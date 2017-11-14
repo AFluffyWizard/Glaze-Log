@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/base"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_marginTop="@dimen/glazelist_item_external_padding"
+    android:layout_marginRight="@dimen/glazelist_item_external_padding"
+    android:layout_marginLeft="@dimen/glazelist_item_external_padding"
+    android:background="@drawable/glazelist_item_border">
+
+    <ImageView
+        android:id="@+id/testTileImageView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_margin="@dimen/glazelist_item_internal_padding"
+        android:src="@drawable/noimg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/glazeNameLabel"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_gravity="start|center_vertical"
+        android:layout_margin="@dimen/glazelist_item_internal_padding"
+        android:text="glaze_name"
+        android:textAppearance="@style/StandardText"
+        app:layout_constraintLeft_toRightOf="@+id/testTileImageView"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/glazeConeLabel" />
+
+    <TextView
+        android:id="@+id/glazeConeLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:textAppearance="@style/SubtitleText"
+        app:layout_constraintLeft_toRightOf="@+id/testTileImageView"
+        app:layout_constraintBottom_toTopOf="@+id/dateEditedLabel"
+        />
+
+    <TextView
+        android:id="@+id/dateEditedLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="@string/glazelist_date_edited"
+        android:textAppearance="@style/SmallText"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/testTileImageView" />
+
+    <TextView
+        android:id="@+id/glazeDateLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|center_vertical"
+        android:layout_marginLeft="@dimen/layout_textview_to_textfield_separator"
+        android:layout_marginRight="@dimen/glazelist_item_internal_padding"
+        android:text="glaze_date"
+        android:textAppearance="@style/SmallText"
+        android:textStyle="italic"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/dateEditedLabel"
+        app:layout_constraintBaseline_toBaselineOf="@+id/dateEditedLabel"
+        app:layout_constraintHorizontal_bias="1.0" />
+
+
+
+</android.support.constraint.ConstraintLayout>

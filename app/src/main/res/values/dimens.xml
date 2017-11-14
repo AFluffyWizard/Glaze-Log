@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="label_mini">14sp</dimen>
+    <dimen name="space_width">2dp</dimen>
+    <dimen name="recipe_amount_width">70dp</dimen>
+    <dimen name="button_addline_height">32sp</dimen>
+    <dimen name="action_bar_height">56dp</dimen>
+    <dimen name="action_bar_plus_primary_inset">72dp</dimen>
+    <dimen name="image_testtile_height">300dp</dimen>
+    <dimen name="image_testtile_width">300dp</dimen>
+
+    <dimen name="layout_primary_inset">8dp</dimen>
+    <dimen name="layout_secondary_inset">16dp</dimen>
+    <dimen name="layout_tertiary_inset">16dp</dimen>
+    <dimen name="layout_intra_section_separator">16dp</dimen>
+    <dimen name="layout_inter_section_separator">24dp</dimen>
+    <dimen name="layout_label_to_field_separator">16dp</dimen>
+    <dimen name="layout_header_to_field_separator">8dp</dimen>
+    <dimen name="layout_textview_to_textfield_separator">4dp</dimen>
+    <dimen name="glazelist_item_border_width">4dp</dimen>
+    <dimen name="glazelist_item_internal_padding">12dp</dimen>
+    <dimen name="glazelist_item_external_padding">16dp</dimen>
+</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#02473d"/>
+        </shape>
+    </item>
+        <item android:left="@dimen/glazelist_item_border_width" android:right="@dimen/glazelist_item_border_width" android:top="@dimen/glazelist_item_border_width" android:bottom="@dimen/glazelist_item_border_width" >
+            <shape android:shape="rectangle">
+                <solid android:color="#deefed"/>
+            </shape>
+        </item>
+</layer-list>

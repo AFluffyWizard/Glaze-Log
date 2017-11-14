@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/temperatureLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="8dp"
+        android:layout_weight="0.3"
+        android:layout_gravity="center"
+        android:text="@string/firingcycle_temp_label"
+        android:textAppearance="@style/StandardText" />
+
+    <TextView
+        android:id="@+id/rateLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="8dp"
+        android:layout_weight="0.3"
+        android:layout_gravity="center"
+        android:text="@string/firingcycle_rate_label"
+        android:textAppearance="@style/StandardText" />
+
+    <TextView
+        android:id="@+id/holdLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="8dp"
+        android:layout_weight="0.3"
+        android:layout_gravity="center"
+        android:text="@string/firingcycle_hold_label"
+        android:textAppearance="@style/StandardText" />
+
+    <Space
+        android:id="@+id/alignmentSpace"
+        android:layout_width="24dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.1"
+        />
+    <!-- layout_width is 24dp because that is the width of the "remove row" vector drawing -->
+
+</TableRow>
