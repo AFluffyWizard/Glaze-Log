@@ -15,6 +15,8 @@ public interface Storable {
     public Type getStorableType();
     public String getRowName();
     public String getCreationDateRaw();
+    public void updateEditDate();
+    public String getEditDate();
 
     public interface CursorCreator<T> {
         public ArrayList<T> createFromCursor (Cursor cursor);

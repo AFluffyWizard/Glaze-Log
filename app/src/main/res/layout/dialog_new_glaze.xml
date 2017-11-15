@@ -6,11 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <include layout="@layout/dialog_new_name"/>
+
     <Spinner
         android:id="@+id/chooseTemplateSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_margin="8dp" />
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"/>
 
 </LinearLayout>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="8dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:gravity="center|start">
+
+    <TextView
+        android:id="@+id/newNameLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/SubtitleText"
+        android:text="@string/dialog_newname_label"/>
+
+    <EditText
+        android:id="@+id/newNameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:text=""
+        android:ems="10"
+        />
+
+</LinearLayout>

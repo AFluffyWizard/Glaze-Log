@@ -32,7 +32,7 @@
     <string name="dialog_newglaze_type_single_label">Single Glaze</string>
     <string name="dialog_newglaze_type_combo_label">Combination of Glazes</string>
     <string name="dialog_newglaze_template_label">From Template</string>
-    <string name="dialog_newglaze_title">Create New Glaze From</string>
+    <string name="dialog_newglaze_title">Create New Glaze</string>
     <string name="glazelist_date_edited">Last Edited</string>
     <string name="appbar_newtemplate_title">Use As Template</string>
     <string name="appbar_glazename_hint">Glaze Name Here…</string>
@@ -43,4 +43,8 @@
     <string name="dialog_newtemplate_label">Name:</string>
     <string name="dialog_newtemplate_hint">Template Name Here…</string>
     <string name="__imagespath">Android/data/nh.glazelog/files/Pictures</string>
+    <string name="appbar_rename_label">Rename</string>
+    <string name="dialog_rename_title">Rename glaze</string>
+    <string name="dialog_rename_hint">New Name...</string>
+    <string name="dialog_newname_label">New Name:</string>
 </resources>

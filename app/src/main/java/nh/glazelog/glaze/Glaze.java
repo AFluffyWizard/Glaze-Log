@@ -189,6 +189,8 @@ public class Glaze implements Parcelable,Storable {
     }
     public String getRowName() {return name;}
     public String getCreationDateRaw() {return creationDate;}
+    public void updateEditDate() {setEditedDate(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));}
+    public String getEditDate() {return getEditedDateRaw();}
 
     public static final CursorCreator<Glaze> CURSOR_CREATOR = new CursorCreator<Glaze>() {
         @Override

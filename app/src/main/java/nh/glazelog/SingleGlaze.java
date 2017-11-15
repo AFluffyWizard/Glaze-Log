@@ -1,5 +1,6 @@
 package nh.glazelog;
 
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.NavUtils;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -63,8 +65,7 @@ public class SingleGlaze extends AppCompatActivity {
         ab.show();
 
         // fills in the version-independent fields
-        EditText glazeName = (EditText) findViewById(R.id.glazeNameEditText);
-        glazeName.addTextChangedListener(new TextSaver(getApplicationContext(),rootGlaze,DBHelper.SingleCN.NAME,true,true));
+        TextView glazeName = (TextView) findViewById(R.id.glazeNameTextView);
         glazeName.setText(rootGlaze.getName());
 
         Spinner finishSpinner = (Spinner) findViewById(R.id.finishSpinner);
@@ -95,7 +96,8 @@ public class SingleGlaze extends AppCompatActivity {
         versionPager = (VersionPager) findViewById(R.id.versionPager);
         PagerAdapter versionPagerAdapter = new VersionPagerAdapter(getSupportFragmentManager(), this, glaze);
         versionPager.setAdapter(versionPagerAdapter);
-        versionPager.setCurrentItem(versionPager.getAdapter().getCount()-2);
+        versionPager.setCurrentItem(0);
+        versionPager.setCurrentItem(versionPager.getAdapter().getCount()-2,true);
 
     }
 
@@ -118,6 +120,28 @@ public class SingleGlaze extends AppCompatActivity {
             case android.R.id.home:
                 navigateUp();
                 return true;
+            case R.id.action_rename:
+                final AlertDialog renameDialog = new AlertDialog.Builder(this).create();
+                renameDialog.setTitle(getString(R.string.dialog_rename_title));
+                final View newNameView = View.inflate(getApplicationContext(),R.layout.dialog_new_name,null);
+                renameDialog.setView(newNameView);
+                renameDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Rename", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        String newName = ((TextView)newNameView.findViewById(R.id.newNameEditText)).getText().toString();
+                        TextView glazeName = (TextView) findViewById(R.id.glazeNameTextView);
+                        glazeName.setText(newName);
+                        ContentValues newNameCv = new ContentValues();
+                        newNameCv.put(DBHelper.CCN_NAME,newName);
+                        dbHelper.appendAllVersions(glaze.get(0),newNameCv);
+                    }
+                });
+                renameDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        renameDialog.hide();
+                    }
+                });
+                renameDialog.show();
+                return true;
             case R.id.action_create_template:
                 final AlertDialog newTemplateDialog = new AlertDialog.Builder(this).create();
                 newTemplateDialog.setTitle(R.string.dialog_newtemplate_title);
@@ -126,10 +150,8 @@ public class SingleGlaze extends AppCompatActivity {
                 newTemplateDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Create", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         String templateName = ((EditText)dialogView.findViewById(R.id.newTemplateEditText)).getText().toString();
-                        System.out.println(templateName);
                         GlazeTemplate t = new GlazeTemplate(glaze.get(versionPager.getCurrentItem()),templateName);
-                        System.out.println(t);
-                        dbHelper.writeOrAppend(t, false); // TODO - FIND OUT WHY THIS ISN'T WORKING AND FIX
+                        dbHelper.writeTemplate(t);
                     }
                 });
                 newTemplateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {

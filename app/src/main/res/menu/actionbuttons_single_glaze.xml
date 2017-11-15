@@ -8,6 +8,11 @@
         app:showAsAction="always|withText"/>
 
     <item
+        android:id="@+id/action_rename"
+        android:title="@string/appbar_rename_label"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/action_create_template"
         android:icon="@drawable/ic_rounded_corner_black_24dp"
         android:title="@string/appbar_newtemplate_title"

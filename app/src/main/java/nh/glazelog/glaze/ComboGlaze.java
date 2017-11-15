@@ -61,6 +61,8 @@ public class ComboGlaze implements Parcelable,Storable {
     }
     public String getRowName() {return name;}
     public String getCreationDateRaw() {return creationDate;}
+    public void updateEditDate() {return;}//setEditedDate(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));}
+    public String getEditDate() {return "";} // TODO
 
     public static final CursorCreator<ComboGlaze> CURSOR_CREATOR = new CursorCreator<ComboGlaze>() {
         @Override

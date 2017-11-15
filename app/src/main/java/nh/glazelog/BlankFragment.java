@@ -50,11 +50,11 @@ public class BlankFragment extends Fragment {
         if (versionPager == null) versionPager = (VersionPager) getActivity().findViewById(R.id.versionPager);
         if (versionPagerAdapter == null) versionPagerAdapter = versionPager.getVersionPagerAdapter();
         versionPagerAdapter.addPage();
-        versionPager.setCurrentItem(versionPagerAdapter.getCount()-2);
+        versionPager.setCurrentItem(versionPagerAdapter.getCount()-2,true);
     }
     private void cancelAddNewVersion () {
         if (versionPager == null) versionPager = (VersionPager) getActivity().findViewById(R.id.versionPager);
         if (versionPagerAdapter == null) versionPagerAdapter = versionPager.getVersionPagerAdapter();
-        versionPager.setCurrentItem(versionPagerAdapter.getCount()-2);
+        versionPager.setCurrentItem(versionPagerAdapter.getCount()-2,true);
     }
 }

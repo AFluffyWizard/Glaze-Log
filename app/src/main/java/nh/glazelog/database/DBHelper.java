@@ -56,25 +56,26 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public void append(Storable s, ContentValues values) {
+        if (!(s instanceof GlazeTemplate)) {
+            s.updateEditDate();
+            values.put(CCN_EDITED_DATE,s.getEditDate());
+        }
         singletonDatabase.updateWithOnConflict(s.getStorableType().getTableName(),values,
                 CCN_CREATION_DATE + " = ?",new String[]{s.getCreationDateRaw()},SQLiteDatabase.CONFLICT_REPLACE);
     }
-    public void append(Storable s) {
-        append(s,s.getContentValues());
-    }
 
     public void appendAllVersions(Storable s, ContentValues values) {
+        if (!(s instanceof GlazeTemplate)) {
+            s.updateEditDate();
+            values.put(CCN_EDITED_DATE,s.getEditDate());
+        }
         singletonDatabase.updateWithOnConflict(s.getStorableType().getTableName(),values,
                 CCN_NAME + " = ?",new String[]{s.getRowName()},SQLiteDatabase.CONFLICT_REPLACE);
     }
-    public void appendAllVersions(Storable s) {
-        appendAllVersions(s,s.getContentValues());
-    }
 
-
-    public void writeOrAppend(Storable s, boolean useDate) {
-        if (contains(s,useDate))
-            append(s);
+    public void writeTemplate(Storable s) {
+        if (contains(s,false))
+            append(s,s.getContentValues());
         else
             write(s);
     }

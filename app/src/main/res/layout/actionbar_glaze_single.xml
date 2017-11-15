@@ -6,13 +6,12 @@
     android:background="?attr/colorPrimary"
     android:elevation="4dp">
 
-    <EditText
-        android:id="@+id/glazeNameEditText"
+    <TextView
+        android:id="@+id/glazeNameTextView"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:hint="@string/appbar_glazename_hint"
-        android:inputType="textShortMessage"
-        android:text=""
+        android:gravity="center|start"
         android:textAppearance="@style/StandardText"/>
 
 </android.support.v7.widget.Toolbar>

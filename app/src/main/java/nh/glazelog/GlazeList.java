@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -71,10 +72,13 @@ public class GlazeList extends AppCompatActivity {
         newGlazeDialog.setTitle(getString(R.string.dialog_newglaze_title));
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_new_glaze,null);
         templateSpinner = (Spinner) dialogView.findViewById(R.id.chooseTemplateSpinner);
+        final EditText newGlazeNameEditText = (EditText) dialogView.findViewById(R.id.newNameEditText);
         newGlazeDialog.setView(dialogView);
         newGlazeDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Create", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                openNewGlaze();
+                GlazeTemplate newGlazeTemplate = (GlazeTemplate) templateSpinner.getSelectedItem();
+                newGlazeTemplate.setName(newGlazeNameEditText.getText().toString());
+                openNewGlaze(newGlazeTemplate);
             }
         });
         newGlazeDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
@@ -148,10 +152,9 @@ public class GlazeList extends AppCompatActivity {
         System.out.println("Template lost loaded");
     }
 
-    public void openNewGlaze() {
+    public void openNewGlaze(GlazeTemplate template) {
         Intent templateIntent = new Intent(this, SingleGlaze.class);
-        GlazeTemplate templateToSend = (GlazeTemplate) templateSpinner.getSelectedItem();
-        templateIntent.putExtra(KEY_GLAZE_TEMPLATE,templateToSend);
+        templateIntent.putExtra(KEY_GLAZE_TEMPLATE,template);
         startActivity(templateIntent);
     }
 

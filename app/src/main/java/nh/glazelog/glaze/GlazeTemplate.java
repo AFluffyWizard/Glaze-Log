@@ -135,6 +135,8 @@ public class GlazeTemplate implements Parcelable,Storable {
     }
     public String getRowName() {return name;}
     public String getCreationDateRaw() {return creationDate;}
+    public void updateEditDate() {return;} // does not need to be defined for templates
+    public String getEditDate() {return "";} // same
 
     public static final CursorCreator<GlazeTemplate> CURSOR_CREATOR = new CursorCreator<GlazeTemplate>() {
         @Override

@@ -326,8 +326,8 @@ public class VersionFragment extends Fragment {
     private void deleteVersion () {
         if (versionPager == null) versionPager = (VersionPager) getActivity().findViewById(R.id.versionPager);
         if (versionPagerAdapter == null) versionPagerAdapter = versionPager.getVersionPagerAdapter();
+        versionPager.setCurrentItem(verNum-2,true);
         versionPagerAdapter.deletePage(gVer);
-        versionPager.setCurrentItem(verNum-2);
     }
 
 
