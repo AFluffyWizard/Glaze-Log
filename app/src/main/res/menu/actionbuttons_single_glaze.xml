@@ -13,6 +13,11 @@
         app:showAsAction="never"/>
 
     <item
+        android:id="@+id/action_copy"
+        android:title="@string/appbar_copy_title"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/action_create_template"
         android:icon="@drawable/ic_rounded_corner_black_24dp"
         android:title="@string/appbar_newtemplate_title"

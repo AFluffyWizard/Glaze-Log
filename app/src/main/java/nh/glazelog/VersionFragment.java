@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,7 +14,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.text.Selection;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -28,7 +32,7 @@ import android.widget.TextView;
 import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -39,7 +43,6 @@ import nh.glazelog.database.IngredientTextSaver;
 import nh.glazelog.database.SimpleSpinnerSaver;
 import nh.glazelog.database.StaticSaver;
 import nh.glazelog.database.TextSaver;
-import nh.glazelog.database.Storable;
 import nh.glazelog.glaze.Cone;
 import nh.glazelog.glaze.Glaze;
 import nh.glazelog.glaze.Ingredient;
@@ -118,8 +121,8 @@ public class VersionFragment extends Fragment {
         testTileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!canReadWrite()) askForPermissions();
-                if (canReadWrite()) dispatchCameraIntent(gVer);
+                if (canReadWrite()) dispatchCameraIntent();
+                else requestStoragePermissions();
             }
         });
 
@@ -207,7 +210,7 @@ public class VersionFragment extends Fragment {
      * Apparently it occurs not just when adding rows
      * but whenever I edit any table at ALL
      * (i.e. removing rows causes it as well).
-     * I've added this to the remove table image views as well.
+     * I've added this to the remove table image buttons as well.
      *
      * Nick Hansen 11/13/17
      */
@@ -237,7 +240,23 @@ public class VersionFragment extends Fragment {
 
         SearchableSpinner ingredient = (SearchableSpinner) recipeRow.findViewById(R.id.ingredientEditText);
         ingredient.setAdapter(new ArrayAdapter<Ingredient>(this.getContext(),/*android.R.layout.select_dialog_item*/R.layout.spinner_item_small, Ingredient.values()));
-        TextView amount = (TextView) recipeRow.findViewById(R.id.amountEditText);
+        final EditText amount = (EditText) recipeRow.findViewById(R.id.amountEditText);
+        amount.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                System.out.println("FOCUS: " + hasFocus);
+                if (hasFocus) {
+                    amount.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            System.out.println("HAS FOCUS");
+                            amount.setSelection(amount.getText().length());
+                            System.out.println("TEXT LENGTH: " + amount.getText().length());
+                        }
+                    },50);
+                }
+            }
+        });
         ImageView deleteRow = (ImageView) recipeRow.findViewById(R.id.deleteRowImageView);
         deleteRow.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -256,11 +275,11 @@ public class VersionFragment extends Fragment {
         }
 
         if (isMaterials) {
-            ingredient.setOnItemSelectedListener(new IngredientSpinnerSaver(getContext(),gVer,recipeMaterialsTable,true));
+            ingredient.setOnItemSelectedListener(new IngredientSpinnerSaver(getContext(),gVer,recipeMaterialsTable,isMaterials));
             amount.addTextChangedListener(new IngredientTextSaver(getContext(),gVer,recipeMaterialsTable,isMaterials));
         }
         else {
-            ingredient.setOnItemSelectedListener(new IngredientSpinnerSaver(getContext(),gVer,recipeAdditionsTable,false));
+            ingredient.setOnItemSelectedListener(new IngredientSpinnerSaver(getContext(),gVer,recipeAdditionsTable,isMaterials));
             amount.addTextChangedListener(new IngredientTextSaver(getContext(),gVer,recipeAdditionsTable,isMaterials));
         }
 
@@ -344,39 +363,25 @@ public class VersionFragment extends Fragment {
         return checkReadPermission && checkWritePermission;
     }
 
-    private final static int READ_STORAGE_PERMISSION_SUCCESSFUL = 100;
-    private final static int WRITE_STORAGE_PERMISSION_SUCCESSFUL = 200;
-    private boolean askForPermissions() {
-        if (!canReadWrite()) {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    READ_STORAGE_PERMISSION_SUCCESSFUL);
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    WRITE_STORAGE_PERMISSION_SUCCESSFUL);
-        }
-
-        return canReadWrite();
+    private final static int PERMISSION_USE_INTERNAL_STORAGE = 200;
+    private void requestStoragePermissions() {
+        //Manifest.permission.READ_EXTERNAL_STORAGE
+        ActivityCompat.requestPermissions(getActivity(),
+                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                PERMISSION_USE_INTERNAL_STORAGE);
     }
 
-    public void dispatchCameraIntent(Storable s) {
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        System.out.println("REQUEST CODE MATCHES: " + (requestCode == PERMISSION_USE_INTERNAL_STORAGE));
+        System.out.println("PERMISSION GRANTED: " + (grantResults[0] == PackageManager.PERMISSION_GRANTED));
+        if (requestCode == PERMISSION_USE_INTERNAL_STORAGE && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                dispatchCameraIntent();
+    }
+
+
+    public void dispatchCameraIntent() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        imageFile = new File(Environment.getExternalStorageDirectory() + "/Android/data/nh.glazelog/files/Pictures",s.getCreationDateRaw() + ".jpg");
-        if (imageFile.exists()) imageFile.delete();
-        try{
-            imageFile.createNewFile();
-        } catch (IOException e) {e.printStackTrace();return;}
-
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            imageUri = Uri.fromFile(imageFile);
-            System.out.println("Uses old Uri format: " + imageUri);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        } else {
-            imageUri = FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".fileprovider", imageFile);
-            System.out.println("Uses Android N+ Uri format: " + imageUri);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        }
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         if (intent.resolveActivity(getContext().getPackageManager()) != null) {
             startActivityForResult(intent, KEY_REQUEST_IMAGE_CAPTURE);
@@ -386,22 +391,56 @@ public class VersionFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        String resultCodeType;
+        String resultCodeType = "UNKNOWN RESULT CODE";
         if (resultCode == RESULT_OK) resultCodeType = "RESULT_OK";
         else if (resultCode == RESULT_CANCELED) resultCodeType = "RESULT_CANCELED";
         else if (resultCode == RESULT_FIRST_USER) resultCodeType = "RESULT_FIRST_USER";
-        else resultCodeType = "UNKNOWN RESULT CODE";
         System.out.println("Request code matches take image key: " + (requestCode == KEY_REQUEST_IMAGE_CAPTURE));
         System.out.println("Img Intent result code: " + resultCodeType);
-        switch(requestCode){
-            case KEY_REQUEST_IMAGE_CAPTURE:
-                if(resultCode==RESULT_OK) {
-                    ContentValues imageUriCV= new ContentValues();
-                    imageUriCV.put(DBHelper.SingleCN.IMAGE_URI_STRING,imageUri.toString());
-                    DBHelper.getSingletonInstance(getContext()).append(gVer,imageUriCV);
-                    System.out.println("Image saved with Uri " + imageUri.toString());
-                    testTileImage.setImageURI(imageUri);
+
+        if (requestCode == KEY_REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+
+
+            imageFile = new File(Environment.getExternalStorageDirectory() + getString(R.string.__imagespath),gVer.getCreationDateRaw() + ".png");
+            FileOutputStream outputStream = null;
+            if (imageFile.exists()) imageFile.delete();
+            else imageFile.mkdirs();
+
+            try{
+                imageFile.createNewFile();
+                outputStream = new FileOutputStream(imageFile);
+                System.out.println("Before compress: bmp height: " + imageBitmap.getHeight() + " bmp width: " + imageBitmap.getWidth());
+                imageBitmap.compress(Bitmap.CompressFormat.PNG,100,outputStream);
+                System.out.println("After compress: bmp height: " + imageBitmap.getHeight() + " bmp width: " + imageBitmap.getWidth());
+            } catch (IOException e) {
+                e.printStackTrace();
+                onActivityResult(requestCode,resultCode,data);
+            } finally {
+                try {
+                    if (outputStream != null) {
+                        outputStream.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+            }
+
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                imageUri = Uri.fromFile(imageFile);
+                System.out.println("Uses old Uri format: " + imageUri);
+            } else {
+                imageUri = FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".fileprovider", imageFile);
+                System.out.println("Uses Android N+ Uri format: " + imageUri);
+            }
+
+            ContentValues imageUriCV= new ContentValues();
+            imageUriCV.put(DBHelper.SingleCN.IMAGE_URI_STRING,imageUri.toString());
+            DBHelper.getSingletonInstance(getContext()).append(gVer,imageUriCV);
+            System.out.println("Image saved with Uri " + imageUri.toString());
+            testTileImage.setImageURI(imageUri);
         }
     }
 

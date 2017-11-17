@@ -42,9 +42,10 @@
     <string name="dialog_newtemplate_title">Create New Template</string>
     <string name="dialog_newtemplate_label">Name:</string>
     <string name="dialog_newtemplate_hint">Template Name Here…</string>
-    <string name="__imagespath">Android/data/nh.glazelog/files/Pictures</string>
+    <string name="__imagespath">/Android/data/nh.glazelog/files/Pictures</string>
     <string name="appbar_rename_label">Rename</string>
     <string name="dialog_rename_title">Rename glaze</string>
     <string name="dialog_rename_hint">New Name...</string>
     <string name="dialog_newname_label">New Name:</string>
+    <string name="appbar_copy_title">Create Copy of This Version</string>
 </resources>

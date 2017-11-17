@@ -88,6 +88,25 @@ public class Glaze implements Parcelable,Storable {
         this.secondaryNotes = "";
     }
 
+    public Glaze (Glaze g) {
+        this.name = "Copy of " + g.getName();
+        this.creationDate = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        this.editedDate = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        this.finish = g.getFinish();
+        this.opacity = g.getOpacity();
+        this.atmos = g.getAtmos();
+        this.clayBody = g.getClayBody();
+        this.application = g.getApplication();
+        this.primaryNotes = g.getPrimaryNotes();
+        this.imageUriString = "";
+        this.spgr = g.getSpgr();
+        this.materials = g.getMaterials();
+        this.additions = g.getAdditions();
+        this.firingCycle = g.getFiringCycle();
+        bisquedTo = g.getBisquedTo();
+        this.secondaryNotes = g.getSecondaryNotes();
+    }
+
     public Glaze(String name, String creationDate, String editedDate, Finish finish, Opacity opacity, Atmosphere atmos, String clayBody, String application, String primaryNotes, String imageUri, double spgr, ArrayList<IngredientQuantity> materials, ArrayList<IngredientQuantity> additions, ArrayList<RampHold> firingCycle, Cone bisquedTo, String secondaryNotes) {
         this.name = name;
         this.creationDate = creationDate;

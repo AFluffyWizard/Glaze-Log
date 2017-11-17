@@ -120,6 +120,10 @@ public class SingleGlaze extends AppCompatActivity {
             case android.R.id.home:
                 navigateUp();
                 return true;
+            case R.id.action_copy:
+                DBHelper.getSingletonInstance(getApplicationContext()).write(new Glaze(glaze.get(versionPager.getCurrentItem())));
+                navigateUp();
+                return true;
             case R.id.action_rename:
                 final AlertDialog renameDialog = new AlertDialog.Builder(this).create();
                 renameDialog.setTitle(getString(R.string.dialog_rename_title));

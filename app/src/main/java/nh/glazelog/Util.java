@@ -2,6 +2,7 @@ package nh.glazelog;
 
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TableLayout;
 
 import java.util.ArrayList;
 
@@ -66,6 +67,10 @@ public class Util {
         final String seconds = d.substring(13,15);
 
         return month + "/" + day + "/" + shortYear + " at " + hour + ":" + minute;
+    }
+
+    public static void fixTables (TableLayout... tables) {
+        for (TableLayout tb : tables) tb.requestLayout();
     }
 
     public static <T extends Object> void setSpinnerSelection (Spinner spinner, Class<T> o) {
