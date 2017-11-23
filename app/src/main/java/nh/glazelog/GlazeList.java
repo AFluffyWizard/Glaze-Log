@@ -3,7 +3,6 @@ package nh.glazelog;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
@@ -110,7 +109,7 @@ public class GlazeList extends AppCompatActivity {
         numGlazes = 0;
         for (ArrayList<Glaze> gList : glazesWithVersions) {
             // init individual view
-            View singleGlaze = getLayoutInflater().inflate(R.layout.glazelist_item_single,list,false);
+            View singleGlaze = getLayoutInflater().inflate(R.layout.list_item_glaze_single,list,false);
             singleGlaze.setId(numGlazes);
             singleGlaze.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -137,7 +136,6 @@ public class GlazeList extends AppCompatActivity {
             cone.setText(closestCone.toString());
             date.setText(Util.getShortDate(rootGlaze.getEditedDateRaw()));
             if (currentGlaze.getImageUri() != Uri.EMPTY) testTileImage.setImageURI(currentGlaze.getImageUri());
-            // TODO - CATCH EXCEPTION INSTEAD OF USING IF
 
             // add view to list and increment counter
             list.addView(singleGlaze);

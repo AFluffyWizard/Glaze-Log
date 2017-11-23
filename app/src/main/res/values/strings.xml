@@ -38,7 +38,6 @@
     <string name="appbar_glazename_hint">Glaze Name Here…</string>
     <string name="dialog_confirm_pretext">"Are you sure you want "</string>
     <string name="appbar_delete">Delete</string>
-    <string name="dialog_confirm_title">Confirm Action</string>
     <string name="dialog_newtemplate_title">Create New Template</string>
     <string name="dialog_newtemplate_label">Name:</string>
     <string name="dialog_newtemplate_hint">Template Name Here…</string>
@@ -48,4 +47,5 @@
     <string name="dialog_rename_hint">New Name...</string>
     <string name="dialog_newname_label">New Name:</string>
     <string name="appbar_copy_title">Create Copy of This Version</string>
+    <string name="dialog_nocamera_message">Your system does not have a camera, and therefore does not support taking pictures</string>
 </resources>

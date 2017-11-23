@@ -2,9 +2,12 @@ package nh.glazelog;
 
 import android.Manifest;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +17,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
 import android.text.Selection;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -64,8 +68,12 @@ public class VersionFragment extends Fragment {
     int verNum;
     LayoutInflater inflater;
     private View page;
+    private static File preCompressImageFile;
+    private static Uri preCompressImageUri;
 
-    private final static int KEY_REQUEST_IMAGE_CAPTURE = 1;
+    private static final double newImageScale = 0.1;
+    private static final int WAIT_ADD_LISTENER = 50;
+    private static final int KEY_REQUEST_IMAGE_CAPTURE = 1;
 
     private TextView versionField;
     private EditText primaryNotes;
@@ -96,39 +104,14 @@ public class VersionFragment extends Fragment {
 
         primaryNotes = (EditText) page.findViewById(R.id.primaryNotes);
         primaryNotes.setText(gVer.getPrimaryNotes());
-        primaryNotes.addTextChangedListener(new TextSaver(getContext(),gVer,DBHelper.SingleCN.PRIMARY_NOTES,false,false));
 
         deleteVersion = (ImageView) page.findViewById(R.id.deleteVersionImageView);
-        if (verNum == 1) deleteVersion.setVisibility(GONE);
-        else {
-            deleteVersion.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ConfirmDialog confirmDelete = new ConfirmDialog(getContext(), true, "to delete this version? \nWARNING: this CANNOT be undone.",
-                            new ConfirmDialog.Action() {
-                        @Override
-                        public void action() {
-                            deleteVersion();
-                        }
-                    });
-                    confirmDelete.show();
-                }
-            });
-        }
 
         testTileImage = (ImageView) page.findViewById(R.id.testTileImageView);
         if (!gVer.getImageUri().equals(Uri.EMPTY)) testTileImage.setImageURI(gVer.getImageUri());
-        testTileImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (canReadWrite()) dispatchCameraIntent();
-                else requestStoragePermissions();
-            }
-        });
 
         spgrField = (EditText) page.findViewById(R.id.spgrField);
         spgrField.setText(new Double(gVer.getSpgr()).toString());
-        spgrField.addTextChangedListener(new TextSaver(getContext(),gVer,DBHelper.SingleCN.SPGR,false,false));
 
         recipeMaterialsTable = (TableLayout) page.findViewById(R.id.recipeMaterialsTable);
         ArrayList<IngredientQuantity> materialsList = gVer.getMaterials();
@@ -161,7 +144,6 @@ public class VersionFragment extends Fragment {
         bisqueSpinner = (Spinner) page.findViewById(R.id.bisqueSpinner);
         bisqueSpinner.setAdapter(new ArrayAdapter<Cone>(this.getContext(),R.layout.spinner_item_small,Cone.values()));
         Util.setSpinnerSelection(bisqueSpinner,gVer.getBisquedTo()); // default selection
-        bisqueSpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getContext(),gVer,DBHelper.CCN_BISQUED_TO,false));
 
         firingCycleTable = (TableLayout) page.findViewById(R.id.firingcycleTable);
         ArrayList<RampHold> firingCycle = gVer.getFiringCycle();
@@ -179,11 +161,53 @@ public class VersionFragment extends Fragment {
 
         secondaryNotes = (EditText) page.findViewById(R.id.secondaryNotes);
         secondaryNotes.setText(gVer.getSecondaryNotes());
-        secondaryNotes.addTextChangedListener(new TextSaver(getContext(),gVer,DBHelper.SingleCN.SECONDARY_NOTES,false,false));
 
+
+        page.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                addChangeListeners();
+            }
+        },WAIT_ADD_LISTENER);
 
 
         return page;
+    }
+
+    private void addChangeListeners() {
+        primaryNotes.addTextChangedListener(new TextSaver(getContext(),gVer,DBHelper.SingleCN.PRIMARY_NOTES,false,false));
+
+        if (verNum == 1) deleteVersion.setVisibility(GONE);
+        else {
+            deleteVersion.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ConfirmDialog confirmDelete = new ConfirmDialog(getContext(), true, "to delete this version? \nWARNING: this CANNOT be undone.",
+                            new ConfirmDialog.Action() {
+                                @Override
+                                public void action() {
+                                    deleteVersion();
+                                }
+                            });
+                    confirmDelete.show();
+                }
+            });
+
+        }
+
+        testTileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (canReadWrite()) dispatchCameraIntent();
+                else requestStoragePermissions();
+            }
+        });
+
+        spgrField.addTextChangedListener(new TextSaver(getContext(),gVer,DBHelper.SingleCN.SPGR,false,false));
+
+        bisqueSpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getContext(),gVer,DBHelper.CCN_BISQUED_TO,false));
+
+        secondaryNotes.addTextChangedListener(new TextSaver(getContext(),gVer,DBHelper.SingleCN.SECONDARY_NOTES,false,false));
     }
 
 
@@ -238,7 +262,7 @@ public class VersionFragment extends Fragment {
                     }
                 });
 
-        SearchableSpinner ingredient = (SearchableSpinner) recipeRow.findViewById(R.id.ingredientEditText);
+        final SearchableSpinner ingredient = (SearchableSpinner) recipeRow.findViewById(R.id.ingredientEditText);
         ingredient.setAdapter(new ArrayAdapter<Ingredient>(this.getContext(),/*android.R.layout.select_dialog_item*/R.layout.spinner_item_small, Ingredient.values()));
         final EditText amount = (EditText) recipeRow.findViewById(R.id.amountEditText);
         amount.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -249,9 +273,7 @@ public class VersionFragment extends Fragment {
                     amount.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            System.out.println("HAS FOCUS");
                             amount.setSelection(amount.getText().length());
-                            System.out.println("TEXT LENGTH: " + amount.getText().length());
                         }
                     },50);
                 }
@@ -275,12 +297,22 @@ public class VersionFragment extends Fragment {
         }
 
         if (isMaterials) {
-            ingredient.setOnItemSelectedListener(new IngredientSpinnerSaver(getContext(),gVer,recipeMaterialsTable,isMaterials));
-            amount.addTextChangedListener(new IngredientTextSaver(getContext(),gVer,recipeMaterialsTable,isMaterials));
+            recipeRow.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    ingredient.setOnItemSelectedListener(new IngredientSpinnerSaver(getContext(),gVer,recipeMaterialsTable,isMaterials));
+                    amount.addTextChangedListener(new IngredientTextSaver(getContext(),gVer,recipeMaterialsTable,isMaterials));
+                }
+            },WAIT_ADD_LISTENER);
         }
         else {
-            ingredient.setOnItemSelectedListener(new IngredientSpinnerSaver(getContext(),gVer,recipeAdditionsTable,isMaterials));
-            amount.addTextChangedListener(new IngredientTextSaver(getContext(),gVer,recipeAdditionsTable,isMaterials));
+            recipeRow.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    ingredient.setOnItemSelectedListener(new IngredientSpinnerSaver(getContext(),gVer,recipeAdditionsTable,isMaterials));
+                    amount.addTextChangedListener(new IngredientTextSaver(getContext(),gVer,recipeAdditionsTable,isMaterials));
+                }
+            },WAIT_ADD_LISTENER);
         }
 
         if (isMaterials)    recipeMaterialsTable.addView(recipeRow);
@@ -299,9 +331,9 @@ public class VersionFragment extends Fragment {
                     }
                 });
 
-        EditText temperature = (EditText) firingCycleRow.findViewById(R.id.temperatureEditText);
-        EditText rate = (EditText) firingCycleRow.findViewById(R.id.rateEditText);
-        EditText hold = (EditText) firingCycleRow.findViewById(R.id.holdEditText);
+        final EditText temperature = (EditText) firingCycleRow.findViewById(R.id.temperatureEditText);
+        final EditText rate = (EditText) firingCycleRow.findViewById(R.id.rateEditText);
+        final EditText hold = (EditText) firingCycleRow.findViewById(R.id.holdEditText);
         ImageView deleteRow = (ImageView) firingCycleRow.findViewById(R.id.deleteRowImageView);
         deleteRow.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -321,9 +353,14 @@ public class VersionFragment extends Fragment {
             hold.setText(new Double(rh.getHold()).toString());
         }
 
-        temperature.addTextChangedListener(new FiringCycleTextSaver(getContext(),gVer,firingCycleTable));
-        rate.addTextChangedListener(new FiringCycleTextSaver(getContext(),gVer,firingCycleTable));
-        hold.addTextChangedListener(new FiringCycleTextSaver(getContext(),gVer,firingCycleTable));
+        firingCycleRow.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                temperature.addTextChangedListener(new FiringCycleTextSaver(getContext(),gVer,firingCycleTable));
+                rate.addTextChangedListener(new FiringCycleTextSaver(getContext(),gVer,firingCycleTable));
+                hold.addTextChangedListener(new FiringCycleTextSaver(getContext(),gVer,firingCycleTable));
+            }
+        },WAIT_ADD_LISTENER);
 
         firingCycleTable.addView(firingCycleRow);
     }
@@ -354,6 +391,13 @@ public class VersionFragment extends Fragment {
 
     /*--------------------TAKE AND SAVE PICTURE OF TEST TILE--------------------*/
 
+    private void initPreCompressFile() {
+        if (preCompressImageFile == null) preCompressImageFile = new File(Environment.getExternalStorageDirectory() + getString(R.string.__imagespath), "pre_compress_camera_img.jpg");
+
+        if (preCompressImageUri == null) {
+            preCompressImageUri = Util.getVersionSpecificUri(getContext(),preCompressImageFile);
+        }
+    }
 
     private boolean canReadWrite() {
         boolean checkReadPermission = ContextCompat.checkSelfPermission(getActivity(),
@@ -381,10 +425,25 @@ public class VersionFragment extends Fragment {
 
 
     public void dispatchCameraIntent() {
+        initPreCompressFile();
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT,preCompressImageUri);
         if (intent.resolveActivity(getContext().getPackageManager()) != null) {
             startActivityForResult(intent, KEY_REQUEST_IMAGE_CAPTURE);
+        }
+        else {
+            final AlertDialog noCameraDialog = new AlertDialog.Builder(getContext()).create();
+            noCameraDialog.setTitle(R.string.app_name);
+            noCameraDialog.setMessage(getString(R.string.dialog_nocamera_message));
+            noCameraDialog.setCancelable(true);
+            noCameraDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    noCameraDialog.cancel();
+                }
+            });
+            noCameraDialog.show();
         }
     }
 
@@ -399,25 +458,30 @@ public class VersionFragment extends Fragment {
         System.out.println("Img Intent result code: " + resultCodeType);
 
         if (requestCode == KEY_REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-
+            //Bundle extras = data.getExtras();
+            //Bitmap imageBitmap = (Bitmap) extras.get("data");
 
             imageFile = new File(Environment.getExternalStorageDirectory() + getString(R.string.__imagespath),gVer.getCreationDateRaw() + ".png");
             FileOutputStream outputStream = null;
             if (imageFile.exists()) imageFile.delete();
             else imageFile.mkdirs();
 
+            // get image, compress it, and rotate it
+            Bitmap imageBitmap = BitmapFactory.decodeFile(preCompressImageFile.toString());
+            imageBitmap = Bitmap.createScaledBitmap(imageBitmap, (int)(imageBitmap.getWidth()*newImageScale), (int)(imageBitmap.getHeight()*newImageScale), true);
+            Matrix rotate = new Matrix();
+            rotate.postRotate(90);
+            imageBitmap = Bitmap.createBitmap(imageBitmap , 0, 0, imageBitmap.getWidth(), imageBitmap.getHeight(), rotate, true);
+
             try{
                 imageFile.createNewFile();
                 outputStream = new FileOutputStream(imageFile);
-                System.out.println("Before compress: bmp height: " + imageBitmap.getHeight() + " bmp width: " + imageBitmap.getWidth());
                 imageBitmap.compress(Bitmap.CompressFormat.PNG,100,outputStream);
-                System.out.println("After compress: bmp height: " + imageBitmap.getHeight() + " bmp width: " + imageBitmap.getWidth());
             } catch (IOException e) {
                 e.printStackTrace();
                 onActivityResult(requestCode,resultCode,data);
             } finally {
+                preCompressImageFile.delete();
                 try {
                     if (outputStream != null) {
                         outputStream.close();
@@ -428,19 +492,13 @@ public class VersionFragment extends Fragment {
             }
 
 
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                imageUri = Uri.fromFile(imageFile);
-                System.out.println("Uses old Uri format: " + imageUri);
-            } else {
-                imageUri = FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".fileprovider", imageFile);
-                System.out.println("Uses Android N+ Uri format: " + imageUri);
-            }
+            imageUri = Util.getVersionSpecificUri(getContext(), imageFile);
 
             ContentValues imageUriCV= new ContentValues();
             imageUriCV.put(DBHelper.SingleCN.IMAGE_URI_STRING,imageUri.toString());
             DBHelper.getSingletonInstance(getContext()).append(gVer,imageUriCV);
             System.out.println("Image saved with Uri " + imageUri.toString());
-            testTileImage.setImageURI(imageUri);
+            testTileImage.setImageBitmap(imageBitmap);
         }
     }
 

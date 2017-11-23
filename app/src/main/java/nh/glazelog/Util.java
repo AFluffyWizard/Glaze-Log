@@ -1,9 +1,14 @@
 package nh.glazelog;
 
+import android.content.Context;
+import android.net.Uri;
+import android.os.Build;
+import android.support.v4.content.FileProvider;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import nh.glazelog.database.DBHelper;
@@ -71,6 +76,18 @@ public class Util {
 
     public static void fixTables (TableLayout... tables) {
         for (TableLayout tb : tables) tb.requestLayout();
+    }
+
+    public static Uri getVersionSpecificUri(Context context, File file) {
+        Uri u;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            u = Uri.fromFile(file);
+            System.out.println("Uses old Uri format: " + u);
+        } else {
+            u = FileProvider.getUriForFile(context, context.getPackageName() + ".fileprovider", file);
+            System.out.println("Uses Android N+ Uri format: " + u);
+        }
+        return u;
     }
 
     public static <T extends Object> void setSpinnerSelection (Spinner spinner, Class<T> o) {

@@ -2,7 +2,6 @@ package nh.glazelog;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -24,7 +23,7 @@ public class ConfirmDialog extends AlertDialog {
     // onCancel will be null, so it makes instantiating the class easier.
     public ConfirmDialog(@NonNull Context context, boolean includePrefix, String text, @Nullable final Action onConfirm) {
         super(context);
-        setTitle(R.string.dialog_confirm_title);
+        setTitle(R.string.app_name);
         if (includePrefix) setMessage(getContext().getString(R.string.dialog_confirm_pretext) + text);
         else setMessage(text);
         setCancelable(true);

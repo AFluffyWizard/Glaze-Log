@@ -33,6 +33,8 @@ public class SingleGlaze extends AppCompatActivity {
     DBHelper dbHelper;
     VersionPager versionPager;
 
+    private static final int WAIT_ADD_LISTENER = 50;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,28 +70,54 @@ public class SingleGlaze extends AppCompatActivity {
         TextView glazeName = (TextView) findViewById(R.id.glazeNameTextView);
         glazeName.setText(rootGlaze.getName());
 
-        Spinner finishSpinner = (Spinner) findViewById(R.id.finishSpinner);
+        final Spinner finishSpinner = (Spinner) findViewById(R.id.finishSpinner);
         finishSpinner.setAdapter(new ArrayAdapter<Finish>(this, R.layout.spinner_item_small, Finish.values()));
         Util.setSpinnerSelection(finishSpinner,rootGlaze.getFinish());
-        finishSpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(this,rootGlaze,DBHelper.SingleCN.FINISH,true));
+        finishSpinner.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                finishSpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getThis(),rootGlaze,DBHelper.SingleCN.FINISH,true));
+            }
+        },WAIT_ADD_LISTENER);
 
-        Spinner opacitySpinner = (Spinner) findViewById(R.id.opacitySpinner);
+        final Spinner opacitySpinner = (Spinner) findViewById(R.id.opacitySpinner);
         opacitySpinner.setAdapter(new ArrayAdapter<Opacity>(this, R.layout.spinner_item_small, Opacity.values()));
         Util.setSpinnerSelection(opacitySpinner,rootGlaze.getOpacity());
-        opacitySpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(this,rootGlaze,DBHelper.SingleCN.OPACITY,true));
+        opacitySpinner.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                opacitySpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getThis(),rootGlaze,DBHelper.SingleCN.OPACITY,true));
+            }
+        },WAIT_ADD_LISTENER);
 
-        Spinner atmosSpinner = (Spinner) findViewById(R.id.atmosSpinner);
+        final Spinner atmosSpinner = (Spinner) findViewById(R.id.atmosSpinner);
         atmosSpinner.setAdapter(new ArrayAdapter<Atmosphere>(this, R.layout.spinner_item_small, Atmosphere.values()));
         Util.setSpinnerSelection(atmosSpinner,rootGlaze.getAtmos());
-        atmosSpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(this,rootGlaze,DBHelper.SingleCN.ATMOSPHERE,true));
+        atmosSpinner.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                atmosSpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getThis(),rootGlaze,DBHelper.SingleCN.ATMOSPHERE,true));
+            }
+        },WAIT_ADD_LISTENER);
 
-        EditText clayBody = (EditText) findViewById(R.id.bodyTextField);
+        final EditText clayBody = (EditText) findViewById(R.id.bodyTextField);
         clayBody.setText(rootGlaze.getClayBody());
-        clayBody.addTextChangedListener(new TextSaver(this,rootGlaze,DBHelper.SingleCN.CLAY_BODY,true,false));
+        clayBody.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                clayBody.addTextChangedListener(new TextSaver(getThis(),rootGlaze,DBHelper.SingleCN.CLAY_BODY,true,false));
+            }
+        },WAIT_ADD_LISTENER);
         
-        EditText application = (EditText) findViewById(R.id.applicationTextField);
+        final EditText application = (EditText) findViewById(R.id.applicationTextField);
         application.setText(rootGlaze.getApplication());
-        application.addTextChangedListener(new TextSaver(this,rootGlaze,DBHelper.SingleCN.APPLICATION,true,false));
+        application.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                application.addTextChangedListener(new TextSaver(getThis(),rootGlaze,DBHelper.SingleCN.APPLICATION,true,false));
+            }
+        },WAIT_ADD_LISTENER);
+
 
 
         // init the version pager
@@ -101,11 +129,16 @@ public class SingleGlaze extends AppCompatActivity {
 
     }
 
-    // this enables each versionFragment to handle the result on their own (Used for pictures)
+    // these two enable each versionFragment to handle the results on their own (Used for pictures)
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
     }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu (Menu menu) {
@@ -194,5 +227,9 @@ public class SingleGlaze extends AppCompatActivity {
         NavUtils.navigateUpFromSameTask(this);
         //NavUtils.navigateUpTo(this,null);
         //this.finish();
+    }
+
+    private SingleGlaze getThis() {
+        return this;
     }
 }
