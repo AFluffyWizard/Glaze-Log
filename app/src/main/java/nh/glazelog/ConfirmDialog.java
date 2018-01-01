@@ -29,7 +29,7 @@ public class ConfirmDialog extends AlertDialog {
         setCancelable(true);
 
         this.onConfirm = onConfirm;
-        setButton(DialogInterface.BUTTON_POSITIVE, "Confirm", new DialogInterface.OnClickListener() {
+        setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 if (getOnConfirm() != null) onConfirm();
             }

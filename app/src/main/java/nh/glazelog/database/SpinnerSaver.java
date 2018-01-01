@@ -1,10 +1,8 @@
 package nh.glazelog.database;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Spinner;
 
 /**
  * Created by Nick Hansen on 10/30/2017.
@@ -12,13 +10,13 @@ import android.widget.Spinner;
 
 public abstract class SpinnerSaver implements AdapterView.OnItemSelectedListener {
 
-    DBHelper dbHelper;
+    DbHelper dbHelper;
     Storable sToSave;
     String cvKey;
     boolean appendAllVersions;
 
     public SpinnerSaver(Context context, Storable s, String key, boolean appendAllVersions) {
-        dbHelper = DBHelper.getSingletonInstance(context);
+        dbHelper = DbHelper.getSingletonInstance(context);
         sToSave = s;
         cvKey = key;
         this.appendAllVersions = appendAllVersions;

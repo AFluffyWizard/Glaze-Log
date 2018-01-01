@@ -1,27 +1,17 @@
 package nh.glazelog;
 
-import android.Manifest;
 import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
-import android.support.v7.app.AlertDialog;
-import android.text.Selection;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -40,7 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import nh.glazelog.database.DBHelper;
+import nh.glazelog.database.DbHelper;
 import nh.glazelog.database.FiringCycleTextSaver;
 import nh.glazelog.database.IngredientSpinnerSaver;
 import nh.glazelog.database.IngredientTextSaver;
@@ -49,7 +39,7 @@ import nh.glazelog.database.StaticSaver;
 import nh.glazelog.database.TextSaver;
 import nh.glazelog.glaze.Cone;
 import nh.glazelog.glaze.Glaze;
-import nh.glazelog.glaze.Ingredient;
+import nh.glazelog.glaze.IngredientEnum;
 import nh.glazelog.glaze.IngredientQuantity;
 import nh.glazelog.glaze.RampHold;
 
@@ -57,6 +47,7 @@ import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_FIRST_USER;
 import static android.app.Activity.RESULT_OK;
 import static android.view.View.GONE;
+import static nh.glazelog.Util.PERMISSION_USE_INTERNAL_STORAGE;
 
 /**
  * Created by Nick Hansen on 10/18/2017.
@@ -175,7 +166,7 @@ public class VersionFragment extends Fragment {
     }
 
     private void addChangeListeners() {
-        primaryNotes.addTextChangedListener(new TextSaver(getContext(),gVer,DBHelper.SingleCN.PRIMARY_NOTES,false,false));
+        primaryNotes.addTextChangedListener(new TextSaver(getContext(),gVer, DbHelper.SingleCN.PRIMARY_NOTES,false,false));
 
         if (verNum == 1) deleteVersion.setVisibility(GONE);
         else {
@@ -198,16 +189,16 @@ public class VersionFragment extends Fragment {
         testTileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (canReadWrite()) dispatchCameraIntent();
-                else requestStoragePermissions();
+                if (Util.checkStoragePermissions(getActivity())) dispatchCameraIntent();
+                else Util.requestStoragePermissions(getActivity());
             }
         });
 
-        spgrField.addTextChangedListener(new TextSaver(getContext(),gVer,DBHelper.SingleCN.SPGR,false,false));
+        spgrField.addTextChangedListener(new TextSaver(getContext(),gVer, DbHelper.SingleCN.SPGR,false,false));
 
-        bisqueSpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getContext(),gVer,DBHelper.CCN_BISQUED_TO,false));
+        bisqueSpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getContext(),gVer, DbHelper.SingleCN.BISQUED_TO,false));
 
-        secondaryNotes.addTextChangedListener(new TextSaver(getContext(),gVer,DBHelper.SingleCN.SECONDARY_NOTES,false,false));
+        secondaryNotes.addTextChangedListener(new TextSaver(getContext(),gVer, DbHelper.SingleCN.SECONDARY_NOTES,false,false));
     }
 
 
@@ -238,7 +229,7 @@ public class VersionFragment extends Fragment {
      *
      * Nick Hansen 11/13/17
      */
-    private void fixTables () {
+    void fixTables () {
         recipeMaterialsTable.requestLayout();
         recipeAdditionsTable.requestLayout();
         firingCycleTable.requestLayout();
@@ -263,7 +254,7 @@ public class VersionFragment extends Fragment {
                 });
 
         final SearchableSpinner ingredient = (SearchableSpinner) recipeRow.findViewById(R.id.ingredientEditText);
-        ingredient.setAdapter(new ArrayAdapter<Ingredient>(this.getContext(),/*android.R.layout.select_dialog_item*/R.layout.spinner_item_small, Ingredient.values()));
+        ingredient.setAdapter(new ArrayAdapter<IngredientEnum>(this.getContext(),/*android.R.layout.select_dialog_item*/R.layout.spinner_item_small, IngredientEnum.values()));
         final EditText amount = (EditText) recipeRow.findViewById(R.id.amountEditText);
         amount.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -292,7 +283,7 @@ public class VersionFragment extends Fragment {
             amount.setHint("0");
         }
         else {
-            Util.setSpinnerSelection(ingredient,iq.getIngredient());
+            Util.setSpinnerSelection(ingredient,iq.getIngredientEnum());
             amount.setText(new Double(iq.getAmount()).toString());
         }
 
@@ -399,22 +390,6 @@ public class VersionFragment extends Fragment {
         }
     }
 
-    private boolean canReadWrite() {
-        boolean checkReadPermission = ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-        boolean checkWritePermission = ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-        return checkReadPermission && checkWritePermission;
-    }
-
-    private final static int PERMISSION_USE_INTERNAL_STORAGE = 200;
-    private void requestStoragePermissions() {
-        //Manifest.permission.READ_EXTERNAL_STORAGE
-        ActivityCompat.requestPermissions(getActivity(),
-                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                PERMISSION_USE_INTERNAL_STORAGE);
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         System.out.println("REQUEST CODE MATCHES: " + (requestCode == PERMISSION_USE_INTERNAL_STORAGE));
@@ -429,22 +404,9 @@ public class VersionFragment extends Fragment {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.putExtra(MediaStore.EXTRA_OUTPUT,preCompressImageUri);
-        if (intent.resolveActivity(getContext().getPackageManager()) != null) {
+        //if (intent.resolveActivity(getContext().getPackageManager()) != null) {
             startActivityForResult(intent, KEY_REQUEST_IMAGE_CAPTURE);
-        }
-        else {
-            final AlertDialog noCameraDialog = new AlertDialog.Builder(getContext()).create();
-            noCameraDialog.setTitle(R.string.app_name);
-            noCameraDialog.setMessage(getString(R.string.dialog_nocamera_message));
-            noCameraDialog.setCancelable(true);
-            noCameraDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    noCameraDialog.cancel();
-                }
-            });
-            noCameraDialog.show();
-        }
+        //}
     }
 
     @Override
@@ -461,7 +423,7 @@ public class VersionFragment extends Fragment {
             //Bundle extras = data.getExtras();
             //Bitmap imageBitmap = (Bitmap) extras.get("data");
 
-            imageFile = new File(Environment.getExternalStorageDirectory() + getString(R.string.__imagespath),gVer.getCreationDateRaw() + ".png");
+            imageFile = new File(Environment.getExternalStorageDirectory() + getString(R.string.__imagespath),gVer.getDateCreatedRaw() + ".png");
             FileOutputStream outputStream = null;
             if (imageFile.exists()) imageFile.delete();
             else imageFile.mkdirs();
@@ -495,8 +457,8 @@ public class VersionFragment extends Fragment {
             imageUri = Util.getVersionSpecificUri(getContext(), imageFile);
 
             ContentValues imageUriCV= new ContentValues();
-            imageUriCV.put(DBHelper.SingleCN.IMAGE_URI_STRING,imageUri.toString());
-            DBHelper.getSingletonInstance(getContext()).append(gVer,imageUriCV);
+            imageUriCV.put(DbHelper.SingleCN.IMAGE_URI_STRING,imageUri.toString());
+            DbHelper.getSingletonInstance(getContext()).append(gVer,imageUriCV);
             System.out.println("Image saved with Uri " + imageUri.toString());
             testTileImage.setImageBitmap(imageBitmap);
         }

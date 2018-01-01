@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navDrawerSingle"
+        android:title="Glazes"
+        android:orderInCategory="1"
+        />
+    <item
+        android:id="@+id/navDrawerCombo"
+        android:title="Glaze Combinations"
+        android:orderInCategory="2"
+        />
+    <item
+        android:id="@+id/navDrawerTemplate"
+        android:title="Glaze Templates"
+        android:orderInCategory="3"
+        />
+
+    <item
+        android:id="@+id/navDrawerFiringCycle"
+        android:title="Firing Cycle"
+        android:orderInCategory="4"
+        />
+
+    <item
+        android:id="@+id/navDrawerIngredient"
+        android:title="Ingredients"
+        android:orderInCategory="5"
+        />
+
+</menu>

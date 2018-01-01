@@ -9,24 +9,24 @@
 
     <item
         android:id="@+id/action_rename"
-        android:title="@string/appbar_rename_label"
+        android:title="@string/appbar_actionbutton_rename_label"
         app:showAsAction="never"/>
 
     <item
         android:id="@+id/action_copy"
-        android:title="@string/appbar_copy_title"
+        android:title="@string/appbar_actionbutton_copy_title"
         app:showAsAction="never"/>
 
     <item
         android:id="@+id/action_create_template"
         android:icon="@drawable/ic_rounded_corner_black_24dp"
-        android:title="@string/appbar_newtemplate_title"
+        android:title="@string/appbar_actionbutton_newtemplate_title"
         app:showAsAction="never"/>
 
     <item
         android:id="@+id/action_delete_glaze"
         android:icon="@drawable/ic_delete_forever_black_24dp"
-        android:title="@string/appbar_delete"
+        android:title="@string/appbar_actionbutton_delete"
         app:showAsAction="never"/>
 
 </menu>

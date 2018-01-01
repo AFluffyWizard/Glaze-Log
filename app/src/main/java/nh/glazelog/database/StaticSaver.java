@@ -22,10 +22,10 @@ public class StaticSaver {
 
     public static void ingredientWithoutInstance(Context context, Glaze gToSave, TableLayout ingredientTable, boolean isMaterialsTable) {
         String cvKey;
-        if (isMaterialsTable)   cvKey = DBHelper.SingleCN.MATERIALS;
-        else                    cvKey = DBHelper.SingleCN.ADDITIONS;
-        System.out.println("Ingredient Text Saver called without instance for " + cvKey + ".");
-        DBHelper dbHelper = DBHelper.getSingletonInstance(context);
+        if (isMaterialsTable)   cvKey = DbHelper.SingleCN.MATERIALS;
+        else                    cvKey = DbHelper.SingleCN.ADDITIONS;
+        System.out.println("IngredientEnum Text Saver called without instance for " + cvKey + ".");
+        DbHelper dbHelper = DbHelper.getSingletonInstance(context);
 
         ArrayList<IngredientQuantity> ingredientQuantities = new ArrayList<>();
         for (int i = 1; i < ingredientTable.getChildCount(); i++) {
@@ -41,9 +41,9 @@ public class StaticSaver {
     }
 
     public static void firingCycleWithoutInstance(Context context, Storable sToSave, TableLayout firingCycleTable) {
-        String cvKey = DBHelper.CCN_FIRING_CYCLE;
+        String cvKey = DbHelper.SingleCN.FIRING_CYCLE;
         System.out.println("Firing Cycle Text Saver called without instance");
-        DBHelper dbHelper = DBHelper.getSingletonInstance(context);
+        DbHelper dbHelper = DbHelper.getSingletonInstance(context);
         ArrayList<RampHold> rampHolds = new ArrayList<>();
         for (int i = 1; i < firingCycleTable.getChildCount(); i++) {
             TableRow row = (TableRow) firingCycleTable.getChildAt(i);

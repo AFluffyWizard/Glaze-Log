@@ -17,7 +17,7 @@ public class BlankFragment extends Fragment {
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
-        View nothing = inflater.inflate(R.layout.empty,container,false);
+        View empty = inflater.inflate(R.layout.empty,container,false);
         confirmAddVersionDialog = new ConfirmDialog(getContext(), false, "Would you like to create a new version?",
                 new ConfirmDialog.Action() {
                     @Override
@@ -31,14 +31,14 @@ public class BlankFragment extends Fragment {
                 cancelAddNewVersion();
             }
         });
-        return nothing;
+        return empty;
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            if (confirmAddVersionDialog != null) confirmAddVersionDialog.show();
+        if (isVisibleToUser && confirmAddVersionDialog != null) {
+            confirmAddVersionDialog.show();
         }
     }
 

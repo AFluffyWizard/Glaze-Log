@@ -6,4 +6,5 @@ package nh.glazelog.database;
 
 public interface ParseFromString<T> {
     public T parseFromString(String data);
+    //TODO - IMPLEMENT MAYBE???
 }

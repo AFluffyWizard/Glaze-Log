@@ -3,28 +3,52 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
+        <item name="actionBarTheme">@style/ActionBarTheme</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="TextBase" parent="@android:style/TextAppearance">
-        <item name="android:textColor">#000000</item>
+    <style name="ActionBarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:colorBackground">@color/colorPrimaryDark</item>
+
+        <!--  <item name="colorControlNormal">@color/colorTextLight</item>  -->
     </style>
 
-    <style name="HeaderText" parent="TextBase">
+
+
+    <style name="TextBaseDark" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/colorTextDark</item>
+    </style>
+    <style name="TextBaseLight" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/colorTextLight</item>
+    </style>
+
+    <style name="HeaderText" parent="TextBaseDark">
+        <item name="android:textSize">28sp</item>
+    </style>
+    <style name="HeaderTextLight" parent="TextBaseLight">
         <item name="android:textSize">28sp</item>
     </style>
 
-    <style name="StandardText" parent="TextBase">
+    <style name="StandardText" parent="TextBaseDark">
+        <item name="android:textSize">22sp</item>
+    </style>
+    <style name="StandardTextLight" parent="TextBaseLight">
         <item name="android:textSize">22sp</item>
     </style>
 
-    <style name="SubtitleText" parent="TextBase">
+    <style name="SubtitleText" parent="TextBaseDark">
+        <item name="android:textSize">16sp</item>
+    </style>
+    <style name="SubtitleTextLight" parent="TextBaseLight">
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="SmallText" parent="TextBase">
+    <style name="SmallText" parent="TextBaseDark">
+        <item name="android:textSize">12sp</item>
+    </style>
+    <style name="SmallTextLight" parent="TextBaseLight">
         <item name="android:textSize">12sp</item>
     </style>
 

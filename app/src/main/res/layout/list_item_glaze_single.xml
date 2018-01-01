@@ -51,7 +51,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:text="@string/glazelist_date_edited"
+        android:text="@string/list_date_edited"
         android:textAppearance="@style/SmallText"
         android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="parent"

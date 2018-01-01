@@ -2,7 +2,6 @@ package nh.glazelog.database;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 import android.widget.TableLayout;
@@ -24,8 +23,8 @@ public class IngredientSpinnerSaver extends SpinnerSaver {
     TableLayout ingredientTable;
 
     public IngredientSpinnerSaver(Context context, Glaze g, TableLayout table, boolean isMaterialsTable) {
-        super(context,g,DBHelper.SingleCN.MATERIALS,false);
-        if (!isMaterialsTable) cvKey = DBHelper.SingleCN.ADDITIONS;
+        super(context,g, DbHelper.SingleCN.MATERIALS,false);
+        if (!isMaterialsTable) cvKey = DbHelper.SingleCN.ADDITIONS;
         ingredientTable = table;
     }
 
@@ -35,7 +34,7 @@ public class IngredientSpinnerSaver extends SpinnerSaver {
     }
 
     private void saveWithoutParameters() {
-        System.out.println("Ingredient Text Saver called for " + cvKey + ".");
+        System.out.println("IngredientEnum Text Saver called for " + cvKey + ".");
         ArrayList<IngredientQuantity> ingredientQuantities = new ArrayList<>();
         for (int i = 0; i < ingredientTable.getChildCount(); i++) {
             TableRow row = (TableRow) ingredientTable.getChildAt(i);

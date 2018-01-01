@@ -10,7 +10,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 
-import nh.glazelog.database.DBHelper;
+import nh.glazelog.Util;
+import nh.glazelog.database.DbHelper;
 import nh.glazelog.database.Storable;
 
 /**
@@ -20,7 +21,9 @@ import nh.glazelog.database.Storable;
 public class GlazeTemplate implements Parcelable,Storable {
 
     private String name;
-    private String creationDate;
+    private String dateCreated;
+    private String dateEdited;
+    private String tags;
     private Finish finish;
     private Opacity opacity;
     private Atmosphere atmos;
@@ -31,7 +34,9 @@ public class GlazeTemplate implements Parcelable,Storable {
 
     public GlazeTemplate(String name, Finish finish, Opacity opacity, Atmosphere atmos, String clayBody, String application, RampHold[] firingCycle, Cone bisquedTo) {
         this.name = name;
-        this.creationDate = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        this.dateCreated = Util.getDateTimeStamp();
+        this.dateEdited = Util.getDateTimeStamp();
+        this.tags = "";
         this.finish = finish;
         this.opacity = opacity;
         this.atmos = atmos;
@@ -42,9 +47,11 @@ public class GlazeTemplate implements Parcelable,Storable {
         this.bisquedTo = bisquedTo;
     }
 
-    public GlazeTemplate(String name, String creationDate, Finish finish, Opacity opacity, Atmosphere atmos, String clayBody, String application, ArrayList<RampHold> firingCycle, Cone bisquedTo) {
+    public GlazeTemplate(String name, String dateCreated, String dateEdited, String tags, Finish finish, Opacity opacity, Atmosphere atmos, String clayBody, String application, ArrayList<RampHold> firingCycle, Cone bisquedTo) {
         this.name = name;
-        this.creationDate = creationDate;
+        this.dateCreated = dateCreated;
+        this.dateEdited = dateEdited;
+        this.tags = tags;
         this.finish = finish;
         this.opacity = opacity;
         this.atmos = atmos;
@@ -56,7 +63,9 @@ public class GlazeTemplate implements Parcelable,Storable {
 
     public GlazeTemplate(Glaze g, String name) {
         this.name = name;
-        this.creationDate = g.getCreationDateRaw();
+        this.dateCreated = Util.getDateTimeStamp();
+        this.dateEdited = Util.getDateTimeStamp();
+        this.tags = g.getTags();
         this.finish = g.getFinish();
         this.opacity = g.getOpacity();
         this.atmos = g.getAtmos();
@@ -68,7 +77,9 @@ public class GlazeTemplate implements Parcelable,Storable {
 
     public GlazeTemplate() {
         this.name = "No Template";
-        this.creationDate = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        this.dateCreated = Util.getDateTimeStamp();
+        this.dateEdited = Util.getDateTimeStamp();
+        this.tags = "";
         this.finish = Finish.NONE;
         this.opacity = Opacity.NONE;
         this.atmos = Atmosphere.NONE;
@@ -81,6 +92,14 @@ public class GlazeTemplate implements Parcelable,Storable {
 
     public String getName() {return name;}
     public void setName(String name) {this.name = name;}
+    public String getDateCreatedRaw() {return dateCreated;}
+    public void setDateCreated(Date date) {this.dateCreated = date.toString();}
+    public void setDateCreated(String date) {this.dateCreated = date;}
+    public String getDateEditedRaw() {return dateEdited;}
+    public void setDateEdited(Date date) {this.dateEdited = date.toString();}
+    public void setDateEdited(String date) {this.dateEdited = date;}
+    public String getTags() {return tags;}
+    public void setTags(String tags) {this.tags = tags;}
     public Finish getFinish() {return finish;}
     public void setFinish(Finish finish) {this.finish = finish;}
     public Opacity getOpacity() {return opacity;}
@@ -100,31 +119,22 @@ public class GlazeTemplate implements Parcelable,Storable {
         return name;
     }
 
-    public String debugString() {
-        return "Name: " + name +
-                "\nFinish: " + finish +
-                "\nOpacity: " + opacity +
-                "\nAtmos: " + atmos +
-                "\nClay Body: " + clayBody +
-                "\nApplication: " + application +
-                "\nFiring Cycle: " + firingCycle;
-    }
-
-
 
     // storable implementation
     @Override
     public ContentValues getContentValues() {
         ContentValues values = new ContentValues();
-        values.put(DBHelper.CCN_NAME,getName());
-        values.put(DBHelper.CCN_CREATION_DATE,getCreationDateRaw());
-        values.put(DBHelper.TemplateCN.FINISH,getFinish().toString());
-        values.put(DBHelper.TemplateCN.OPACITY,getOpacity().toString());
-        values.put(DBHelper.TemplateCN.ATMOSPHERE,getAtmos().toString());
-        values.put(DBHelper.TemplateCN.CLAY_BODY,getClayBody());
-        values.put(DBHelper.TemplateCN.APPLICATION,getApplication());
-        values.put(DBHelper.TemplateCN.FIRING_CYCLE,RampHold.toLongString(getFiringCycle()));
-        values.put(DBHelper.CCN_BISQUED_TO,bisquedTo.toString());
+        values.put(DbHelper.CCN_NAME,getName());
+        values.put(DbHelper.CCN_DATE_CREATED, getDateCreatedRaw());
+        values.put(DbHelper.CCN_DATE_EDITED, getDateEditedRaw());
+        values.put(DbHelper.CCN_TAGS, getTags());
+        values.put(DbHelper.TemplateCN.FINISH,getFinish().toString());
+        values.put(DbHelper.TemplateCN.OPACITY,getOpacity().toString());
+        values.put(DbHelper.TemplateCN.ATMOSPHERE,getAtmos().toString());
+        values.put(DbHelper.TemplateCN.CLAY_BODY,getClayBody());
+        values.put(DbHelper.TemplateCN.APPLICATION,getApplication());
+        values.put(DbHelper.TemplateCN.FIRING_CYCLE,RampHold.toLongString(getFiringCycle()));
+        values.put(DbHelper.TemplateCN.BISQUED_TO, getBisquedTo().toString());
 
         return values;
     }
@@ -134,9 +144,7 @@ public class GlazeTemplate implements Parcelable,Storable {
         return Type.TEMPLATE;
     }
     public String getRowName() {return name;}
-    public String getCreationDateRaw() {return creationDate;}
-    public void updateEditDate() {return;} // does not need to be defined for templates
-    public String getEditDate() {return "";} // same
+    public void updateDateEdited() {setDateEdited(Util.getDateTimeStamp());}
 
     public static final CursorCreator<GlazeTemplate> CURSOR_CREATOR = new CursorCreator<GlazeTemplate>() {
         @Override
@@ -146,13 +154,15 @@ public class GlazeTemplate implements Parcelable,Storable {
                 templates.add(new GlazeTemplate (
                         cursor.getString(1),
                         cursor.getString(2),
-                        Finish.getEnum(cursor.getString(3)),
-                        Opacity.getEnum(cursor.getString(4)),
-                        Atmosphere.getEnum(cursor.getString(5)),
-                        cursor.getString(6),
-                        cursor.getString(7),
-                        RampHold.parseFromLongString(cursor.getString(8)),
-                        Cone.getEnum(cursor.getString(9))));
+                        cursor.getString(3),
+                        cursor.getString(4),
+                        Finish.getEnum(cursor.getString(5)),
+                        Opacity.getEnum(cursor.getString(6)),
+                        Atmosphere.getEnum(cursor.getString(7)),
+                        cursor.getString(8),
+                        cursor.getString(9),
+                        RampHold.parseFromLongString(cursor.getString(10)),
+                        Cone.getEnum(cursor.getString(11))));
             }
             cursor.close();
             return templates;
@@ -163,6 +173,9 @@ public class GlazeTemplate implements Parcelable,Storable {
     // parcelable implementation
     public GlazeTemplate(Parcel in) {
         name = in.readString();
+        dateCreated = in.readString();
+        dateEdited = in.readString();
+        tags = in.readString();
         finish = Finish.getEnum(in.readString());
         opacity = Opacity.getEnum(in.readString());
         atmos = Atmosphere.getEnum(in.readString());
@@ -175,6 +188,9 @@ public class GlazeTemplate implements Parcelable,Storable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
+        dest.writeString(dateCreated);
+        dest.writeString(dateEdited);
+        dest.writeString(tags);
         dest.writeString(finish.toString());
         dest.writeString(opacity.toString());
         dest.writeString(atmos.toString());

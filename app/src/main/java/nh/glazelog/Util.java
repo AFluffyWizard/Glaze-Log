@@ -1,23 +1,22 @@
 package nh.glazelog;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
-import nh.glazelog.database.DBHelper;
-import nh.glazelog.database.ParseFromString;
-import nh.glazelog.glaze.Cone;
-import nh.glazelog.glaze.Glaze;
-import nh.glazelog.glaze.Ingredient;
-import nh.glazelog.glaze.IngredientQuantity;
-import nh.glazelog.glaze.RampHold;
+import java.util.Date;
 
 /**
  * Created by Nick Hansen on 9/29/2017.
@@ -74,6 +73,10 @@ public class Util {
         return month + "/" + day + "/" + shortYear + " at " + hour + ":" + minute;
     }
 
+    public static String getDateTimeStamp() {
+        return new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+    }
+
     public static void fixTables (TableLayout... tables) {
         for (TableLayout tb : tables) tb.requestLayout();
     }
@@ -88,6 +91,22 @@ public class Util {
             System.out.println("Uses Android N+ Uri format: " + u);
         }
         return u;
+    }
+
+    public static boolean checkStoragePermissions(Activity activity) {
+        //final boolean checkReadPermission = ContextCompat.checkSelfPermission(activity,
+        //        Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        final boolean checkWritePermission = ContextCompat.checkSelfPermission(activity,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        return checkWritePermission;
+    }
+
+    public static final int PERMISSION_USE_INTERNAL_STORAGE = 200;
+    public static void requestStoragePermissions(Activity activity) {
+        //Manifest.permission.READ_EXTERNAL_STORAGE
+        ActivityCompat.requestPermissions(activity,
+                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                PERMISSION_USE_INTERNAL_STORAGE);
     }
 
     public static <T extends Object> void setSpinnerSelection (Spinner spinner, Class<T> o) {
@@ -111,7 +130,7 @@ public class Util {
     public static String toLongString (Object... data) {
         String longString = "";
         for (int i = 0; i < data.length; i++) {
-            longString += data[i] + DBHelper.LONG_SEP;
+            longString += data[i] + DbHelper.LONG_SEP;
         }
         return longString;
     }
@@ -119,13 +138,13 @@ public class Util {
     public static String toLongString (ArrayList<Object> data) {
         String longString = "";
         for (int i = 0; i < data.size(); i++) {
-            longString += data.get(i) + DBHelper.LONG_SEP;
+            longString += data.get(i) + DbHelper.LONG_SEP;
         }
         return longString;
     }
 
     public static <T implements ParseFromString<?>> ArrayList<T> parseFromLongString (String s) {
-        String[] separate = Util.stringToArray(s, DBHelper.LONG_SEP);
+        String[] separate = Util.stringToArray(s, DbHelper.LONG_SEP);
         ArrayList<T> list = new ArrayList<>();
         for (String str : separate)
             list.add(T.parseFromString(str));

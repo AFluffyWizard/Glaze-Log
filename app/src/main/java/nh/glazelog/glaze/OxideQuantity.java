@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 
 import nh.glazelog.Util;
-import nh.glazelog.database.DBHelper;
+import nh.glazelog.database.DbHelper;
 
 /**
  * Created by Nick Hansen on 9/22/2017.
@@ -30,13 +30,13 @@ public class OxideQuantity implements Parcelable {
 
     // STRING FORMAT EXAMPLE:   ZnO:20:
     public String toString() {
-        return oxide.getAbbreviation() + DBHelper.SHORT_SEP + amount + DBHelper.SHORT_SEP;
+        return oxide.getAbbreviation() + DbHelper.SHORT_SEP + amount + DbHelper.SHORT_SEP;
     }
 
     public static String toLongString (OxideQuantity... data) {
         String longString = "";
         for (int i = 0; i < data.length; i++) {
-            longString += data[i] + DBHelper.LONG_SEP;
+            longString += data[i] + DbHelper.LONG_SEP;
         }
         return longString;
     }
@@ -44,19 +44,19 @@ public class OxideQuantity implements Parcelable {
     public static String toLongString (ArrayList<OxideQuantity> data) {
         String longString = "";
         for (int i = 0; i < data.size(); i++) {
-            longString += data.get(i) + DBHelper.LONG_SEP;
+            longString += data.get(i) + DbHelper.LONG_SEP;
         }
         return longString;
     }
 
     public static OxideQuantity parseFromString (String s) {
-        String[] data = Util.stringToArray(s,DBHelper.SHORT_SEP);
+        String[] data = Util.stringToArray(s, DbHelper.SHORT_SEP);
         //for (String str : data) System.out.println("AFTER PARSING SHORT: " + str);
         return new OxideQuantity(Oxide.getEnum(data[0]),Double.parseDouble(data[1]));
     }
 
     public static ArrayList<OxideQuantity> parseFromLongString (String s) {
-        String[] separateOxides = Util.stringToArray(s, DBHelper.LONG_SEP);
+        String[] separateOxides = Util.stringToArray(s, DbHelper.LONG_SEP);
         //for (String str : separateRampHolds) System.out.println("AFTER PARSING LONG: " + str);
         ArrayList<OxideQuantity> list = new ArrayList<>();
         for (String str : separateOxides)

@@ -1,4 +1,4 @@
-package nh.glazelog;
+package nh.glazelog.activity;
 
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -20,7 +20,12 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import nh.glazelog.database.DBHelper;
+import nh.glazelog.ConfirmDialog;
+import nh.glazelog.R;
+import nh.glazelog.Util;
+import nh.glazelog.VersionPager;
+import nh.glazelog.VersionPagerAdapter;
+import nh.glazelog.database.DbHelper;
 import nh.glazelog.database.TextSaver;
 import nh.glazelog.database.SimpleSpinnerSaver;
 import nh.glazelog.glaze.*;
@@ -30,7 +35,7 @@ public class SingleGlaze extends AppCompatActivity {
     ArrayList<Glaze> glaze;
     Glaze rootGlaze;
     Glaze currentGlaze;
-    DBHelper dbHelper;
+    DbHelper dbHelper;
     VersionPager versionPager;
 
     private static final int WAIT_ADD_LISTENER = 50;
@@ -39,7 +44,7 @@ public class SingleGlaze extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_glaze);
-        dbHelper = DBHelper.getSingletonInstance(getBaseContext());
+        dbHelper = DbHelper.getSingletonInstance(getBaseContext());
 
         Intent intent = getIntent();
         glaze = intent.getParcelableArrayListExtra(GlazeList.KEY_GLAZE_SINGLE);
@@ -76,7 +81,7 @@ public class SingleGlaze extends AppCompatActivity {
         finishSpinner.postDelayed(new Runnable() {
             @Override
             public void run() {
-                finishSpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getThis(),rootGlaze,DBHelper.SingleCN.FINISH,true));
+                finishSpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getThis(),rootGlaze, DbHelper.SingleCN.FINISH,true));
             }
         },WAIT_ADD_LISTENER);
 
@@ -86,7 +91,7 @@ public class SingleGlaze extends AppCompatActivity {
         opacitySpinner.postDelayed(new Runnable() {
             @Override
             public void run() {
-                opacitySpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getThis(),rootGlaze,DBHelper.SingleCN.OPACITY,true));
+                opacitySpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getThis(),rootGlaze, DbHelper.SingleCN.OPACITY,true));
             }
         },WAIT_ADD_LISTENER);
 
@@ -96,7 +101,7 @@ public class SingleGlaze extends AppCompatActivity {
         atmosSpinner.postDelayed(new Runnable() {
             @Override
             public void run() {
-                atmosSpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getThis(),rootGlaze,DBHelper.SingleCN.ATMOSPHERE,true));
+                atmosSpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getThis(),rootGlaze, DbHelper.SingleCN.ATMOSPHERE,true));
             }
         },WAIT_ADD_LISTENER);
 
@@ -105,7 +110,7 @@ public class SingleGlaze extends AppCompatActivity {
         clayBody.postDelayed(new Runnable() {
             @Override
             public void run() {
-                clayBody.addTextChangedListener(new TextSaver(getThis(),rootGlaze,DBHelper.SingleCN.CLAY_BODY,true,false));
+                clayBody.addTextChangedListener(new TextSaver(getThis(),rootGlaze, DbHelper.SingleCN.CLAY_BODY,true,false));
             }
         },WAIT_ADD_LISTENER);
         
@@ -114,7 +119,7 @@ public class SingleGlaze extends AppCompatActivity {
         application.postDelayed(new Runnable() {
             @Override
             public void run() {
-                application.addTextChangedListener(new TextSaver(getThis(),rootGlaze,DBHelper.SingleCN.APPLICATION,true,false));
+                application.addTextChangedListener(new TextSaver(getThis(),rootGlaze, DbHelper.SingleCN.APPLICATION,true,false));
             }
         },WAIT_ADD_LISTENER);
 
@@ -154,7 +159,7 @@ public class SingleGlaze extends AppCompatActivity {
                 navigateUp();
                 return true;
             case R.id.action_copy:
-                DBHelper.getSingletonInstance(getApplicationContext()).write(new Glaze(glaze.get(versionPager.getCurrentItem())));
+                DbHelper.getSingletonInstance(getApplicationContext()).write(new Glaze(glaze.get(versionPager.getCurrentItem())));
                 navigateUp();
                 return true;
             case R.id.action_rename:
@@ -168,7 +173,7 @@ public class SingleGlaze extends AppCompatActivity {
                         TextView glazeName = (TextView) findViewById(R.id.glazeNameTextView);
                         glazeName.setText(newName);
                         ContentValues newNameCv = new ContentValues();
-                        newNameCv.put(DBHelper.CCN_NAME,newName);
+                        newNameCv.put(DbHelper.CCN_NAME,newName);
                         dbHelper.appendAllVersions(glaze.get(0),newNameCv);
                     }
                 });

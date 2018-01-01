@@ -2,13 +2,7 @@ package nh.glazelog.database;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.view.View;
-import android.widget.Adapter;
 import android.widget.AdapterView;
-import android.widget.Spinner;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by Nick Hansen on 10/30/2017.

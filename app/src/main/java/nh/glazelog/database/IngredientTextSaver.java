@@ -23,7 +23,7 @@ import nh.glazelog.glaze.IngredientQuantity;
 
 public class IngredientTextSaver implements TextWatcher {
 
-    DBHelper dbHelper;
+    DbHelper dbHelper;
     Glaze gToSave;
     TableLayout ingredientTable;
     String cvKey;
@@ -32,11 +32,11 @@ public class IngredientTextSaver implements TextWatcher {
     private final long DELAY = 500; // milliseconds
 
     public IngredientTextSaver(Context context, Glaze g, TableLayout table, boolean isMaterialsTable) {
-        dbHelper = DBHelper.getSingletonInstance(context);
+        dbHelper = DbHelper.getSingletonInstance(context);
         gToSave = g;
         ingredientTable = table;
-        if (isMaterialsTable)   cvKey = DBHelper.SingleCN.MATERIALS;
-        else                    cvKey = DBHelper.SingleCN.ADDITIONS;
+        if (isMaterialsTable)   cvKey = DbHelper.SingleCN.MATERIALS;
+        else                    cvKey = DbHelper.SingleCN.ADDITIONS;
     }
 
     @Override
@@ -59,7 +59,7 @@ public class IngredientTextSaver implements TextWatcher {
     }
 
     public void save() {
-        System.out.println("Ingredient Text Saver called for " + cvKey + ".");
+        System.out.println("IngredientEnum Text Saver called for " + cvKey + ".");
         ArrayList<IngredientQuantity> ingredientQuantities = new ArrayList<>();
         for (int i = 0; i < ingredientTable.getChildCount(); i++) {
             TableRow row = (TableRow) ingredientTable.getChildAt(i);

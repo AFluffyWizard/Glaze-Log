@@ -21,16 +21,16 @@ import nh.glazelog.glaze.RampHold;
 
 public class FiringCycleTextSaver implements TextWatcher {
 
-    DBHelper dbHelper;
+    DbHelper dbHelper;
     Storable sToSave;
     TableLayout firingCycleTable;
-    private static final String cvKey = DBHelper.CCN_FIRING_CYCLE;
+    private static final String cvKey = DbHelper.SingleCN.FIRING_CYCLE;
 
     private Timer timer = new Timer();
     private final long DELAY = 500; // milliseconds
 
     public FiringCycleTextSaver(Context context, Storable s, TableLayout table) {
-        dbHelper = DBHelper.getSingletonInstance(context);
+        dbHelper = DbHelper.getSingletonInstance(context);
         sToSave = s;
         firingCycleTable = table;
     }

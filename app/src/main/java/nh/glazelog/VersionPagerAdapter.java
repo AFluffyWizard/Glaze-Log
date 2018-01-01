@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-import nh.glazelog.database.DBHelper;
+import nh.glazelog.database.DbHelper;
 import nh.glazelog.glaze.Glaze;
 import nh.glazelog.glaze.GlazeTemplate;
 
@@ -20,11 +20,12 @@ import nh.glazelog.glaze.GlazeTemplate;
 
 public class VersionPagerAdapter extends FragmentStatePagerAdapter {
 
-    ArrayList<Glaze> glazeVersions = new ArrayList<Glaze>();
+    ArrayList<Glaze> glazeVersions;
     private Activity parentActivity;
     public static final String KEY_GLAZE_VERSION = "nh.glazelog.GLAZE_VERSION";
     public static final String KEY_GLAZE_VERSION_NUMBER = "nh.glazelog.GLAZE_VERSION_NUMBER";
     private int currentPosition = -1;
+    private static DbHelper dbHelper;
 
     public VersionPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -34,6 +35,7 @@ public class VersionPagerAdapter extends FragmentStatePagerAdapter {
         super(fm);
         this.parentActivity = parentActivity;
         this.glazeVersions = glazeVersions;
+        dbHelper = DbHelper.getSingletonInstance(parentActivity);
     }
 
 
@@ -43,7 +45,7 @@ public class VersionPagerAdapter extends FragmentStatePagerAdapter {
             return new BlankFragment();
         }
         else {
-            Fragment version = new VersionFragment();
+            VersionFragment version = new VersionFragment();
             Bundle args = new Bundle();
             args.putParcelable(KEY_GLAZE_VERSION, glazeVersions.get(position));
             args.putInt(KEY_GLAZE_VERSION_NUMBER, position);
@@ -75,7 +77,6 @@ public class VersionPagerAdapter extends FragmentStatePagerAdapter {
     /*     StackOverflow come thruuuuu     */
 
     /*--------------------ADD AND REMOVE PAGES--------------------*/
-    DBHelper dbHelper = DBHelper.getSingletonInstance(parentActivity);
 
     // when Adapter.notifyDataSetChanged() is called,
     // the ViewPager interrogates the adapter to determine what has changed in terms of positioning.
@@ -91,12 +92,6 @@ public class VersionPagerAdapter extends FragmentStatePagerAdapter {
         newGlaze.setName(glazeVersions.get(0).getName());
         dbHelper.write(newGlaze);
         glazeVersions.add(newGlaze);
-        notifyDataSetChanged();
-    }
-
-    // it is assumed the index is valid
-    public void deletePage(int index) {
-        dbHelper.delete(glazeVersions.remove(index),false);
         notifyDataSetChanged();
     }
 

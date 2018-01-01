@@ -1,13 +1,22 @@
-package nh.glazelog;
+package nh.glazelog.activity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -18,6 +27,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import nh.glazelog.R;
+import nh.glazelog.Util;
 import nh.glazelog.database.*;
 import nh.glazelog.glaze.*;
 
@@ -28,26 +39,27 @@ public class GlazeList extends AppCompatActivity {
     public final static String KEY_GLAZE_COMBO = "nh.glazelog.COMBO";
 
 
-    public class DbLoader extends AsyncTask<String,Void,DBHelper> {
+    public class DbLoader extends AsyncTask<String,Void,DbHelper> {
         @Override
-        protected DBHelper doInBackground(String... params) {
-            return DBHelper.getSingletonInstance(getApplicationContext());
+        protected DbHelper doInBackground(String... params) {
+            return DbHelper.getSingletonInstance(getApplicationContext());
         }
         @Override
-        protected void onPostExecute(DBHelper result) {
+        protected void onPostExecute(DbHelper result) {
             dbHelper = result;
-
-            populateGlazeList(Storable.Type.SINGLE);
-            populateTemplateList();
+            populateList(Storable.Type.SINGLE);
+            populateTemplateSpinner();
         }
 
     }
     DbLoader glazeDbLoader = new DbLoader();
-    DBHelper dbHelper;
+    DbHelper dbHelper;
     Spinner templateSpinner;
+    DrawerLayout navDrawer;
+    NavigationView navView;
 
     ArrayList<ArrayList<Glaze>> glazesWithVersions;
-    int numGlazes;
+    public static int numInList;
 
 
 
@@ -57,14 +69,15 @@ public class GlazeList extends AppCompatActivity {
         System.out.println("onCreate called");
         setContentView(R.layout.activity_glaze_list);
 
-        /*
-        TODO - ENABLE TOOLBAR
         setSupportActionBar((Toolbar) findViewById(R.id.listToolbar));
         ActionBar ab = getSupportActionBar();
+        ab.setTitle(R.string.list_title_single);
+        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
         ab.show();
-        */
 
 
+        initNavDrawer();
 
 
         final AlertDialog newGlazeDialog = new AlertDialog.Builder(this).create();
@@ -96,21 +109,27 @@ public class GlazeList extends AppCompatActivity {
 
     }
 
-    public void populateGlazeList(Storable.Type type) {
+    private boolean populateList (@StringRes int resId, Storable.Type type) {
+        getSupportActionBar().setTitle(resId);
+        navDrawer.closeDrawer(Gravity.LEFT,true);
+        return true;
+    }
+
+    private void populateList(Storable.Type type) {
         // load necessary components
         LinearLayout list = (LinearLayout) findViewById(R.id.layoutList);
         list.removeAllViews();
         glazesWithVersions = new ArrayList<ArrayList<Glaze>>();
         for (String name : dbHelper.getDistinctNames(type)) {
-            glazesWithVersions.add(Util.<Glaze>typeUntypedList(dbHelper.readSingle(type,dbHelper.CCN_NAME,name)));
+            glazesWithVersions.add(Util.<Glaze>typeUntypedList(dbHelper.readSingle(type, dbHelper.CCN_NAME,name)));
         }
 
         // create view for each glaze
-        numGlazes = 0;
+        numInList = 0;
         for (ArrayList<Glaze> gList : glazesWithVersions) {
             // init individual view
             View singleGlaze = getLayoutInflater().inflate(R.layout.list_item_glaze_single,list,false);
-            singleGlaze.setId(numGlazes);
+            singleGlaze.setId(numInList);
             singleGlaze.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     openGlaze(glazesWithVersions.get((v.getId())));
@@ -134,17 +153,17 @@ public class GlazeList extends AppCompatActivity {
             // add information to views
             name.setText(rootGlaze.getName());
             cone.setText(closestCone.toString());
-            date.setText(Util.getShortDate(rootGlaze.getEditedDateRaw()));
+            date.setText(Util.getShortDate(rootGlaze.getDateEditedRaw()));
             if (currentGlaze.getImageUri() != Uri.EMPTY) testTileImage.setImageURI(currentGlaze.getImageUri());
 
             // add view to list and increment counter
             list.addView(singleGlaze);
-            numGlazes++;
+            numInList++;
         }
         System.out.println("Glaze list loaded");
     }
 
-    public void populateTemplateList() {
+    public void populateTemplateSpinner() {
         ArrayList<GlazeTemplate> allTemplates = Util.<GlazeTemplate>typeUntypedList(dbHelper.readAll(Storable.Type.TEMPLATE));
         templateSpinner.setAdapter(new ArrayAdapter<GlazeTemplate>(this,android.R.layout.simple_spinner_dropdown_item,allTemplates));
         System.out.println("Template lost loaded");
@@ -162,6 +181,34 @@ public class GlazeList extends AppCompatActivity {
         startActivity(glazeIntent);
     }
 
+    private void initNavDrawer() {
+        navDrawer = (DrawerLayout) findViewById(R.id.navDrawerLayout);
+        navView = (NavigationView) findViewById(R.id.navView);
+
+        //navView.setItemTextAppearance(R.style.StandardText);
+        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch(item.getItemId()) {
+                    default: break;
+                    case R.id.navDrawerSingle:
+                        return populateList(R.string.list_title_single, Storable.Type.SINGLE);
+                    case R.id.navDrawerCombo:
+                        return populateList(R.string.list_title_combo, Storable.Type.COMBO);
+                    case R.id.navDrawerTemplate:
+                        return populateList(R.string.list_title_templates, Storable.Type.TEMPLATE);
+                    case R.id.navDrawerFiringCycle:
+                        return populateList(R.string.list_title_firingcycle, Storable.Type.FIRING_CYCLE);
+                    case R.id.navDrawerIngredient:
+                        //return populateList(R.string.list_title_ingredients, Storable.Type.INGREDIENT);
+                        return true;
+                }
+                return false;
+            }
+        });
+    }
+
+
 
     @Override
     public void onStart() {
@@ -171,24 +218,31 @@ public class GlazeList extends AppCompatActivity {
             glazeDbLoader.execute("");
         }
         else {
-            populateGlazeList(Storable.Type.SINGLE);
-            populateTemplateList();
+            populateList(Storable.Type.SINGLE);
+            populateTemplateSpinner();
         }
     }
 
-    /*
     @Override
-    public void onRestart() {
-        super.onRestart();
-        System.out.println("onRestart called");
+    public boolean onCreateOptionsMenu (Menu menu) {
+        getMenuInflater().inflate(R.menu.actionbuttons_list,menu);
+        return true;
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        System.out.println("onResume called");
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            default: break;
+            case android.R.id.home:
+                navDrawer.openDrawer(Gravity.LEFT,true);
+                return true;
+            case R.id.action_settings:
+                return true;
+            case R.id.action_resetdb:
+                //TODO - IMPLEMENT, PREFERRABLY IN SETTINGS ACTIVITY AND WITH NESTED CONFIRM DIALOGS
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
-    */
-
 
 }

@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/glazeToolbar"
     android:layout_width="match_parent"
     android:layout_height="@dimen/action_bar_height"
     android:background="?attr/colorPrimary"
-    android:elevation="4dp">
+    android:elevation="4dp"
+    app:theme="@style/ActionBarTheme">
 
     <TextView
         android:id="@+id/glazeNameTextView"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:hint="@string/appbar_glazename_hint"
+        android:maxHeight="@dimen/action_bar_height"
         android:gravity="center|start"
-        android:textAppearance="@style/StandardText"/>
+        android:textAppearance="@style/StandardTextLight" />
 
 </android.support.v7.widget.Toolbar>

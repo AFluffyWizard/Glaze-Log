@@ -8,15 +8,13 @@ import android.text.TextWatcher;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import nh.glazelog.glaze.Glaze;
-
 /**
  * Created by Nick Hansen on 10/26/2017.
  */
 
 public class TextSaver implements TextWatcher {
 
-    DBHelper dbHelper;
+    DbHelper dbHelper;
     Storable sToSave;
     String cvKey;
     boolean appendAll;
@@ -26,7 +24,7 @@ public class TextSaver implements TextWatcher {
     private final long DELAY = 350; // milliseconds
 
     public TextSaver(Context context, Storable s, String key, boolean appendAllVersions, boolean saveEmptyText) {
-        dbHelper = DBHelper.getSingletonInstance(context);
+        dbHelper = DbHelper.getSingletonInstance(context);
         sToSave = s;
         cvKey = key;
         appendAll = appendAllVersions;

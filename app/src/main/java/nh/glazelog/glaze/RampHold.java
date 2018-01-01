@@ -1,6 +1,5 @@
 package nh.glazelog.glaze;
 
-import android.content.ContentValues;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -8,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import nh.glazelog.Util;
-import nh.glazelog.database.DBHelper;
+import nh.glazelog.database.DbHelper;
 
 /**
  * Created by Nick Hansen on 9/22/2017.
@@ -55,13 +54,13 @@ public class RampHold implements Parcelable {
     }
 
     public String toString() {
-        return temperature + DBHelper.SHORT_SEP + rate + DBHelper.SHORT_SEP + hold + DBHelper.SHORT_SEP;
+        return temperature + DbHelper.SHORT_SEP + rate + DbHelper.SHORT_SEP + hold + DbHelper.SHORT_SEP;
     }
 
     public static String toLongString (RampHold... data) {
         String longString = "";
         for (int i = 0; i < data.length; i++) {
-            longString += data[i] + DBHelper.LONG_SEP;
+            longString += data[i] + DbHelper.LONG_SEP;
         }
         return longString;
     }
@@ -69,19 +68,19 @@ public class RampHold implements Parcelable {
     public static String toLongString (ArrayList<RampHold> data) {
         String longString = "";
         for (int i = 0; i < data.size(); i++) {
-            longString += data.get(i) + DBHelper.LONG_SEP;
+            longString += data.get(i) + DbHelper.LONG_SEP;
         }
         return longString;
     }
 
     public static RampHold parseFromString (String s) {
-        String[] data = Util.stringToArray(s, DBHelper.SHORT_SEP);
+        String[] data = Util.stringToArray(s, DbHelper.SHORT_SEP);
         //for (String str : data) System.out.println("AFTER PARSING SHORT: " + str);
         return new RampHold (data[0], data[1], data[2]);
     }
 
     public static ArrayList<RampHold> parseFromLongString (String s) {
-        String[] separateRampHolds = Util.stringToArray(s, DBHelper.LONG_SEP);
+        String[] separateRampHolds = Util.stringToArray(s, DbHelper.LONG_SEP);
         //for (String str : separateRampHolds) System.out.println("AFTER PARSING LONG: " + str);
         ArrayList<RampHold> list = new ArrayList<>();
         for (String str : separateRampHolds)

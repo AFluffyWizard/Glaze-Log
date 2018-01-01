@@ -1,13 +1,12 @@
 package nh.glazelog.glaze;
 
-import android.content.ContentValues;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
 
 import nh.glazelog.Util;
-import nh.glazelog.database.DBHelper;
+import nh.glazelog.database.DbHelper;
 
 /**
  * Created by Nick Hansen on 10/17/2017.
@@ -15,34 +14,34 @@ import nh.glazelog.database.DBHelper;
 
 public class IngredientQuantity implements Parcelable {
 
-    private Ingredient ingredient;
-    private double amount; // in grams, per 100g batch of the ingredient this is in
+    private IngredientEnum ingredientEnum;
+    private double amount; // in grams, per 100g batch of the ingredientEnum this is in
 
-    public IngredientQuantity (Ingredient ingredient, double amount) {
-        this.ingredient = ingredient;
+    public IngredientQuantity (IngredientEnum ingredientEnum, double amount) {
+        this.ingredientEnum = ingredientEnum;
         this.amount = amount;
     }
 
     public IngredientQuantity (String ingredient, String amount) {
-        this.ingredient = Ingredient.getEnum(ingredient);
+        this.ingredientEnum = IngredientEnum.getEnum(ingredient);
         if (!amount.equals("")) this.amount = Double.parseDouble(amount);
     }
 
-    public void setIngredient (Ingredient ingredient) {this.ingredient = ingredient;}
+    public void setIngredientEnum(IngredientEnum ingredientEnum) {this.ingredientEnum = ingredientEnum;}
     public void setAmount (double Amount) {this.amount = amount;}
-    public Ingredient getIngredient () {return ingredient;}
+    public IngredientEnum getIngredientEnum() {return ingredientEnum;}
     public double getAmount () {return amount;}
 
 
     // STRING FORMAT EXAMPLE:   Ferro Frit 3124:18:
     public String toString() {
-        return ingredient.toString() + DBHelper.SHORT_SEP + amount + DBHelper.SHORT_SEP;
+        return ingredientEnum.toString() + DbHelper.SHORT_SEP + amount + DbHelper.SHORT_SEP;
     }
 
     public static String toLongString (IngredientQuantity... data) {
         String longString = "";
         for (int i = 0; i < data.length; i++) {
-            longString += data[i] + DBHelper.LONG_SEP;
+            longString += data[i] + DbHelper.LONG_SEP;
         }
         return longString;
     }
@@ -50,19 +49,19 @@ public class IngredientQuantity implements Parcelable {
     public static String toLongString (ArrayList<IngredientQuantity> data) {
         String longString = "";
         for (int i = 0; i < data.size(); i++) {
-            longString += data.get(i) + DBHelper.LONG_SEP;
+            longString += data.get(i) + DbHelper.LONG_SEP;
         }
         return longString;
     }
 
     public static IngredientQuantity parseFromString (String s) {
-        String[] data = Util.stringToArray(s,DBHelper.SHORT_SEP);
+        String[] data = Util.stringToArray(s, DbHelper.SHORT_SEP);
         //for (String str : data) System.out.println("AFTER PARSING SHORT: " + str);
         return new IngredientQuantity(data[0],data[1]);
     }
 
     public static ArrayList<IngredientQuantity> parseFromLongString (String s) {
-        String[] separateIngredients = Util.stringToArray(s, DBHelper.LONG_SEP);
+        String[] separateIngredients = Util.stringToArray(s, DbHelper.LONG_SEP);
         //for (String str : separateRampHolds) System.out.println("AFTER PARSING LONG: " + str);
         ArrayList<IngredientQuantity> list = new ArrayList<>();
         for (String str : separateIngredients)
@@ -75,11 +74,11 @@ public class IngredientQuantity implements Parcelable {
     public static ContentValues getCvToSave (ArrayList<RampHold> rampHolds, int index, RampHold newRampHold) {
         ContentValues toSave = new ContentValues();
         rampHolds.set(index,newRampHold);
-        toSave.put(DBHelper.CCN_FIRING_CYCLE,toLongString(rampHolds));
+        toSave.put(DbHelper.CCN_FIRING_CYCLE,toLongString(rampHolds));
         return toSave;
     }
 
-    public static ContentValues getCvToSave (String ingredient, String quantity) {
+    public static ContentValues getCvToSave (String ingredientEnum, String quantity) {
 
     }
     */
@@ -87,13 +86,13 @@ public class IngredientQuantity implements Parcelable {
 
     // parcelable implementation
     public IngredientQuantity(Parcel in) {
-        ingredient = Ingredient.getEnum(in.readString());
+        ingredientEnum = IngredientEnum.getEnum(in.readString());
         amount = in.readDouble();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(ingredient.toString());
+        dest.writeString(ingredientEnum.toString());
         dest.writeDouble(amount);
     }
 

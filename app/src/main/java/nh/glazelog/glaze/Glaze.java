@@ -6,12 +6,12 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import nh.glazelog.database.DBHelper;
+import nh.glazelog.Util;
+import nh.glazelog.database.DbHelper;
 import nh.glazelog.database.Storable;
 
 /**
@@ -21,38 +21,40 @@ import nh.glazelog.database.Storable;
 public class Glaze implements Parcelable,Storable {
 
     private String name;
-    private String creationDate;
-    private String editedDate;
+    private String dateCreated;
+    private String dateEdited;
+    private String tags;
     private Finish finish;
     private Opacity opacity;
     private Atmosphere atmos;
     private String clayBody;
     private String application;
-    private String primaryNotes;
     private String imageUriString;
     private double spgr;
     private ArrayList<IngredientQuantity> materials;
     private ArrayList<IngredientQuantity> additions;
     private ArrayList<RampHold> firingCycle;
     private Cone bisquedTo;
+    private String primaryNotes;
     private String secondaryNotes;
 
     public Glaze () {
         this.name = "";
-        this.creationDate = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        this.editedDate = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        this.dateCreated = Util.getDateTimeStamp();
+        this.dateEdited = Util.getDateTimeStamp();
+        this.tags = "";
         this.finish = Finish.NONE;
         this.opacity = Opacity.NONE;
         this.atmos = Atmosphere.NONE;
         this.clayBody = "";
         this.application = "";
-        this.primaryNotes = "";
         this.imageUriString = "";
         this.spgr = 0;
         this.materials = new ArrayList<IngredientQuantity>();
         this.additions = new ArrayList<IngredientQuantity>();
         this.firingCycle = new ArrayList<RampHold>();
-        bisquedTo = Cone.C04;
+        this.bisquedTo = Cone.C05;
+        this.primaryNotes = "";
         this.secondaryNotes = "";
     }
 
@@ -65,14 +67,15 @@ public class Glaze implements Parcelable,Storable {
     public Glaze (String name, int debugdate) {
         this();
         this.setName(name);
-        this.setCreationDate("201710" + debugdate + "_120000");
+        this.setDateCreated("201710" + debugdate + "_120000");
     }
 
     public Glaze (GlazeTemplate template) {
         if (template.getName().equals("No Template")) this.name = "";
         else this.name = template.getName();
-        this.creationDate = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        this.editedDate = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        this.dateCreated = Util.getDateTimeStamp();
+        this.dateEdited = Util.getDateTimeStamp();
+        this.tags = "";
         this.finish = template.getFinish();
         this.opacity = template.getOpacity();
         this.atmos = template.getAtmos();
@@ -84,68 +87,71 @@ public class Glaze implements Parcelable,Storable {
         this.materials = new ArrayList<IngredientQuantity>();
         this.additions = new ArrayList<IngredientQuantity>();
         this.firingCycle = template.getFiringCycle();
-        bisquedTo = Cone.NONE;
+        this.bisquedTo = Cone.NONE;
         this.secondaryNotes = "";
     }
 
     public Glaze (Glaze g) {
         this.name = "Copy of " + g.getName();
-        this.creationDate = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        this.editedDate = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        this.dateCreated = Util.getDateTimeStamp();
+        this.dateEdited = Util.getDateTimeStamp();
+        this.tags = g.getTags();
         this.finish = g.getFinish();
         this.opacity = g.getOpacity();
         this.atmos = g.getAtmos();
         this.clayBody = g.getClayBody();
         this.application = g.getApplication();
-        this.primaryNotes = g.getPrimaryNotes();
         this.imageUriString = "";
         this.spgr = g.getSpgr();
         this.materials = g.getMaterials();
         this.additions = g.getAdditions();
         this.firingCycle = g.getFiringCycle();
-        bisquedTo = g.getBisquedTo();
+        this.bisquedTo = g.getBisquedTo();
+        this.primaryNotes = g.getPrimaryNotes();
         this.secondaryNotes = g.getSecondaryNotes();
     }
 
-    public Glaze(String name, String creationDate, String editedDate, Finish finish, Opacity opacity, Atmosphere atmos, String clayBody, String application, String primaryNotes, String imageUri, double spgr, ArrayList<IngredientQuantity> materials, ArrayList<IngredientQuantity> additions, ArrayList<RampHold> firingCycle, Cone bisquedTo, String secondaryNotes) {
+    public Glaze(String name, String dateCreated, String dateEdited, String tags, Finish finish, Opacity opacity, Atmosphere atmos, String clayBody, String application, String imageUri, double spgr, ArrayList<IngredientQuantity> materials, ArrayList<IngredientQuantity> additions, ArrayList<RampHold> firingCycle, Cone bisquedTo, String primaryNotes, String secondaryNotes) {
         this.name = name;
-        this.creationDate = creationDate;
-        this.editedDate = editedDate;
+        this.dateCreated = dateCreated;
+        this.dateEdited = dateEdited;
+        this.tags = tags;
         this.finish = finish;
         this.opacity = opacity;
         this.atmos = atmos;
         this.clayBody = clayBody;
         this.application = application;
-        this.primaryNotes = primaryNotes;
         this.imageUriString = imageUri;
         this.spgr = spgr;
         this.materials = materials;
         this.additions = additions;
         this.firingCycle = firingCycle;
         this.bisquedTo = bisquedTo;
+        this.primaryNotes = primaryNotes;
         this.secondaryNotes = secondaryNotes;
     }
 
+    /* Old implementation where the getDate() functions returned a Date object.
+       Kept in case I need it in the future.
+
+    public Date getDateCreated() {
+        try {
+            return new SimpleDateFormat("yyyyMMdd_HHmmss").parse(dateCreated);
+        } catch (ParseException e) {e.printStackTrace();};
+        return null;
+    }
+    */
 
     public String getName() {return name;}
     public void setName(String name) {this.name = name;}
-    public Date getCreationDate() {
-        try {
-            return new SimpleDateFormat("yyyyMMdd_HHmmss").parse(creationDate);
-        } catch (ParseException e) {e.printStackTrace();};
-        return null;
-    }
-    public void setCreationDate(Date date) {this.creationDate = date.toString();}
-    public void setCreationDate(String date) {this.creationDate = date;}
-    public Date getEditedDate() {
-        try {
-            return new SimpleDateFormat("yyyyMMdd_HHmmss").parse(editedDate);
-        } catch (ParseException e) {e.printStackTrace();};
-        return null;
-    }
-    public String getEditedDateRaw() {return editedDate;}
-    public void setEditedDate(Date date) {this.editedDate = date.toString();}
-    public void setEditedDate(String date) {this.editedDate = date;}
+    public String getDateCreatedRaw() {return dateCreated;}
+    public void setDateCreated(Date date) {this.dateCreated = date.toString();}
+    public void setDateCreated(String date) {this.dateCreated = date;}
+    public String getDateEditedRaw() {return dateEdited;}
+    public void setDateEdited(Date date) {this.dateEdited = date.toString();}
+    public void setDateEdited(String date) {this.dateEdited = date;}
+    public String getTags() {return tags;}
+    public void setTags(String tags) {this.tags = tags;}
     public Finish getFinish() {return finish;}
     public void setFinish(Finish finish) {this.finish = finish;}
     public Opacity getOpacity() {return opacity;}
@@ -156,8 +162,6 @@ public class Glaze implements Parcelable,Storable {
     public void setClayBody(String clayBody) {this.clayBody = clayBody;}
     public String getApplication() {return application;}
     public void setApplication(String application) {this.application = application;}
-    public String getPrimaryNotes() {return primaryNotes;}
-    public void setPrimaryNotes(String primaryNotes) {this.primaryNotes = primaryNotes;}
     public Uri getImageUri() {if (imageUriString.equals("")) return Uri.EMPTY; else return Uri.parse(imageUriString);}
     private String getImageUriString () {return imageUriString;}
     public void setImageUri(Uri imageUri) {this.imageUriString = imageUri.toString();}
@@ -172,6 +176,8 @@ public class Glaze implements Parcelable,Storable {
     public void setFiringCycle(ArrayList<RampHold> firingCycle) {this.firingCycle = firingCycle;}
     public Cone getBisquedTo() {return bisquedTo;}
     public void setBisquedTo(Cone bisquedTo) {this.bisquedTo = bisquedTo;}
+    public String getPrimaryNotes() {return primaryNotes;}
+    public void setPrimaryNotes(String primaryNotes) {this.primaryNotes = primaryNotes;}
     public String getSecondaryNotes() {return secondaryNotes;}
     public void setSecondaryNotes(String secondaryNotes) {this.secondaryNotes = secondaryNotes;}
 
@@ -181,35 +187,33 @@ public class Glaze implements Parcelable,Storable {
     @Override
     public ContentValues getContentValues() {
         ContentValues values = new ContentValues();
-        values.put(DBHelper.CCN_NAME,getName());
-        values.put(DBHelper.CCN_CREATION_DATE,getCreationDateRaw());
-        values.put(DBHelper.SingleCN.DATE_EDITED,getEditedDateRaw());
-        values.put(DBHelper.SingleCN.FINISH,getFinish().toString());
-        values.put(DBHelper.SingleCN.OPACITY,getOpacity().toString());
-        values.put(DBHelper.SingleCN.ATMOSPHERE,getAtmos().toString());
-        values.put(DBHelper.SingleCN.CLAY_BODY,getClayBody());
-        values.put(DBHelper.SingleCN.APPLICATION,getApplication());
-        values.put(DBHelper.SingleCN.PRIMARY_NOTES,getPrimaryNotes());
-        values.put(DBHelper.SingleCN.IMAGE_URI_STRING,getImageUriString());
-        values.put(DBHelper.SingleCN.SPGR,getSpgr());
-        values.put(DBHelper.SingleCN.MATERIALS,IngredientQuantity.toLongString(getMaterials()));
-        values.put(DBHelper.SingleCN.ADDITIONS,IngredientQuantity.toLongString(getAdditions()));
-        values.put(DBHelper.SingleCN.FIRING_CYCLE,RampHold.toLongString(getFiringCycle()));
-        values.put(DBHelper.SingleCN.FIRING_CYCLE, RampHold.toLongString(getFiringCycle()));
-        values.put(DBHelper.CCN_BISQUED_TO, bisquedTo.toString());
-        values.put(DBHelper.SingleCN.SECONDARY_NOTES,getSecondaryNotes());
+        values.put(DbHelper.CCN_NAME,getName());
+        values.put(DbHelper.CCN_DATE_CREATED,getDateCreatedRaw());
+        values.put(DbHelper.CCN_DATE_EDITED,getDateEditedRaw());
+        values.put(DbHelper.CCN_TAGS,getTags());
+        values.put(DbHelper.SingleCN.FINISH,getFinish().toString());
+        values.put(DbHelper.SingleCN.OPACITY,getOpacity().toString());
+        values.put(DbHelper.SingleCN.ATMOSPHERE,getAtmos().toString());
+        values.put(DbHelper.SingleCN.CLAY_BODY,getClayBody());
+        values.put(DbHelper.SingleCN.APPLICATION,getApplication());
+        values.put(DbHelper.SingleCN.IMAGE_URI_STRING,getImageUriString());
+        values.put(DbHelper.SingleCN.SPGR,getSpgr());
+        values.put(DbHelper.SingleCN.MATERIALS,IngredientQuantity.toLongString(getMaterials()));
+        values.put(DbHelper.SingleCN.ADDITIONS,IngredientQuantity.toLongString(getAdditions()));
+        values.put(DbHelper.SingleCN.FIRING_CYCLE,RampHold.toLongString(getFiringCycle()));
+        values.put(DbHelper.SingleCN.BISQUED_TO,getBisquedTo().toString());
+        values.put(DbHelper.SingleCN.PRIMARY_NOTES,getPrimaryNotes());
+        values.put(DbHelper.SingleCN.SECONDARY_NOTES,getSecondaryNotes());
 
         return values;
     }
 
     @Override
-    public Storable.Type getStorableType() {
-        return Type.SINGLE;
-    }
+    public Storable.Type getStorableType() {return Type.SINGLE;}
+    @Override
     public String getRowName() {return name;}
-    public String getCreationDateRaw() {return creationDate;}
-    public void updateEditDate() {setEditedDate(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));}
-    public String getEditDate() {return getEditedDateRaw();}
+    @Override
+    public void updateDateEdited() {setDateEdited(Util.getDateTimeStamp());}
 
     public static final CursorCreator<Glaze> CURSOR_CREATOR = new CursorCreator<Glaze>() {
         @Override
@@ -220,10 +224,10 @@ public class Glaze implements Parcelable,Storable {
                         cursor.getString(1),
                         cursor.getString(2),
                         cursor.getString(3),
-                        Finish.getEnum(cursor.getString(4)),
-                        Opacity.getEnum(cursor.getString(5)),
-                        Atmosphere.getEnum(cursor.getString(6)),
-                        cursor.getString(7),
+                        cursor.getString(4),
+                        Finish.getEnum(cursor.getString(5)),
+                        Opacity.getEnum(cursor.getString(6)),
+                        Atmosphere.getEnum(cursor.getString(7)),
                         cursor.getString(8),
                         cursor.getString(9),
                         cursor.getString(10),
@@ -232,7 +236,8 @@ public class Glaze implements Parcelable,Storable {
                         IngredientQuantity.parseFromLongString(cursor.getString(13)),
                         RampHold.parseFromLongString(cursor.getString(14)),
                         Cone.getEnum(cursor.getString(15)),
-                        cursor.getString(16)
+                        cursor.getString(16),
+                        cursor.getString(17)
                 ));
             }
             cursor.close();
@@ -244,40 +249,42 @@ public class Glaze implements Parcelable,Storable {
     // parcelable implementation
     public Glaze(Parcel in) {
         name = in.readString();
-        creationDate = in.readString();
-        editedDate = in.readString();
+        dateCreated = in.readString();
+        dateEdited = in.readString();
+        tags = in.readString();
         finish = Finish.getEnum(in.readString());
         opacity = Opacity.getEnum(in.readString());
         atmos = Atmosphere.getEnum(in.readString());
         clayBody = in.readString();
         application = in.readString();
-        primaryNotes = in.readString();
         imageUriString = in.readString();
         spgr = in.readDouble();
         materials = in.createTypedArrayList(IngredientQuantity.CREATOR);
         additions = in.createTypedArrayList(IngredientQuantity.CREATOR);
         firingCycle = in.createTypedArrayList(RampHold.CREATOR);
         bisquedTo = Cone.getEnum(in.readString());
+        primaryNotes = in.readString();
         secondaryNotes = in.readString();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
-        dest.writeString(creationDate);
-        dest.writeString(editedDate);
+        dest.writeString(dateCreated);
+        dest.writeString(dateEdited);
+        dest.writeString(tags);
         dest.writeString(finish.toString());
         dest.writeString(opacity.toString());
         dest.writeString(atmos.toString());
         dest.writeString(clayBody);
         dest.writeString(application);
-        dest.writeString(primaryNotes);
         dest.writeString(imageUriString);
         dest.writeDouble(spgr);
         dest.writeTypedList(materials);
         dest.writeTypedList(additions);
         dest.writeTypedList(firingCycle);
         dest.writeString(bisquedTo.toString());
+        dest.writeString(primaryNotes);
         dest.writeString(secondaryNotes);
     }
 

@@ -1,21 +1,21 @@
 <resources>
     <string name="app_name">Glaze Log</string>
-    <string name="finish_label">Finish</string>
-    <string name="opacity_label">Opacity</string>
-    <string name="atmos_label">Atmosphere</string>
-    <string name="body_label">Clay Body</string>
-    <string name="application_label">Application</string>
-    <string name="workswith_label">Works Well With</string>
-    <string name="body_hint">Description of Clay Body</string>
-    <string name="applicaiton_hint">Method of Application</string>
+    <string name="glaze_finish_label">Finish</string>
+    <string name="glaze_opacity_label">Opacity</string>
+    <string name="glaze_atmos_label">Atmosphere</string>
+    <string name="glaze_body_label">Clay Body</string>
+    <string name="glaze_application_label">Application</string>
+    <string name="glaze_workswith_label">Works Well With</string>
+    <string name="glaze_body_hint">Description of Clay Body</string>
+    <string name="glaze_applicaiton_hint">Method of Application</string>
     <string name="recipe_label">Recipe</string>
     <string name="recipe_spgr_label" translatable="false">"(sp gr: "</string>
     <string name="recipe_additions_label">Additions</string>
     <string name="firingcycle_label">Firing Cycle</string>
-    <string name="notes_label">Other Notes</string>
-    <string name="version_primarynotes_hint" translatable="false">Desc. of version</string>
-    <string name="version_secondarynotes_hint">Other notes…</string>
-    <string name="version_number_label" translatable="false">Ver.</string>
+    <string name="glaze_notes_label">Other Notes</string>
+    <string name="glaze_version_primarynotes_hint" translatable="false">Desc. of version</string>
+    <string name="glaze_version_secondarynotes_hint">Other notes…</string>
+    <string name="glaze_version_number_label" translatable="false">Ver.</string>
     <string name="recipe_spgr_label2" translatable="false">)</string>
     <string name="recipe_hint">Enter Ingredient…</string>
     <string name="recipe_unit_label">g</string>
@@ -33,19 +33,28 @@
     <string name="dialog_newglaze_type_combo_label">Combination of Glazes</string>
     <string name="dialog_newglaze_template_label">From Template</string>
     <string name="dialog_newglaze_title">Create New Glaze</string>
-    <string name="glazelist_date_edited">Last Edited</string>
-    <string name="appbar_newtemplate_title">Use As Template</string>
+    <string name="list_date_edited">Last Edited</string>
+    <string name="appbar_actionbutton_newtemplate_title">Use As Template</string>
     <string name="appbar_glazename_hint">Glaze Name Here…</string>
     <string name="dialog_confirm_pretext">"Are you sure you want "</string>
-    <string name="appbar_delete">Delete</string>
+    <string name="appbar_actionbutton_delete">Delete</string>
     <string name="dialog_newtemplate_title">Create New Template</string>
     <string name="dialog_newtemplate_label">Name:</string>
     <string name="dialog_newtemplate_hint">Template Name Here…</string>
     <string name="__imagespath">/Android/data/nh.glazelog/files/Pictures</string>
-    <string name="appbar_rename_label">Rename</string>
-    <string name="dialog_rename_title">Rename glaze</string>
+    <string name="appbar_actionbutton_rename_label">Rename</string>
+    <string name="dialog_rename_title">Rename glazeName</string>
     <string name="dialog_rename_hint">New Name...</string>
     <string name="dialog_newname_label">New Name:</string>
-    <string name="appbar_copy_title">Create Copy of This Version</string>
+    <string name="appbar_actionbutton_copy_title">Create Copy of This Version</string>
     <string name="dialog_nocamera_message">Your system does not have a camera, and therefore does not support taking pictures</string>
+    <string name="list_title_single">Glazes</string>
+    <string name="list_title_combo">Glaze Combinations</string>
+    <string name="list_title_firingcycle">Firing Cycles</string>
+    <string name="list_title_templates">Glaze Templates</string>
+    <string name="list_title_ingredients">Ingredients</string>
+    <string name="appbar_actionbutton_settings_title">Settings</string>
+    <string name="navdrawer_open">Open navigation drawer</string>
+    <string name="navdrawer_close">Close navigation drawer</string>
+    <string name="navdrawer_header">Databases</string>
 </resources>
