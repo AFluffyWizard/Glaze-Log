@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/base"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_marginTop="@dimen/glazelist_item_external_padding"
+    android:layout_marginRight="@dimen/glazelist_item_external_padding"
+    android:layout_marginLeft="@dimen/glazelist_item_external_padding"
+    android:background="@drawable/glazelist_item_border">
+
+    <TextView
+        android:id="@+id/itemNameLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|center_vertical"
+        android:text="item_name"
+        android:textAppearance="@style/StandardText"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="@dimen/glazelist_item_internal_padding"
+        android:layout_marginLeft="@dimen/glazelist_item_internal_padding"
+        android:layout_marginRight="@dimen/glazelist_item_internal_padding" />
+
+    <TextView
+        android:id="@+id/secondaryInfoLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="@dimen/glazelist_item_internal_padding"
+        android:textAppearance="@style/SubtitleText"
+        app:layout_constraintTop_toBottomOf="@id/itemNameLabel"
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/dateEditedTitle"
+        />
+
+    <TextView
+        android:id="@+id/dateEditedTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/glazelist_item_internal_padding"
+        android:layout_marginBottom="@dimen/glazelist_item_internal_padding"
+        android:text="@string/list_date_edited"
+        android:textAppearance="@style/SmallText"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <TextView
+        android:id="@+id/dateEditedLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|center_vertical"
+        android:layout_marginLeft="@dimen/layout_textview_to_textfield_separator"
+        android:layout_marginRight="@dimen/glazelist_item_internal_padding"
+        android:text="glaze_date"
+        android:textAppearance="@style/SmallText"
+        android:textStyle="italic"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/dateEditedTitle"
+        app:layout_constraintBaseline_toBaselineOf="@+id/dateEditedTitle"
+        app:layout_constraintHorizontal_bias="1.0" />
+
+
+
+</android.support.constraint.ConstraintLayout>

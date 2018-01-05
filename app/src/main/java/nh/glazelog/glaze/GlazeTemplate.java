@@ -2,10 +2,10 @@ package nh.glazelog.glaze;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -18,7 +18,7 @@ import nh.glazelog.database.Storable;
  * Created by Nick Hansen on 9/29/2017.
  */
 
-public class GlazeTemplate implements Parcelable,Storable {
+public class GlazeTemplate implements Parcelable,Storable,Listable {
 
     private String name;
     private String dateCreated;
@@ -120,6 +120,15 @@ public class GlazeTemplate implements Parcelable,Storable {
     }
 
 
+    //listable implementation
+    @Override
+    public String getSecondaryInfo(ArrayList<?> itemInfo) {
+        return null;
+    }
+    @Override
+    public Uri getImageUri() {return Uri.EMPTY;}
+
+
     // storable implementation
     @Override
     public ContentValues getContentValues() {
@@ -145,6 +154,7 @@ public class GlazeTemplate implements Parcelable,Storable {
     }
     public String getRowName() {return name;}
     public void updateDateEdited() {setDateEdited(Util.getDateTimeStamp());}
+
 
     public static final CursorCreator<GlazeTemplate> CURSOR_CREATOR = new CursorCreator<GlazeTemplate>() {
         @Override

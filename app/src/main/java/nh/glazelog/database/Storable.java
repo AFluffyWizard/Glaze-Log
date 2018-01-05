@@ -2,8 +2,12 @@ package nh.glazelog.database;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.view.View;
 
+import java.net.URI;
 import java.util.ArrayList;
+
+import nh.glazelog.glaze.Glaze;
 
 /**
  * Created by Nick Hansen on 10/5/2017.
@@ -23,25 +27,26 @@ public interface Storable {
         public ArrayList<T> createFromCursor (Cursor cursor);
     }
 
+
     public enum Type {
-        SINGLE("Glazes", DbHelper.SingleCN.TABLE_NAME),
-        COMBO("Glaze Combinations", DbHelper.ComboCN.TABLE_NAME),
-        TEMPLATE("Glaze Templates", DbHelper.TemplateCN.TABLE_NAME),
-        FIRING_CYCLE("Firing Cycle", DbHelper.FiringCycleCN.TABLE_NAME),
-        INGREDIENT("Ingredients", DbHelper.IngredientCN.TABLE_NAME);
+        SINGLE(DbHelper.SingleCN.TABLE_NAME, true),
+        COMBO(DbHelper.ComboCN.TABLE_NAME, true),
+        TEMPLATE(DbHelper.TemplateCN.TABLE_NAME, false),
+        FIRING_CYCLE(DbHelper.FiringCycleCN.TABLE_NAME, false),
+        INGREDIENT(DbHelper.IngredientCN.TABLE_NAME, false);
 
-        private String friendlyName;
         private String tableName;
+        private boolean hasImage;
 
-        private Type (String friendlyName, String tableName) {
-            this.friendlyName = friendlyName;
+        private Type (String tableName, boolean hasImage) {
             this.tableName = tableName;
+            this.hasImage = hasImage;
         }
-
-        public String toString() {return friendlyName;}
 
         public String getTableName() {
             return tableName;
         }
+
+        public boolean hasImage() {return hasImage;}
     }
 }

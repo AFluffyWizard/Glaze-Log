@@ -98,7 +98,7 @@ public class VersionFragment extends Fragment {
 
         deleteVersion = (ImageView) page.findViewById(R.id.deleteVersionImageView);
 
-        testTileImage = (ImageView) page.findViewById(R.id.testTileImageView);
+        testTileImage = (ImageView) page.findViewById(R.id.previewImageView);
         if (!gVer.getImageUri().equals(Uri.EMPTY)) testTileImage.setImageURI(gVer.getImageUri());
 
         spgrField = (EditText) page.findViewById(R.id.spgrField);

@@ -57,4 +57,5 @@
     <string name="navdrawer_open">Open navigation drawer</string>
     <string name="navdrawer_close">Close navigation drawer</string>
     <string name="navdrawer_header">Databases</string>
+    <string name="comboglaze_notes_hint">Notes About Application...</string>
 </resources>

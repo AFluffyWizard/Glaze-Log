@@ -22,7 +22,7 @@ import nh.glazelog.glaze.Ingredient;
 public class DbHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "GlazeData.db";
-    public static final int DATABASE_VERSION = 5;
+    public static final int DATABASE_VERSION = 6;
 
     // for storing/parsing lists of data
     public static final String SHORT_SEP = ":";
@@ -171,6 +171,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public static class ComboCN implements BaseColumns {
         public static final String TABLE_NAME = "combo_glaze_table";
 
+        public static final String IMAGE_URI_STRING = "image_uri";
         public static final String CLAY_BODY = "clay_body";
         public static final String GLAZES = "glazes";
         public static final String FIRING_CYCLE = "firing_cycle";
@@ -229,6 +230,7 @@ public class DbHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + ComboCN.TABLE_NAME + " (" +
                     ComboCN._ID + " INTEGER PRIMARY KEY," +
                     CREATE_ENTRIES_HEADER +
+                    ComboCN.IMAGE_URI_STRING + " TEXT," +
                     ComboCN.CLAY_BODY + " TEXT," +
                     ComboCN.GLAZES + " TEXT," +
                     ComboCN.FIRING_CYCLE + " TEXT," +
@@ -264,31 +266,6 @@ public class DbHelper extends SQLiteOpenHelper {
                     IngredientCN.OXIDE_QUANTITY_LONG_STRING + " TEXT," +
                     IngredientCN.COST_PER_KG + " TEXT," +
                     IngredientCN.NOTES + " TEXT);";
-
-
-    /*--------------------RESET DATABASE--------------------*/
-     @Deprecated
-     private void reset() {
-        drop(SingleCN.TABLE_NAME,
-             ComboCN.TABLE_NAME,
-             TemplateCN.TABLE_NAME,
-             FiringCycleCN.TABLE_NAME,
-             IngredientCN.TABLE_NAME);
-        singletonInstance.onCreate(getSingletonDatabase());
-    }
-
-    @Deprecated
-    private void drop(String... tableName) {
-        for (String tn : tableName)
-            getSingletonDatabase().execSQL("DROP TABLE IF EXISTS \"" + tn + "\"");
-    }
-
-    private void resetTable(SQLiteDatabase db, String tableName, String createTableString) {
-        String sqlString = "CASE WHEN \"" + tableName + "\" IS NOT NULL THEN DROP TABLE \"" + tableName +
-                "\"; " + createTableString;
-
-        db.execSQL(sqlString);
-    }
 
 
     /*--------------------INHERITED DB FUNCTIONS--------------------*/

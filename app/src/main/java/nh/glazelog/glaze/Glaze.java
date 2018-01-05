@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -18,7 +17,7 @@ import nh.glazelog.database.Storable;
  * Created by Nick Hansen on 9/22/2017.
  */
 
-public class Glaze implements Parcelable,Storable {
+public class Glaze implements Parcelable,Storable,Listable {
 
     private String name;
     private String dateCreated;
@@ -181,6 +180,18 @@ public class Glaze implements Parcelable,Storable {
     public String getSecondaryNotes() {return secondaryNotes;}
     public void setSecondaryNotes(String secondaryNotes) {this.secondaryNotes = secondaryNotes;}
 
+
+
+    //listable implementation
+    @Override
+    public String getSecondaryInfo(ArrayList<?> itemInfo) {
+        Glaze rootGlaze = (Glaze) itemInfo.get(0);
+        Cone closestCone = Cone.NONE;
+        if (rootGlaze.getFiringCycle().size() != 0)
+            closestCone = Cone.getClosestConeF(RampHold.getHighestTemp(((Glaze)itemInfo.get(itemInfo.size()-1)).getFiringCycle()));
+
+        return closestCone.toString();
+    }
 
 
     // storable implementation

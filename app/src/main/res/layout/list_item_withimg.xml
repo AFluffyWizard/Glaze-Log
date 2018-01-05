@@ -12,7 +12,7 @@
     android:background="@drawable/glazelist_item_border">
 
     <ImageView
-        android:id="@+id/testTileImageView"
+        android:id="@+id/previewImageView"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_margin="@dimen/glazelist_item_internal_padding"
@@ -22,43 +22,45 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/glazeNameLabel"
+        android:id="@+id/itemNameLabel"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_gravity="start|center_vertical"
-        android:layout_margin="@dimen/glazelist_item_internal_padding"
-        android:text="glaze_name"
+        android:text="item_name"
         android:textAppearance="@style/StandardText"
-        app:layout_constraintLeft_toRightOf="@+id/testTileImageView"
+        app:layout_constraintLeft_toRightOf="@+id/previewImageView"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="@dimen/glazelist_item_internal_padding"
+        android:layout_marginRight="@dimen/glazelist_item_internal_padding"
+        android:layout_marginLeft="8dp"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/glazeConeLabel" />
+        app:layout_constraintBottom_toTopOf="@+id/secondaryInfoLabel" />
 
     <TextView
-        android:id="@+id/glazeConeLabel"
+        android:id="@+id/secondaryInfoLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:textAppearance="@style/SubtitleText"
-        app:layout_constraintLeft_toRightOf="@+id/testTileImageView"
-        app:layout_constraintBottom_toTopOf="@+id/dateEditedLabel"
+        app:layout_constraintLeft_toRightOf="@+id/previewImageView"
+        app:layout_constraintBottom_toTopOf="@+id/dateEditedTitle"
         />
 
     <TextView
-        android:id="@+id/dateEditedLabel"
+        android:id="@+id/dateEditedTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="@dimen/glazelist_item_internal_padding"
         android:text="@string/list_date_edited"
         android:textAppearance="@style/SmallText"
         android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="@+id/testTileImageView" />
+        app:layout_constraintLeft_toRightOf="@+id/previewImageView" />
 
     <TextView
-        android:id="@+id/glazeDateLabel"
+        android:id="@+id/dateEditedLabel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="start|center_vertical"
@@ -68,8 +70,8 @@
         android:textAppearance="@style/SmallText"
         android:textStyle="italic"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toRightOf="@+id/dateEditedLabel"
-        app:layout_constraintBaseline_toBaselineOf="@+id/dateEditedLabel"
+        app:layout_constraintLeft_toRightOf="@+id/dateEditedTitle"
+        app:layout_constraintBaseline_toBaselineOf="@+id/dateEditedTitle"
         app:layout_constraintHorizontal_bias="1.0" />
 
 

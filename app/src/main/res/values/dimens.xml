@@ -17,6 +17,7 @@
     <dimen name="layout_label_to_field_separator">16dp</dimen>
     <dimen name="layout_header_to_field_separator">8dp</dimen>
     <dimen name="layout_textview_to_textfield_separator">4dp</dimen>
+    <dimen name="layout_reorder_icon_width">12dp</dimen>
     <dimen name="glazelist_item_border_width">4dp</dimen>
     <dimen name="glazelist_item_internal_padding">12dp</dimen>
     <dimen name="glazelist_item_external_padding">16dp</dimen>

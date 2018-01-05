@@ -2,6 +2,7 @@ package nh.glazelog.glaze;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -16,7 +17,7 @@ import nh.glazelog.database.Storable;
  * Created by Nick Hansen on 12/31/2017.
  */
 
-public class Ingredient implements Parcelable,Storable{
+public class Ingredient implements Parcelable,Storable,Listable{
 
     private String name;
     private String dateCreated;
@@ -78,6 +79,15 @@ public class Ingredient implements Parcelable,Storable{
     public void setCostPerKg(Double costPerKg) {this.costPerKg = costPerKg;}
     public String getNotes() {return notes;}
     public void setNotes(String notes) {this.notes = notes;}
+
+
+    //listable implementation
+    @Override
+    public String getSecondaryInfo(ArrayList<?> itemInfo) {
+        return null;
+    }
+    @Override
+    public Uri getImageUri() {return Uri.EMPTY;}
 
 
     // storable implementation
