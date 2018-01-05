@@ -96,7 +96,12 @@ public class ComboGlaze implements Parcelable,Storable,Listable {
     //listable implementation
     @Override
     public String getSecondaryInfo(ArrayList<?> itemInfo) {
-        return null;
+        ComboGlaze currentCombo = (ComboGlaze) itemInfo.get(itemInfo.size()-1);
+        Cone closestCone = Cone.NONE;
+        if (currentCombo.getFiringCycle().size() != 0)
+            closestCone = Cone.getClosestConeF(RampHold.getHighestTemp(currentCombo.getFiringCycle()));
+
+        return closestCone.toString() + ", " + currentCombo.getGlazes().size() + " glazes";
     }
 
 

@@ -22,7 +22,7 @@ import nh.glazelog.glaze.Ingredient;
 public class DbHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "GlazeData.db";
-    public static final int DATABASE_VERSION = 6;
+    public static final int DATABASE_VERSION = 7;
 
     // for storing/parsing lists of data
     public static final String SHORT_SEP = ":";
@@ -196,6 +196,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public static class FiringCycleCN implements BaseColumns {
         public static final String TABLE_NAME = "firing_cycle_table";
 
+        public static final String KILN_TYPE = "kiln_type";
         public static final String RAMP_HOLD_LONG_STRING = "ramp_hold_long_string";
         public static final String NOTES = "notes";
     }
@@ -256,6 +257,7 @@ public class DbHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + FiringCycleCN.TABLE_NAME + " (" +
                     FiringCycleCN._ID + " INTEGER PRIMARY KEY," +
                     CREATE_ENTRIES_HEADER +
+                    FiringCycleCN.KILN_TYPE + " TEXT," +
                     FiringCycleCN.RAMP_HOLD_LONG_STRING + " TEXT," +
                     FiringCycleCN.NOTES + " TEXT);";
 

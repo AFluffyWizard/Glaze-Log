@@ -185,10 +185,10 @@ public class Glaze implements Parcelable,Storable,Listable {
     //listable implementation
     @Override
     public String getSecondaryInfo(ArrayList<?> itemInfo) {
-        Glaze rootGlaze = (Glaze) itemInfo.get(0);
+        Glaze currentGlaze = (Glaze) itemInfo.get(itemInfo.size()-1);
         Cone closestCone = Cone.NONE;
-        if (rootGlaze.getFiringCycle().size() != 0)
-            closestCone = Cone.getClosestConeF(RampHold.getHighestTemp(((Glaze)itemInfo.get(itemInfo.size()-1)).getFiringCycle()));
+        if (currentGlaze.getFiringCycle().size() != 0)
+            closestCone = Cone.getClosestConeF(RampHold.getHighestTemp(currentGlaze.getFiringCycle()));
 
         return closestCone.toString();
     }

@@ -23,6 +23,7 @@ public class FiringCycle implements Parcelable,Storable,Listable{
     private String dateCreated;
     private String dateEdited;
     private String tags;
+    private KilnType kilnType;
     private ArrayList<RampHold> rampHolds;
     private String notes;
 
@@ -32,6 +33,7 @@ public class FiringCycle implements Parcelable,Storable,Listable{
         this.dateCreated = Util.getDateTimeStamp();
         this.dateEdited = Util.getDateTimeStamp();
         this.tags = "";
+        this.kilnType = KilnType.NONE;
         this.rampHolds = new ArrayList<>();
         this.notes = "";
     }
@@ -41,20 +43,12 @@ public class FiringCycle implements Parcelable,Storable,Listable{
         this.setName(name);
     }
 
-    public FiringCycle (String name, String tags, ArrayList<RampHold> rampHolds, String notes) {
-        this.name = name;
-        this.dateCreated = Util.getDateTimeStamp();
-        this.dateEdited = Util.getDateTimeStamp();
-        this.tags = tags;
-        this.rampHolds = rampHolds;
-        this.notes = notes;
-    }
-
-    public FiringCycle (String name, String dateCreated, String dateEdited, String tags, ArrayList<RampHold> rampHolds, String notes) {
+    public FiringCycle (String name, String dateCreated, String dateEdited, String tags, KilnType kilnType, ArrayList<RampHold> rampHolds, String notes) {
         this.name = name;
         this.dateCreated = dateCreated;
         this.dateEdited = dateEdited;
         this.tags = tags;
+        this.kilnType = kilnType;
         this.rampHolds = rampHolds;
         this.notes = notes;
     }
@@ -69,6 +63,8 @@ public class FiringCycle implements Parcelable,Storable,Listable{
     public void setDateEdited(String date) {this.dateEdited = date;}
     public String getTags() {return tags;}
     public void setTags(String tags) {this.tags = tags;}
+    public KilnType getKilnType() {return kilnType;}
+    public void setKilnType(KilnType kilnType) {this.kilnType = kilnType;}
     public ArrayList<RampHold> getRampHolds() {return rampHolds;}
     public void setRampHolds(ArrayList<RampHold> rampHolds) {this.rampHolds = rampHolds;}
     public String getNotes() {return notes;}
@@ -78,7 +74,13 @@ public class FiringCycle implements Parcelable,Storable,Listable{
     //listable implementation
     @Override
     public String getSecondaryInfo(ArrayList<?> itemInfo) {
-        return null;
+        String kilnTypeString = "";
+        if (getKilnType() != KilnType.NONE) kilnTypeString = kilnType.toString() + ", ";
+        String rampString = "";
+        if (getRampHolds().size() == 1) rampString = "1 ramp";
+        else                            rampString = getRampHolds().size() + " ramps";
+
+        return kilnTypeString + getRampHolds().size() + rampString;
     }
     @Override
     public Uri getImageUri() {return Uri.EMPTY;}
@@ -92,6 +94,7 @@ public class FiringCycle implements Parcelable,Storable,Listable{
         values.put(DbHelper.CCN_DATE_CREATED,getDateCreatedRaw());
         values.put(DbHelper.CCN_DATE_EDITED,getDateEditedRaw());
         values.put(DbHelper.CCN_TAGS,getTags());
+        values.put(DbHelper.FiringCycleCN.KILN_TYPE, getKilnType().toString());
         values.put(DbHelper.FiringCycleCN.RAMP_HOLD_LONG_STRING,RampHold.toLongString(getRampHolds()));
         values.put(DbHelper.FiringCycleCN.NOTES,getNotes());
 
@@ -114,8 +117,9 @@ public class FiringCycle implements Parcelable,Storable,Listable{
                         cursor.getString(2),
                         cursor.getString(3),
                         cursor.getString(4),
-                        RampHold.parseFromLongString(cursor.getString(5)),
-                        cursor.getString(6)
+                        KilnType.getEnum(cursor.getString(5)),
+                        RampHold.parseFromLongString(cursor.getString(6)),
+                        cursor.getString(7)
                 ));
             }
             cursor.close();
@@ -130,6 +134,7 @@ public class FiringCycle implements Parcelable,Storable,Listable{
         dateCreated = in.readString();
         dateEdited = in.readString();
         tags = in.readString();
+        kilnType = KilnType.getEnum(in.readString());
         rampHolds = RampHold.parseFromLongString(in.readString());
         notes = in.readString();
     }
@@ -140,6 +145,7 @@ public class FiringCycle implements Parcelable,Storable,Listable{
         dest.writeString(dateCreated);
         dest.writeString(dateEdited);
         dest.writeString(tags);
+        dest.writeString(kilnType.toString());
         dest.writeString(RampHold.toLongString(rampHolds));
         dest.writeString(notes);
     }

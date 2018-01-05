@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.design.widget.FloatingActionButton;
@@ -38,6 +37,8 @@ public class GlazeList extends AppCompatActivity {
     public final static String KEY_GLAZE_TEMPLATE = "nh.glazelog.TEMPLATE";
     public final static String KEY_GLAZE_SINGLE = "nh.glazelog.SINGLE";
     public final static String KEY_GLAZE_COMBO = "nh.glazelog.COMBO";
+    public final static String KEY_FIRING_CYCLE = "nh.glazelog.FIRINGCYCLE";
+    public final static String KEY_INGREDIENT = "nh.glazelog.INGREDIENT";
 
 
     public class DbLoader extends AsyncTask<String,Void,DbHelper> {
@@ -126,6 +127,10 @@ public class GlazeList extends AppCompatActivity {
         // create view for each glaze
         numInList = 0;
         for (ArrayList<T> itemList : itemsWithVersions) {
+            // prevent showing and subsequently allowing editing of the basic blank template
+            if (itemList.get(0) instanceof GlazeTemplate && itemList.get(0).getName() == "No Template")
+                break;
+
             // init individual view
             View itemView;
             if (type.hasImage())    itemView = getLayoutInflater().inflate(R.layout.list_item_withimg,list,false);

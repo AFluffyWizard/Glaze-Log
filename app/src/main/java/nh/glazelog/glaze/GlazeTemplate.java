@@ -123,7 +123,21 @@ public class GlazeTemplate implements Parcelable,Storable,Listable {
     //listable implementation
     @Override
     public String getSecondaryInfo(ArrayList<?> itemInfo) {
-        return null;
+        String[] info = {"","","",""};
+        if (getFiringCycle().size() != 0) info[0] = Cone.getClosestConeF(RampHold.getHighestTemp(getFiringCycle())).toString();
+        if (getFinish() != Finish.NONE) info[1] = getFinish().toString();
+        if (getOpacity() != Opacity.NONE) info[2] = getOpacity().toString();
+        if (getAtmos() != Atmosphere.NONE) info[3] = getAtmos().toString();
+
+        String returnString = "";
+        for (int i = 0; i < info.length; i++) {
+            returnString += info[i];
+            if (i != 0) returnString += ", ";
+            else returnString += " ";
+        }
+
+        if (returnString.equals("")) return "Open for details";
+        else return returnString + "template";
     }
     @Override
     public Uri getImageUri() {return Uri.EMPTY;}
