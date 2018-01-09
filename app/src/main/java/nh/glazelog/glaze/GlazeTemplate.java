@@ -166,7 +166,6 @@ public class GlazeTemplate implements Parcelable,Storable,Listable {
     public Storable.Type getStorableType() {
         return Type.TEMPLATE;
     }
-    public String getRowName() {return name;}
     public void updateDateEdited() {setDateEdited(Util.getDateTimeStamp());}
 
 

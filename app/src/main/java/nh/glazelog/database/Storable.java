@@ -17,7 +17,7 @@ public interface Storable {
 
     public ContentValues getContentValues();
     public Type getStorableType();
-    public String getRowName();
+    public String getName();
     public String getDateCreatedRaw();
     public String getDateEditedRaw();
     public void updateDateEdited();

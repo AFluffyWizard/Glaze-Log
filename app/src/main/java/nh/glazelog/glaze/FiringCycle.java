@@ -43,6 +43,16 @@ public class FiringCycle implements Parcelable,Storable,Listable{
         this.setName(name);
     }
 
+    public FiringCycle(FiringCycle fc) {
+        this.name = "Copy of " + fc.getName();
+        this.dateCreated = Util.getDateTimeStamp();
+        this.dateEdited = Util.getDateTimeStamp();
+        this.tags = fc.getTags();
+        this.kilnType = fc.getKilnType();
+        this.rampHolds = fc.getRampHolds();
+        this.notes = fc.getNotes();
+    }
+
     public FiringCycle (String name, String dateCreated, String dateEdited, String tags, KilnType kilnType, ArrayList<RampHold> rampHolds, String notes) {
         this.name = name;
         this.dateCreated = dateCreated;
@@ -103,8 +113,7 @@ public class FiringCycle implements Parcelable,Storable,Listable{
 
     @Override
     public Type getStorableType() {return Type.FIRING_CYCLE;}
-
-    public String getRowName() {return name;}
+    @Override
     public void updateDateEdited() {setDateEdited(Util.getDateTimeStamp());}
 
     public static final CursorCreator<FiringCycle> CURSOR_CREATOR = new CursorCreator<FiringCycle>() {

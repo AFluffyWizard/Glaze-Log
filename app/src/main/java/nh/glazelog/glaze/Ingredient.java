@@ -7,6 +7,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 import nh.glazelog.Util;
@@ -23,6 +24,7 @@ public class Ingredient implements Parcelable,Storable,Listable{
     private String dateCreated;
     private String dateEdited;
     private String tags;
+    private String aliases;
     private ArrayList<OxideQuantity> oxideQuantities;
     private double costPerKg;
     private String notes;
@@ -33,6 +35,7 @@ public class Ingredient implements Parcelable,Storable,Listable{
         this.dateCreated = Util.getDateTimeStamp();
         this.dateEdited = Util.getDateTimeStamp();
         this.tags = "";
+        this.aliases = "";
         this.oxideQuantities = new ArrayList<>();
         this.costPerKg = 0;
         this.notes = "";
@@ -43,21 +46,12 @@ public class Ingredient implements Parcelable,Storable,Listable{
         this.setName(name);
     }
 
-    public Ingredient (String name, String tags, ArrayList<OxideQuantity> oxideQuantities, double costPerKg, String notes) {
-        this.name = name;
-        this.dateCreated = Util.getDateTimeStamp();
-        this.dateEdited = Util.getDateTimeStamp();
-        this.tags = tags;
-        this.oxideQuantities = oxideQuantities;
-        this.costPerKg = costPerKg;
-        this.notes = notes;
-    }
-
-    public Ingredient (String name, String dateCreated, String dateEdited, String tags, ArrayList<OxideQuantity> oxideQuantities, double costPerKg, String notes) {
+    public Ingredient (String name, String dateCreated, String dateEdited, String tags, String aliases, ArrayList<OxideQuantity> oxideQuantities, double costPerKg, String notes) {
         this.name = name;
         this.dateCreated = dateCreated;
         this.dateEdited = dateEdited;
         this.tags = tags;
+        this.aliases = aliases;
         this.oxideQuantities = oxideQuantities;
         this.costPerKg = costPerKg;
         this.notes = notes;
@@ -73,6 +67,19 @@ public class Ingredient implements Parcelable,Storable,Listable{
     public void setDateEdited(String date) {this.dateEdited = date;}
     public String getTags() {return tags;}
     public void setTags(String tags) {this.tags = tags;}
+    public String getAliasesLongString() {return aliases;}
+    public ArrayList<String> getAliases() {
+        ArrayList<String> stringList = new ArrayList<>();
+        Collections.addAll(stringList,Util.stringToArray(aliases,DbHelper.LONG_SEP));
+        return stringList;
+    }
+    public void setAliases(String aliases) {this.aliases = aliases;}
+    public void setAliases(ArrayList<String> aliases) {
+        String aliasString = "";
+        for (String s : aliases)
+            aliasString += s + DbHelper.LONG_SEP;
+        this.aliases = aliasString;
+    }
     public ArrayList<OxideQuantity> getOxideQuantitys() {return oxideQuantities;}
     public void setOxideQuantitys(ArrayList<OxideQuantity> oxideQuantities) {this.oxideQuantities = oxideQuantities;}
     public double getCostPerKg() {return costPerKg;}
@@ -101,6 +108,7 @@ public class Ingredient implements Parcelable,Storable,Listable{
         values.put(DbHelper.CCN_DATE_CREATED,getDateCreatedRaw());
         values.put(DbHelper.CCN_DATE_EDITED,getDateEditedRaw());
         values.put(DbHelper.CCN_TAGS,getTags());
+        values.put(DbHelper.IngredientCN.ALIASES, getAliasesLongString());
         values.put(DbHelper.IngredientCN.OXIDE_QUANTITY_LONG_STRING,OxideQuantity.toLongString(getOxideQuantitys()));
         values.put(DbHelper.IngredientCN.COST_PER_KG,getCostPerKg());
         values.put(DbHelper.IngredientCN.NOTES,getNotes());
@@ -110,8 +118,7 @@ public class Ingredient implements Parcelable,Storable,Listable{
 
     @Override
     public Type getStorableType() {return Type.INGREDIENT;}
-
-    public String getRowName() {return name;}
+    @Override
     public void updateDateEdited() {setDateEdited(Util.getDateTimeStamp());}
 
     public static final CursorCreator<Ingredient> CURSOR_CREATOR = new CursorCreator<Ingredient>() {
@@ -124,9 +131,10 @@ public class Ingredient implements Parcelable,Storable,Listable{
                         cursor.getString(2),
                         cursor.getString(3),
                         cursor.getString(4),
-                        OxideQuantity.parseFromLongString(cursor.getString(5)),
-                        cursor.getDouble(6),
-                        cursor.getString(7)
+                        cursor.getString(5),
+                        OxideQuantity.parseFromLongString(cursor.getString(6)),
+                        cursor.getDouble(7),
+                        cursor.getString(8)
                 ));
             }
             cursor.close();
@@ -141,6 +149,7 @@ public class Ingredient implements Parcelable,Storable,Listable{
         dateCreated = in.readString();
         dateEdited = in.readString();
         tags = in.readString();
+        aliases = in.readString();
         oxideQuantities = OxideQuantity.parseFromLongString(in.readString());
         costPerKg = in.readDouble();
         notes = in.readString();
@@ -152,6 +161,7 @@ public class Ingredient implements Parcelable,Storable,Listable{
         dest.writeString(dateCreated);
         dest.writeString(dateEdited);
         dest.writeString(tags);
+        dest.writeString(aliases);
         dest.writeString(OxideQuantity.toLongString(oxideQuantities));
         dest.writeDouble(costPerKg);
         dest.writeString(notes);

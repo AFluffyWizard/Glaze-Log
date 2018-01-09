@@ -10,6 +10,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import nh.glazelog.R;
+import nh.glazelog.glaze.FiringCycle;
 import nh.glazelog.glaze.Glaze;
 import nh.glazelog.glaze.IngredientQuantity;
 import nh.glazelog.glaze.RampHold;
@@ -18,19 +19,21 @@ import nh.glazelog.glaze.RampHold;
  * Created by Nick Hansen on 11/8/2017.
  */
 
-public class StaticSaver {
+public class Saver {
+
+    private static DbHelper dbHelper;
+    private static String cvKey;
 
     public static void ingredientWithoutInstance(Context context, Glaze gToSave, TableLayout ingredientTable, boolean isMaterialsTable) {
-        String cvKey;
         if (isMaterialsTable)   cvKey = DbHelper.SingleCN.MATERIALS;
         else                    cvKey = DbHelper.SingleCN.ADDITIONS;
         System.out.println("IngredientEnum Text Saver called without instance for " + cvKey + ".");
-        DbHelper dbHelper = DbHelper.getSingletonInstance(context);
+        if (dbHelper == null) dbHelper = DbHelper.getSingletonInstance(context);
 
         ArrayList<IngredientQuantity> ingredientQuantities = new ArrayList<>();
         for (int i = 1; i < ingredientTable.getChildCount(); i++) {
             TableRow row = (TableRow) ingredientTable.getChildAt(i);
-            String ingredient = ((Spinner)row.findViewById(R.id.ingredientEditText)).getSelectedItem().toString();
+            String ingredient = ((Spinner)row.findViewById(R.id.ingredientSpinner)).getSelectedItem().toString();
             String amount = ((TextView)row.findViewById(R.id.amountEditText)).getText().toString();
             ingredientQuantities.add(new IngredientQuantity(ingredient,amount));
         }
@@ -40,10 +43,10 @@ public class StaticSaver {
         System.out.println("\"" + cvToSave.get(cvKey).toString() + "\" saved in column \"" + cvKey + "\".");
     }
 
-    public static void firingCycleWithoutInstance(Context context, Storable sToSave, TableLayout firingCycleTable) {
-        String cvKey = DbHelper.SingleCN.FIRING_CYCLE;
+    public static void firingCycleRampHold(Context context, FiringCycle fcToSave, TableLayout firingCycleTable) {
         System.out.println("Firing Cycle Text Saver called without instance");
-        DbHelper dbHelper = DbHelper.getSingletonInstance(context);
+        cvKey = DbHelper.FiringCycleCN.RAMP_HOLD_LONG_STRING;
+        if (dbHelper == null) dbHelper = DbHelper.getSingletonInstance(context);
         ArrayList<RampHold> rampHolds = new ArrayList<>();
         for (int i = 1; i < firingCycleTable.getChildCount(); i++) {
             TableRow row = (TableRow) firingCycleTable.getChildAt(i);
@@ -52,10 +55,17 @@ public class StaticSaver {
             String hold = ((TextView)row.findViewById(R.id.holdEditText)).getText().toString();
             rampHolds.add(new RampHold(temp,rate,hold));
         }
+        genericSave(context,fcToSave,cvKey,RampHold.toLongString(rampHolds));
+    }
+
+    public static void genericSave(Context context, Storable sToSave, String key, String dataToSave) {
+        System.out.println("Firing Cycle Text Saver called without instance");
+        cvKey = key;
+        if (dbHelper == null) dbHelper = DbHelper.getSingletonInstance(context);
         ContentValues cvToSave = new ContentValues();
-        cvToSave.put(cvKey,RampHold.toLongString(rampHolds));
+        cvToSave.put(cvKey,dataToSave);
         dbHelper.append(sToSave,cvToSave);
-        System.out.println("\"" + cvToSave.get(cvKey).toString() + "\" saved in column \"" + cvKey + "\".");
+        System.out.println("\"" + cvToSave.get(cvKey).toString() + "\" saved in column \"" + cvKey + "\" of " + sToSave.getName() + ".");
     }
 
 

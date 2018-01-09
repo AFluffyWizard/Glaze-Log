@@ -54,8 +54,12 @@ public class DbHelper extends SQLiteOpenHelper {
 
 
     /*--------------------READING AND WRITING FROM DB--------------------*/
-    public void write(Storable s) {
+    public boolean write(Storable s) {
+        ArrayList<String> names = getDistinctNames(s.getStorableType());
+        for (String name : names)
+            if (name == s.getName()) return false;
         long newRowId = singletonDatabase.insertOrThrow(s.getStorableType().getTableName(), null, s.getContentValues());
+        return true;
     }
 
     public void append(Storable s, ContentValues values) {
@@ -73,7 +77,7 @@ public class DbHelper extends SQLiteOpenHelper {
             values.put(CCN_DATE_EDITED,s.getDateEditedRaw());
         }
         singletonDatabase.updateWithOnConflict(s.getStorableType().getTableName(),values,
-                CCN_NAME + " = ?",new String[]{s.getRowName()},SQLiteDatabase.CONFLICT_REPLACE);
+                CCN_NAME + " = ?",new String[]{s.getName()},SQLiteDatabase.CONFLICT_REPLACE);
     }
 
     public void writeTemplate(Storable s) {
@@ -87,13 +91,13 @@ public class DbHelper extends SQLiteOpenHelper {
         if (useDate)
             return readSingle(s.getStorableType(), CCN_DATE_CREATED, s.getDateCreatedRaw()).size() > 0;
         else
-            return readSingle(s.getStorableType(), CCN_NAME, s.getRowName()).size() > 0;
+            return readSingle(s.getStorableType(), CCN_NAME, s.getName()).size() > 0;
     }
 
     public void delete(Storable s, boolean deleteAll) {
         String criterion;
         String value;
-        if (deleteAll) {criterion = CCN_NAME; value = s.getRowName();}
+        if (deleteAll) {criterion = CCN_NAME; value = s.getName();}
         else {criterion = CCN_DATE_CREATED; value = s.getDateCreatedRaw();}
 
         singletonDatabase.execSQL("DELETE FROM " + s.getStorableType().getTableName() +
@@ -204,6 +208,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public static class IngredientCN implements BaseColumns {
         public static final String TABLE_NAME = "ingredient_table";
 
+        public static final String ALIASES = "aliases";
         public static final String OXIDE_QUANTITY_LONG_STRING = "oxide_quantity_long_string";
         public static final String COST_PER_KG = "cost_per_kg";
         public static final String NOTES = "notes";
@@ -265,6 +270,7 @@ public class DbHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + IngredientCN.TABLE_NAME + " (" +
                     IngredientCN._ID + " INTEGER PRIMARY KEY," +
                     CREATE_ENTRIES_HEADER +
+                    IngredientCN.ALIASES + " TEXT," +
                     IngredientCN.OXIDE_QUANTITY_LONG_STRING + " TEXT," +
                     IngredientCN.COST_PER_KG + " TEXT," +
                     IngredientCN.NOTES + " TEXT);";

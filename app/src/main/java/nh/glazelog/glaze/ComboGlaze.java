@@ -127,7 +127,7 @@ public class ComboGlaze implements Parcelable,Storable,Listable {
     public Storable.Type getStorableType() {
         return Type.COMBO;
     }
-    public String getRowName() {return name;}
+    @Override
     public void updateDateEdited() {setDateEdited(Util.getDateTimeStamp());}
 
     public static final CursorCreator<ComboGlaze> CURSOR_CREATOR = new CursorCreator<ComboGlaze>() {

@@ -2,42 +2,37 @@
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:weightSum="3">
 
-    <EditText
-        android:id="@+id/temperatureEditText"
+    <TextView
+        android:id="@+id/temperatureLabel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:inputType="number"
         android:layout_marginRight="8dp"
-        android:layout_weight="0.3"
-        />
-
-    <EditText
-        android:id="@+id/rateEditText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:inputType="number|numberSigned"
-        android:layout_marginRight="8dp"
-        android:layout_weight="0.3"
-        />
-
-    <EditText
-        android:id="@+id/holdEditText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:inputType="numberDecimal"
-        android:layout_marginRight="8dp"
-        android:layout_weight="0.3"
-        />
-
-    <ImageView
-        android:id="@+id/deleteRowImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/ic_clear_black_24dp"
+        android:layout_weight="1"
         android:layout_gravity="center"
-        />
+        android:text="@string/firingcycle_temp_label"
+        android:textAppearance="@style/StandardText" />
 
+    <TextView
+        android:id="@+id/rateLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="8dp"
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        android:text="@string/firingcycle_rate_label"
+        android:textAppearance="@style/StandardText" />
+
+    <TextView
+        android:id="@+id/holdLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="8dp"
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        android:text="@string/firingcycle_hold_label"
+        android:textAppearance="@style/StandardText" />
 
 </TableRow>

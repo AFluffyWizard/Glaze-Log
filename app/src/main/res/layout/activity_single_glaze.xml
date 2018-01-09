@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context="nh.glazelog.activity.SingleGlaze">
 
-    <include layout="@layout/actionbar_glaze_single"></include>
+    <include layout="@layout/actionbar_default"></include>
 
     <ScrollView
         android:id="@+id/baseScrollView"

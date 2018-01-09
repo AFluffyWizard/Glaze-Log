@@ -10,12 +10,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -23,23 +23,16 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import nh.glazelog.database.DbHelper;
-import nh.glazelog.database.FiringCycleTextSaver;
-import nh.glazelog.database.IngredientSpinnerSaver;
-import nh.glazelog.database.IngredientTextSaver;
 import nh.glazelog.database.SimpleSpinnerSaver;
-import nh.glazelog.database.StaticSaver;
-import nh.glazelog.database.TextSaver;
+import nh.glazelog.database.SimpleTextSaver;
 import nh.glazelog.glaze.Cone;
 import nh.glazelog.glaze.Glaze;
-import nh.glazelog.glaze.IngredientEnum;
 import nh.glazelog.glaze.IngredientQuantity;
 import nh.glazelog.glaze.RampHold;
 
@@ -63,8 +56,6 @@ public class VersionFragment extends Fragment {
     private static Uri preCompressImageUri;
 
     private static final double newImageScale = 0.1;
-    private static final int WAIT_ADD_LISTENER = 50;
-    private static final int KEY_REQUEST_IMAGE_CAPTURE = 1;
 
     private TextView versionField;
     private EditText primaryNotes;
@@ -72,14 +63,11 @@ public class VersionFragment extends Fragment {
     private ImageView testTileImage;
     private File imageFile;
     private Uri imageUri;
-    private EditText spgrField;
+    private TextView spgrField;
     private TableLayout recipeMaterialsTable;
-    private Button materialsAddLineButton;
     private TableLayout recipeAdditionsTable;
-    private Button additionsAddLineButton;
     private Spinner bisqueSpinner;
     private TableLayout firingCycleTable;
-    private Button firingCycleAddLineButton;
     private EditText secondaryNotes;
 
     @Override
@@ -101,36 +89,22 @@ public class VersionFragment extends Fragment {
         testTileImage = (ImageView) page.findViewById(R.id.previewImageView);
         if (!gVer.getImageUri().equals(Uri.EMPTY)) testTileImage.setImageURI(gVer.getImageUri());
 
-        spgrField = (EditText) page.findViewById(R.id.spgrField);
+        spgrField = (TextView) page.findViewById(R.id.spgrField);
         spgrField.setText(new Double(gVer.getSpgr()).toString());
 
         recipeMaterialsTable = (TableLayout) page.findViewById(R.id.recipeMaterialsTable);
         ArrayList<IngredientQuantity> materialsList = gVer.getMaterials();
         if (materialsList.size() == 0)
-            addRecipeRow(null,true);
+            addRecipeRow(null,recipeMaterialsTable);
         else
-            for (IngredientQuantity iq : materialsList) addRecipeRow(iq,true);
-        materialsAddLineButton = (Button) page.findViewById(R.id.materialAddLineButton);
-        materialsAddLineButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick (View v) {
-                addRecipeRow(null,true);
-                fixTables();
-            }
-        });
+            for (IngredientQuantity iq : materialsList) addRecipeRow(iq,recipeMaterialsTable);
 
         recipeAdditionsTable = (TableLayout) page.findViewById(R.id.recipeAdditionsTable);
         ArrayList<IngredientQuantity> additionsList = gVer.getAdditions();
         if (additionsList.size() == 0)
-            addRecipeRow(null,false);
+            addRecipeRow(null,recipeAdditionsTable);
         else
-            for (IngredientQuantity iq : additionsList) addRecipeRow(iq,false);
-        additionsAddLineButton = (Button) page.findViewById(R.id.additionsAddLineButton);
-        additionsAddLineButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick (View v) {
-                addRecipeRow(null, false);
-                fixTables();
-            }
-        });
+            for (IngredientQuantity iq : additionsList) addRecipeRow(iq,recipeAdditionsTable);
 
         bisqueSpinner = (Spinner) page.findViewById(R.id.bisqueSpinner);
         bisqueSpinner.setAdapter(new ArrayAdapter<Cone>(this.getContext(),R.layout.spinner_item_small,Cone.values()));
@@ -142,16 +116,10 @@ public class VersionFragment extends Fragment {
             addFiringCycleRow(null);
         else
             for (RampHold rh : firingCycle) addFiringCycleRow(rh);
-        firingCycleAddLineButton = (Button) page.findViewById(R.id.firingCycleAddLineButton);
-        firingCycleAddLineButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick (View v) {
-                addFiringCycleRow(null);
-                fixTables();
-            }
-        });
 
         secondaryNotes = (EditText) page.findViewById(R.id.secondaryNotes);
         secondaryNotes.setText(gVer.getSecondaryNotes());
+
 
 
         page.postDelayed(new Runnable() {
@@ -159,14 +127,13 @@ public class VersionFragment extends Fragment {
             public void run() {
                 addChangeListeners();
             }
-        },WAIT_ADD_LISTENER);
-
+        },Util.CONST_WAIT_ADD_LISTENER);
 
         return page;
     }
 
     private void addChangeListeners() {
-        primaryNotes.addTextChangedListener(new TextSaver(getContext(),gVer, DbHelper.SingleCN.PRIMARY_NOTES,false,false));
+        primaryNotes.addTextChangedListener(new SimpleTextSaver(getContext(),gVer, DbHelper.SingleCN.PRIMARY_NOTES,false));
 
         if (verNum == 1) deleteVersion.setVisibility(GONE);
         else {
@@ -194,144 +161,37 @@ public class VersionFragment extends Fragment {
             }
         });
 
-        spgrField.addTextChangedListener(new TextSaver(getContext(),gVer, DbHelper.SingleCN.SPGR,false,false));
-
         bisqueSpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getContext(),gVer, DbHelper.SingleCN.BISQUED_TO,false));
 
-        secondaryNotes.addTextChangedListener(new TextSaver(getContext(),gVer, DbHelper.SingleCN.SECONDARY_NOTES,false,false));
+        secondaryNotes.addTextChangedListener(new SimpleTextSaver(getContext(),gVer, DbHelper.SingleCN.SECONDARY_NOTES,false));
     }
 
 
     /*--------------------ADD TABLE ROWS--------------------*/
 
-    /* For some ungodly reason
-     * whenever I add rows to any of the tables
-     * the others glitch the fuck out.
-     * I thought this was an emulator issue
-     * but it also happened on my phone,
-     * so I had to implement this to fix the issue.
-     * When I originally implemented the tables
-     * this wasn't a problem.
-     * I have no idea where it came from
-     * and no idea how to actually fix the root cause of it.
-     * This is more of a quick fix, but it works.
-     *
-     * Quote me on that.
-     *
-     * Nick Hansen 11/12/17
-     *
-     *
-     *
-     * Apparently it occurs not just when adding rows
-     * but whenever I edit any table at ALL
-     * (i.e. removing rows causes it as well).
-     * I've added this to the remove table image buttons as well.
-     *
-     * Nick Hansen 11/13/17
-     */
-    void fixTables () {
-        recipeMaterialsTable.requestLayout();
-        recipeAdditionsTable.requestLayout();
-        firingCycleTable.requestLayout();
-    }
-
-    private void addRecipeRow (IngredientQuantity iq, final boolean isMaterials) {
+    private void addRecipeRow (@Nullable IngredientQuantity iq, final TableLayout recipeTable) {
         final TableRow recipeRow = (TableRow) inflater.inflate(R.layout.tablerow_recipe,null);
-        final ConfirmDialog confirmDeleteDialog = new ConfirmDialog(getContext(), true, "to delete this row?",
-                new ConfirmDialog.Action() {
-                    @Override
-                    public void action() {
-                        if (isMaterials) {
-                            recipeMaterialsTable.removeView(recipeRow);
-                            StaticSaver.ingredientWithoutInstance(getContext(),gVer,recipeMaterialsTable,isMaterials);
-                        }
-                        else {
-                            recipeAdditionsTable.removeView(recipeRow);
-                            StaticSaver.ingredientWithoutInstance(getContext(),gVer,recipeAdditionsTable,isMaterials);
-                        }
-                        fixTables();
-                    }
-                });
 
-        final SearchableSpinner ingredient = (SearchableSpinner) recipeRow.findViewById(R.id.ingredientEditText);
-        ingredient.setAdapter(new ArrayAdapter<IngredientEnum>(this.getContext(),/*android.R.layout.select_dialog_item*/R.layout.spinner_item_small, IngredientEnum.values()));
-        final EditText amount = (EditText) recipeRow.findViewById(R.id.amountEditText);
-        amount.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                System.out.println("FOCUS: " + hasFocus);
-                if (hasFocus) {
-                    amount.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            amount.setSelection(amount.getText().length());
-                        }
-                    },50);
-                }
-            }
-        });
-        ImageView deleteRow = (ImageView) recipeRow.findViewById(R.id.deleteRowImageView);
-        deleteRow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                confirmDeleteDialog.show();
-            }
-        });
+        final TextView ingredient = (TextView) recipeRow.findViewById(R.id.ingredientLabel);
+        final TextView amount = (TextView) recipeRow.findViewById(R.id.amountLabel);
 
         if (iq == null) {
-            amount.setText("");
-            amount.setHint("0");
+            ingredient.setText("");
+            amount.setText("0");
         }
         else {
-            Util.setSpinnerSelection(ingredient,iq.getIngredientEnum());
-            amount.setText(new Double(iq.getAmount()).toString());
+            ingredient.setText(iq.getIngredientEnum().toString());
+            amount.setText(Double.toString(iq.getAmount()));
         }
-
-        if (isMaterials) {
-            recipeRow.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    ingredient.setOnItemSelectedListener(new IngredientSpinnerSaver(getContext(),gVer,recipeMaterialsTable,isMaterials));
-                    amount.addTextChangedListener(new IngredientTextSaver(getContext(),gVer,recipeMaterialsTable,isMaterials));
-                }
-            },WAIT_ADD_LISTENER);
-        }
-        else {
-            recipeRow.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    ingredient.setOnItemSelectedListener(new IngredientSpinnerSaver(getContext(),gVer,recipeAdditionsTable,isMaterials));
-                    amount.addTextChangedListener(new IngredientTextSaver(getContext(),gVer,recipeAdditionsTable,isMaterials));
-                }
-            },WAIT_ADD_LISTENER);
-        }
-
-        if (isMaterials)    recipeMaterialsTable.addView(recipeRow);
-        else                recipeAdditionsTable.addView(recipeRow);
+        recipeTable.addView(recipeRow);
     }
 
-    private void addFiringCycleRow(RampHold rh) {
+    private void addFiringCycleRow(@Nullable RampHold rh) {
         final TableRow firingCycleRow = (TableRow) inflater.inflate(R.layout.tablerow_firingcycle,null);
-        final ConfirmDialog confirmDeleteDialog = new ConfirmDialog(getContext(), true, "to delete this row?",
-                new ConfirmDialog.Action() {
-                    @Override
-                    public void action() {
-                        firingCycleTable.removeView(firingCycleRow);
-                        StaticSaver.firingCycleWithoutInstance(getContext(),gVer,firingCycleTable);
-                        fixTables();
-                    }
-                });
 
-        final EditText temperature = (EditText) firingCycleRow.findViewById(R.id.temperatureEditText);
-        final EditText rate = (EditText) firingCycleRow.findViewById(R.id.rateEditText);
-        final EditText hold = (EditText) firingCycleRow.findViewById(R.id.holdEditText);
-        ImageView deleteRow = (ImageView) firingCycleRow.findViewById(R.id.deleteRowImageView);
-        deleteRow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                confirmDeleteDialog.show();
-            }
-        });
+        final TextView temperature = (TextView) firingCycleRow.findViewById(R.id.temperatureEditText);
+        final TextView rate = (TextView) firingCycleRow.findViewById(R.id.rateEditText);
+        final TextView hold = (TextView) firingCycleRow.findViewById(R.id.holdEditText);
 
         if (rh == null) {
             temperature.setText("");
@@ -343,16 +203,6 @@ public class VersionFragment extends Fragment {
             rate.setText(new Double(rh.getRate()).toString());
             hold.setText(new Double(rh.getHold()).toString());
         }
-
-        firingCycleRow.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                temperature.addTextChangedListener(new FiringCycleTextSaver(getContext(),gVer,firingCycleTable));
-                rate.addTextChangedListener(new FiringCycleTextSaver(getContext(),gVer,firingCycleTable));
-                hold.addTextChangedListener(new FiringCycleTextSaver(getContext(),gVer,firingCycleTable));
-            }
-        },WAIT_ADD_LISTENER);
-
         firingCycleTable.addView(firingCycleRow);
     }
 
@@ -405,7 +255,7 @@ public class VersionFragment extends Fragment {
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.putExtra(MediaStore.EXTRA_OUTPUT,preCompressImageUri);
         //if (intent.resolveActivity(getContext().getPackageManager()) != null) {
-            startActivityForResult(intent, KEY_REQUEST_IMAGE_CAPTURE);
+            startActivityForResult(intent, KeyValues.KEY_REQUEST_IMAGE_CAPTURE);
         //}
     }
 
@@ -416,10 +266,10 @@ public class VersionFragment extends Fragment {
         if (resultCode == RESULT_OK) resultCodeType = "RESULT_OK";
         else if (resultCode == RESULT_CANCELED) resultCodeType = "RESULT_CANCELED";
         else if (resultCode == RESULT_FIRST_USER) resultCodeType = "RESULT_FIRST_USER";
-        System.out.println("Request code matches take image key: " + (requestCode == KEY_REQUEST_IMAGE_CAPTURE));
+        System.out.println("Request code matches take image key: " + (requestCode == KeyValues.KEY_REQUEST_IMAGE_CAPTURE));
         System.out.println("Img Intent result code: " + resultCodeType);
 
-        if (requestCode == KEY_REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+        if (requestCode == KeyValues.KEY_REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             //Bundle extras = data.getExtras();
             //Bitmap imageBitmap = (Bitmap) extras.get("data");
 

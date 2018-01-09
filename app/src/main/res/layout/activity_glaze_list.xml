@@ -15,7 +15,7 @@
         android:fillViewport="true"
         tools:context="nh.glazelog.activity.GlazeList">
 
-        <include layout="@layout/actionbar_list"/>
+        <include layout="@layout/actionbar_default"/>
 
         <ScrollView
             android:id="@+id/scrollView"

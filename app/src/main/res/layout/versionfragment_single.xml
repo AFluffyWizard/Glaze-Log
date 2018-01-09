@@ -121,15 +121,13 @@
         app:layout_constraintBaseline_toBaselineOf="@+id/recipeLabel"
         android:layout_marginStart="@dimen/layout_primary_inset" />
 
-    <EditText
+    <TextView
         android:id="@+id/spgrField"
-        android:layout_width="60dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/layout_textview_to_textfield_separator"
         android:layout_marginStart="@dimen/layout_textview_to_textfield_separator"
-        android:ems="10"
-        android:hint="@string/hint_empty"
-        android:inputType="numberDecimal"
+        android:textAppearance="@style/SubtitleText"
         app:layout_constraintBaseline_toBaselineOf="@+id/spgrLabel1"
         app:layout_constraintLeft_toRightOf="@+id/spgrLabel1" />
 
@@ -155,16 +153,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/recipeLabel"
         android:layout_marginStart="@dimen/layout_secondary_inset" />
-
-    <Button
-        android:id="@+id/materialAddLineButton"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_marginLeft="@dimen/layout_label_to_field_separator"
-        android:layout_marginStart="@dimen/layout_label_to_field_separator"
-        android:text="@string/recipe_add"
-        app:layout_constraintBaseline_toBaselineOf="@+id/materialsLabel"
-        app:layout_constraintLeft_toRightOf="@+id/materialsLabel" />
 
     <TableLayout
         android:id="@+id/recipeMaterialsTable"
@@ -193,16 +181,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/recipeMaterialsTable"
         android:layout_marginStart="@dimen/layout_secondary_inset" />
-
-    <Button
-        android:id="@+id/additionsAddLineButton"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_marginLeft="@dimen/layout_label_to_field_separator"
-        android:layout_marginStart="@dimen/layout_label_to_field_separator"
-        android:text="@string/recipe_add"
-        app:layout_constraintBaseline_toBaselineOf="@+id/additionsLabel"
-        app:layout_constraintLeft_toRightOf="@+id/additionsLabel" />
 
     <TableLayout
         android:id="@+id/recipeAdditionsTable"
@@ -264,20 +242,9 @@
         android:layout_marginStart="@dimen/layout_secondary_inset"
         android:layout_marginEnd="@dimen/layout_secondary_inset">
 
-        <include layout="@layout/tablerow_firingcycle_title"></include>
+        <include layout="@layout/tablerow_firingcycle"></include>
 
     </TableLayout>
-
-    <Button
-        android:id="@+id/firingCycleAddLineButton"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_marginLeft="@dimen/layout_secondary_inset"
-        android:layout_marginTop="@dimen/layout_header_to_field_separator"
-        android:text="@string/firingcycle_add"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/firingcycleTable"
-        android:layout_marginStart="@dimen/layout_secondary_inset" />
 
     <TextView
         android:id="@+id/secondaryNotesLabel"
@@ -288,7 +255,7 @@
         android:text="@string/glaze_notes_label"
         android:textAppearance="@style/HeaderText"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/firingCycleAddLineButton"
+        app:layout_constraintTop_toBottomOf="@+id/firingcycleTable"
         android:layout_marginStart="@dimen/layout_primary_inset" />
 
     <EditText
@@ -309,6 +276,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/secondaryNotesLabel" />
-    <!-- android:scrollHorizontally="false" is not needed, but I included it anyway because fuck it -->
+    <!-- android:scrollHorizontally="false" is not needed, but I included it anyway to be sure -->
 
 </android.support.constraint.ConstraintLayout>

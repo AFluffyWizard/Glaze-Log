@@ -38,7 +38,7 @@ public class IngredientSpinnerSaver extends SpinnerSaver {
         ArrayList<IngredientQuantity> ingredientQuantities = new ArrayList<>();
         for (int i = 0; i < ingredientTable.getChildCount(); i++) {
             TableRow row = (TableRow) ingredientTable.getChildAt(i);
-            String ingredient = ((Spinner)row.findViewById(R.id.ingredientEditText)).getSelectedItem().toString();
+            String ingredient = ((Spinner)row.findViewById(R.id.ingredientSpinner)).getSelectedItem().toString();
             String amount = ((TextView)row.findViewById(R.id.amountEditText)).getText().toString();
             ingredientQuantities.add(new IngredientQuantity(ingredient,amount));
         }

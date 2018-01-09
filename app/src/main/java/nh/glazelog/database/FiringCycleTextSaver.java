@@ -13,48 +13,25 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import nh.glazelog.R;
+import nh.glazelog.glaze.FiringCycle;
 import nh.glazelog.glaze.RampHold;
 
 /**
  * Created by Nick Hansen on 11/1/2017.
  */
 
-public class FiringCycleTextSaver implements TextWatcher {
+public class FiringCycleTextSaver extends TextSaver {
 
-    DbHelper dbHelper;
-    Storable sToSave;
     TableLayout firingCycleTable;
-    private static final String cvKey = DbHelper.SingleCN.FIRING_CYCLE;
 
-    private Timer timer = new Timer();
-    private final long DELAY = 500; // milliseconds
-
-    public FiringCycleTextSaver(Context context, Storable s, TableLayout table) {
-        dbHelper = DbHelper.getSingletonInstance(context);
-        sToSave = s;
+    public FiringCycleTextSaver(Context context, FiringCycle fc, TableLayout table) {
+        super(context,fc,"key",false);
         firingCycleTable = table;
     }
 
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-    @Override
-    public void afterTextChanged(Editable s) {
-        timer.cancel();
-        timer = new Timer();
-        timer.schedule(
-                new TimerTask() {
-                    public void run() {
-                        save();
-                    }
-                },
-                DELAY
-        );
-    }
-
-    public void save() {
+    public void save(String newString) {
+        Saver.firingCycleRampHold(context,(FiringCycle)sToSave,firingCycleTable);
+        /*
         System.out.println("Firing Cycle Text Saver called");
         ArrayList<RampHold> rampHolds = new ArrayList<>();
         for (int i = 1; i < firingCycleTable.getChildCount(); i++) {
@@ -68,6 +45,7 @@ public class FiringCycleTextSaver implements TextWatcher {
         cvToSave.put(cvKey,RampHold.toLongString(rampHolds));
         dbHelper.append(sToSave,cvToSave);
         System.out.println("\"" + cvToSave.get(cvKey).toString() + "\" saved in column \"" + cvKey + "\".");
+        */
     }
 
 }

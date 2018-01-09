@@ -6,4 +6,31 @@
     android:layout_height="match_parent"
     tools:context="nh.glazelog.activity.EditFiringCycle">
 
+    <include layout="@layout/actionbar_default"/>
+
+    <TableLayout
+        android:id="@+id/firingcycleTable"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/action_bar_plus_primary_inset"
+        android:layout_marginLeft="@dimen/layout_primary_inset"
+        android:layout_marginRight="@dimen/layout_primary_inset"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <include layout="@layout/tablerow_firingcycle_title_activity"></include>
+
+    </TableLayout>
+
+    <Button
+        android:id="@+id/firingCycleAddLineButton"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginLeft="@dimen/layout_secondary_inset"
+        android:layout_marginTop="@dimen/layout_header_to_field_separator"
+        android:text="@string/firingcycle_add"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/firingcycleTable" />
+
 </android.support.constraint.ConstraintLayout>

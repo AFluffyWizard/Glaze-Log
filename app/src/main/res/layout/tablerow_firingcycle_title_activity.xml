@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:padding="8dp">
+
+    <Space
+        android:id="@+id/alignmentSpace1"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_reorder_black_24dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="4dp" />
 
     <TextView
         android:id="@+id/temperatureLabel"
@@ -35,10 +43,10 @@
         android:textAppearance="@style/StandardText" />
 
     <Space
-        android:id="@+id/alignmentSpace"
+        android:id="@+id/alignmentSpace2"
         android:layout_width="24dp"
-        android:layout_height="match_parent"
-        android:layout_weight="0.1"
+        android:layout_height="24dp"
+        android:layout_gravity="center"
         />
     <!-- layout_width is 24dp because that is the width of the "remove row" vector drawing -->
 

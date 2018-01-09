@@ -21,12 +21,14 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import nh.glazelog.ConfirmDialog;
+import nh.glazelog.DeleteDialog;
 import nh.glazelog.R;
+import nh.glazelog.RenameDialog;
 import nh.glazelog.Util;
 import nh.glazelog.VersionPager;
 import nh.glazelog.VersionPagerAdapter;
 import nh.glazelog.database.DbHelper;
-import nh.glazelog.database.TextSaver;
+import nh.glazelog.database.SimpleTextSaver;
 import nh.glazelog.database.SimpleSpinnerSaver;
 import nh.glazelog.glaze.*;
 
@@ -37,6 +39,9 @@ public class SingleGlaze extends AppCompatActivity {
     Glaze currentGlaze;
     DbHelper dbHelper;
     VersionPager versionPager;
+
+    private static RenameDialog renameDialog;
+    private static DeleteDialog deleteDialog;
 
     private static final int WAIT_ADD_LISTENER = 50;
 
@@ -57,6 +62,24 @@ public class SingleGlaze extends AppCompatActivity {
         rootGlaze = glaze.get(0);
         currentGlaze = glaze.get(glaze.size()-1);
 
+        renameDialog = new RenameDialog(getApplicationContext(), new RenameDialog.Action() {
+            @Override
+            public void action(String newName) {
+                getSupportActionBar().setTitle(newName);
+                ContentValues newNameCv = new ContentValues();
+                newNameCv.put(DbHelper.CCN_NAME,newName);
+                dbHelper.appendAllVersions(glaze.get(0),newNameCv);
+            }
+        });
+
+        deleteDialog = new DeleteDialog(getApplicationContext(), "", new DeleteDialog.Action() {
+            @Override
+            public void action() {
+                dbHelper.delete(rootGlaze,true);
+                navigateUp();
+            }
+        });
+
 
         // android:focusableInTouchMode="true" in the lowest layout (ScrollView here)
         // and the line below prevent the EditText fields from automatically being focused.
@@ -64,7 +87,7 @@ public class SingleGlaze extends AppCompatActivity {
         findViewById(R.id.baseScrollView).requestFocus();
 
         // enables the action bar
-        setSupportActionBar((Toolbar) findViewById(R.id.glazeToolbar));
+        setSupportActionBar((Toolbar) findViewById(R.id.actionbarDefault));
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setHomeButtonEnabled(true);
@@ -110,7 +133,7 @@ public class SingleGlaze extends AppCompatActivity {
         clayBody.postDelayed(new Runnable() {
             @Override
             public void run() {
-                clayBody.addTextChangedListener(new TextSaver(getThis(),rootGlaze, DbHelper.SingleCN.CLAY_BODY,true,false));
+                clayBody.addTextChangedListener(new SimpleTextSaver(getThis(),rootGlaze, DbHelper.SingleCN.CLAY_BODY,true));
             }
         },WAIT_ADD_LISTENER);
         
@@ -119,7 +142,7 @@ public class SingleGlaze extends AppCompatActivity {
         application.postDelayed(new Runnable() {
             @Override
             public void run() {
-                application.addTextChangedListener(new TextSaver(getThis(),rootGlaze, DbHelper.SingleCN.APPLICATION,true,false));
+                application.addTextChangedListener(new SimpleTextSaver(getThis(),rootGlaze, DbHelper.SingleCN.APPLICATION,true));
             }
         },WAIT_ADD_LISTENER);
 
@@ -163,26 +186,10 @@ public class SingleGlaze extends AppCompatActivity {
                 navigateUp();
                 return true;
             case R.id.action_rename:
-                final AlertDialog renameDialog = new AlertDialog.Builder(this).create();
-                renameDialog.setTitle(getString(R.string.dialog_rename_title));
-                final View newNameView = View.inflate(getApplicationContext(),R.layout.dialog_new_name,null);
-                renameDialog.setView(newNameView);
-                renameDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Rename", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        String newName = ((TextView)newNameView.findViewById(R.id.newNameEditText)).getText().toString();
-                        TextView glazeName = (TextView) findViewById(R.id.glazeNameTextView);
-                        glazeName.setText(newName);
-                        ContentValues newNameCv = new ContentValues();
-                        newNameCv.put(DbHelper.CCN_NAME,newName);
-                        dbHelper.appendAllVersions(glaze.get(0),newNameCv);
-                    }
-                });
-                renameDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        renameDialog.hide();
-                    }
-                });
                 renameDialog.show();
+                return true;
+            case R.id.action_delete:
+                deleteDialog.show();
                 return true;
             case R.id.action_create_template:
                 final AlertDialog newTemplateDialog = new AlertDialog.Builder(this).create();
@@ -203,18 +210,6 @@ public class SingleGlaze extends AppCompatActivity {
                 });
                 newTemplateDialog.show();
                 return true;
-            case R.id.action_delete_glaze:
-                ConfirmDialog confirmDelete = new ConfirmDialog(this, true, "to delete this glaze? WARNING: This CANNOT be undone.",
-                        new ConfirmDialog.Action() {
-                            @Override
-                            public void action() {
-                                dbHelper.delete(rootGlaze,true);
-                                navigateUp();
-                            }
-                        });
-                confirmDelete.show();
-                return true;
-
         }
         return super.onOptionsItemSelected(item);
     }

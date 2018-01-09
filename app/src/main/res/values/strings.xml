@@ -32,7 +32,7 @@
     <string name="dialog_newglaze_type_single_label">Single Glaze</string>
     <string name="dialog_newglaze_type_combo_label">Combination of Glazes</string>
     <string name="dialog_newglaze_template_label">From Template</string>
-    <string name="dialog_newglaze_title">Create New Glaze</string>
+    <string name="dialog_newitem_title">Create New </string>
     <string name="list_date_edited">Last Edited</string>
     <string name="appbar_actionbutton_newtemplate_title">Use As Template</string>
     <string name="appbar_glazename_hint">Glaze Name Here…</string>
@@ -58,4 +58,7 @@
     <string name="navdrawer_close">Close navigation drawer</string>
     <string name="navdrawer_header">Databases</string>
     <string name="comboglaze_notes_hint">Notes About Application...</string>
+    <string name="dialog_delete_text">\"Are you sure you want to delete this \"</string>
+    <string name="dialog_delete_warning">WARNING: This can not be undone.</string>
+    <string name="dialog_name_label">Name:</string>
 </resources>

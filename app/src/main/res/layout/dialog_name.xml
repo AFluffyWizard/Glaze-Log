@@ -9,14 +9,14 @@
     android:gravity="center|start">
 
     <TextView
-        android:id="@+id/newNameLabel"
+        android:id="@+id/nameLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@style/SubtitleText"
-        android:text="@string/dialog_newname_label"/>
+        android:text="@string/dialog_name_label"/>
 
     <EditText
-        android:id="@+id/nameEditText"
+        android:id="@+id/newNameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textCapWords"

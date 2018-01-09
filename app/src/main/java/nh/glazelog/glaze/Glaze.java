@@ -222,8 +222,6 @@ public class Glaze implements Parcelable,Storable,Listable {
     @Override
     public Storable.Type getStorableType() {return Type.SINGLE;}
     @Override
-    public String getRowName() {return name;}
-    @Override
     public void updateDateEdited() {setDateEdited(Util.getDateTimeStamp());}
 
     public static final CursorCreator<Glaze> CURSOR_CREATOR = new CursorCreator<Glaze>() {

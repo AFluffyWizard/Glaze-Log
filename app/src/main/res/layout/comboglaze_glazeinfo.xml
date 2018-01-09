@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/base"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_marginTop="@dimen/glazelist_item_external_padding"
+    android:layout_marginRight="@dimen/glazelist_item_external_padding"
+    android:layout_marginLeft="@dimen/glazelist_item_external_padding"
+    android:background="@drawable/glazelist_item_border">
+
+    <ImageView
+        android:id="@+id/reorderItemImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_reorder_black_24dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <ImageView
+        android:id="@+id/previewImageView"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_margin="@dimen/glazelist_item_internal_padding"
+        android:src="@drawable/noimg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="@id/reorderItemImageView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/itemNameLabel"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_gravity="start|center_vertical"
+        android:layout_margin="@dimen/glazelist_item_internal_padding"
+        android:text="glaze_name"
+        android:textAppearance="@style/StandardText"
+        app:layout_constraintLeft_toRightOf="@+id/previewImageView"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/secondaryInfoLabel" />
+
+    <TextView
+        android:id="@+id/secondaryInfoLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:textAppearance="@style/SubtitleText"
+        android:text="cone_here"
+        app:layout_constraintLeft_toRightOf="@+id/previewImageView"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <EditText
+        android:id="@+id/glazeApplicationNotes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:ems="10"
+        android:hint="@string/comboglaze_notes_hint"
+        android:inputType="text"
+        android:maxLines="1"
+        app:layout_constraintLeft_toRightOf="@+id/secondaryInfoLabel"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+
+</android.support.constraint.ConstraintLayout>

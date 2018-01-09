@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.widget.ArrayAdapter;
@@ -18,11 +19,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import nh.glazelog.database.DbHelper;
+
 /**
  * Created by Nick Hansen on 9/29/2017.
  */
 
 public class Util {
+
+    public static final int CONST_WAIT_ADD_LISTENER = 50;
 
     public static String[] stringToArray(String s, String separator) {
         ArrayList<String> strings = new ArrayList<>();
@@ -31,6 +36,14 @@ public class Util {
             s = s.substring(s.indexOf(separator)+1, s.length());
         }
         return strings.toArray(new String[strings.size()]);
+    }
+
+    public static <T> ArrayList<T> typeUntypedList (ArrayList<?> untyped) {
+        ArrayList<T> typed = new ArrayList<>();
+        for (int i = 0; i < untyped.size(); i++) {
+            typed.add((T) untyped.get(i));
+        }
+        return typed;
     }
 
     public static String getFriendlyDate(String d, boolean includeTime) {
@@ -81,6 +94,10 @@ public class Util {
         for (TableLayout tb : tables) tb.requestLayout();
     }
 
+    public static void navigateUp (Activity activity) {
+        NavUtils.navigateUpFromSameTask(activity);
+    }
+
     public static Uri getVersionSpecificUri(Context context, File file) {
         Uri u;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
@@ -117,39 +134,5 @@ public class Util {
         int itemPos = ((ArrayAdapter<T>)spinner.getAdapter()).getPosition((T)o);
         spinner.setSelection(itemPos);
     }
-
-    public static <T> ArrayList<T> typeUntypedList (ArrayList<?> untyped) {
-        ArrayList<T> typed = new ArrayList<>();
-        for (int i = 0; i < untyped.size(); i++) {
-            typed.add((T) untyped.get(i));
-        }
-        return typed;
-    }
-
-    /*
-    public static String toLongString (Object... data) {
-        String longString = "";
-        for (int i = 0; i < data.length; i++) {
-            longString += data[i] + DbHelper.LONG_SEP;
-        }
-        return longString;
-    }
-
-    public static String toLongString (ArrayList<Object> data) {
-        String longString = "";
-        for (int i = 0; i < data.size(); i++) {
-            longString += data.get(i) + DbHelper.LONG_SEP;
-        }
-        return longString;
-    }
-
-    public static <T implements ParseFromString<?>> ArrayList<T> parseFromLongString (String s) {
-        String[] separate = Util.stringToArray(s, DbHelper.LONG_SEP);
-        ArrayList<T> list = new ArrayList<>();
-        for (String str : separate)
-            list.add(T.parseFromString(str));
-        return list;
-    }
-    */
 
 }
