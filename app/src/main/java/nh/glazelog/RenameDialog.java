@@ -1,15 +1,11 @@
 package nh.glazelog;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.TextView;
-
-import nh.glazelog.database.DbHelper;
 
 /**
  * Created by Nick Hansen on 11/3/2017.
@@ -30,7 +26,7 @@ public class RenameDialog extends AlertDialog {
 
         setButton(DialogInterface.BUTTON_POSITIVE, "Rename", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                String newName = ((TextView)newNameView.findViewById(R.id.newNameEditText)).getText().toString();
+                String newName = ((TextView)newNameView.findViewById(R.id.itemNameEditText)).getText().toString();
                 onRename.action(newName);
             }
         });

@@ -18,12 +18,6 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/action_create_template"
-        android:icon="@drawable/ic_rounded_corner_black_24dp"
-        android:title="@string/appbar_actionbutton_newtemplate_title"
-        app:showAsAction="never"/>
-
-    <item
         android:id="@+id/action_delete"
         android:icon="@drawable/ic_delete_forever_black_24dp"
         android:title="@string/appbar_actionbutton_delete"

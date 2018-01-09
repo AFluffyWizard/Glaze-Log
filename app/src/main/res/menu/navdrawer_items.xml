@@ -12,21 +12,14 @@
         android:orderInCategory="2"
         />
     <item
-        android:id="@+id/navDrawerTemplate"
-        android:title="Glaze Templates"
-        android:orderInCategory="3"
-        />
-
-    <item
         android:id="@+id/navDrawerFiringCycle"
         android:title="Firing Cycle"
-        android:orderInCategory="4"
+        android:orderInCategory="3"
         />
-
     <item
         android:id="@+id/navDrawerIngredient"
         android:title="Ingredients"
-        android:orderInCategory="5"
+        android:orderInCategory="4"
         />
 
 </menu>

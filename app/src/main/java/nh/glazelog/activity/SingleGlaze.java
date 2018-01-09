@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 import nh.glazelog.ConfirmDialog;
 import nh.glazelog.DeleteDialog;
+import nh.glazelog.KeyValues;
 import nh.glazelog.R;
 import nh.glazelog.RenameDialog;
 import nh.glazelog.Util;
@@ -52,11 +53,10 @@ public class SingleGlaze extends AppCompatActivity {
         dbHelper = DbHelper.getSingletonInstance(getBaseContext());
 
         Intent intent = getIntent();
-        glaze = intent.getParcelableArrayListExtra(GlazeList.KEY_GLAZE_SINGLE);
+        glaze = intent.getParcelableArrayListExtra(KeyValues.KEY_GLAZE_SINGLE);
         if (glaze == null) {
-            GlazeTemplate template = intent.getParcelableExtra(GlazeList.KEY_GLAZE_TEMPLATE);
             glaze = new ArrayList<>();
-            glaze.add(new Glaze(template));
+            glaze.add(new Glaze());
             dbHelper.write(glaze.get(0));
         }
         rootGlaze = glaze.get(0);
@@ -190,25 +190,6 @@ public class SingleGlaze extends AppCompatActivity {
                 return true;
             case R.id.action_delete:
                 deleteDialog.show();
-                return true;
-            case R.id.action_create_template:
-                final AlertDialog newTemplateDialog = new AlertDialog.Builder(this).create();
-                newTemplateDialog.setTitle(R.string.dialog_newtemplate_title);
-                final View dialogView = getLayoutInflater().inflate(R.layout.dialog_new_template,null);
-                newTemplateDialog.setView(dialogView);
-                newTemplateDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Create", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        String templateName = ((EditText)dialogView.findViewById(R.id.newTemplateEditText)).getText().toString();
-                        GlazeTemplate t = new GlazeTemplate(glaze.get(versionPager.getCurrentItem()),templateName);
-                        dbHelper.writeTemplate(t);
-                    }
-                });
-                newTemplateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    newTemplateDialog.hide();
-                    }
-                });
-                newTemplateDialog.show();
                 return true;
         }
         return super.onOptionsItemSelected(item);

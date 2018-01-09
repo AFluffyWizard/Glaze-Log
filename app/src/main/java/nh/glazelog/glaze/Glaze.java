@@ -69,27 +69,6 @@ public class Glaze implements Parcelable,Storable,Listable {
         this.setDateCreated("201710" + debugdate + "_120000");
     }
 
-    public Glaze (GlazeTemplate template) {
-        if (template.getName().equals("No Template")) this.name = "";
-        else this.name = template.getName();
-        this.dateCreated = Util.getDateTimeStamp();
-        this.dateEdited = Util.getDateTimeStamp();
-        this.tags = "";
-        this.finish = template.getFinish();
-        this.opacity = template.getOpacity();
-        this.atmos = template.getAtmos();
-        this.clayBody = template.getClayBody();
-        this.application = template.getApplication();
-        this.primaryNotes = "";
-        this.imageUriString = "";
-        this.spgr = 0;
-        this.materials = new ArrayList<IngredientQuantity>();
-        this.additions = new ArrayList<IngredientQuantity>();
-        this.firingCycle = template.getFiringCycle();
-        this.bisquedTo = Cone.NONE;
-        this.secondaryNotes = "";
-    }
-
     public Glaze (Glaze g) {
         this.name = "Copy of " + g.getName();
         this.dateCreated = Util.getDateTimeStamp();

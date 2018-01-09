@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import nh.glazelog.glaze.ComboGlaze;
 import nh.glazelog.glaze.FiringCycle;
 import nh.glazelog.glaze.Glaze;
-import nh.glazelog.glaze.GlazeTemplate;
 import nh.glazelog.glaze.Ingredient;
 
 /**
@@ -36,7 +35,6 @@ public class DbHelper extends SQLiteOpenHelper {
         // See this article for more information: http://bit.ly/6LRzfx
         if (singletonInstance == null) {
             singletonInstance = new DbHelper(context.getApplicationContext());
-            if (!singletonInstance.contains(new GlazeTemplate(),false)) singletonInstance.write(new GlazeTemplate());
         }
         return singletonInstance;
     }
@@ -63,19 +61,15 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public void append(Storable s, ContentValues values) {
-        if (!(s instanceof GlazeTemplate)) {
-            s.updateDateEdited();
-            values.put(CCN_DATE_EDITED,s.getDateEditedRaw());
-        }
+        s.updateDateEdited();
+        values.put(CCN_DATE_EDITED,s.getDateEditedRaw());
         singletonDatabase.updateWithOnConflict(s.getStorableType().getTableName(),values,
                 CCN_DATE_CREATED + " = ?",new String[]{s.getDateCreatedRaw()},SQLiteDatabase.CONFLICT_REPLACE);
     }
 
     public void appendAllVersions(Storable s, ContentValues values) {
-        if (!(s instanceof GlazeTemplate)) {
-            s.updateDateEdited();
-            values.put(CCN_DATE_EDITED,s.getDateEditedRaw());
-        }
+        s.updateDateEdited();
+        values.put(CCN_DATE_EDITED,s.getDateEditedRaw());
         singletonDatabase.updateWithOnConflict(s.getStorableType().getTableName(),values,
                 CCN_NAME + " = ?",new String[]{s.getName()},SQLiteDatabase.CONFLICT_REPLACE);
     }
@@ -121,7 +115,6 @@ public class DbHelper extends SQLiteOpenHelper {
             default: break;
             case SINGLE: return Glaze.CURSOR_CREATOR.createFromCursor(cursor);
             case COMBO: return ComboGlaze.CURSOR_CREATOR.createFromCursor(cursor);
-            case TEMPLATE: return GlazeTemplate.CURSOR_CREATOR.createFromCursor(cursor);
             case FIRING_CYCLE: return FiringCycle.CURSOR_CREATOR.createFromCursor(cursor);
             case INGREDIENT: return Ingredient.CURSOR_CREATOR.createFromCursor(cursor);
         }
@@ -135,7 +128,8 @@ public class DbHelper extends SQLiteOpenHelper {
             default: break;
             case SINGLE: return Glaze.CURSOR_CREATOR.createFromCursor(cursor);
             case COMBO: return ComboGlaze.CURSOR_CREATOR.createFromCursor(cursor);
-            case TEMPLATE: return GlazeTemplate.CURSOR_CREATOR.createFromCursor(cursor);
+            case FIRING_CYCLE: return FiringCycle.CURSOR_CREATOR.createFromCursor(cursor);
+            case INGREDIENT: return Ingredient.CURSOR_CREATOR.createFromCursor(cursor);
         }
         cursor.close();
         return null;
@@ -183,18 +177,6 @@ public class DbHelper extends SQLiteOpenHelper {
         public static final String PRIMARY_NOTES = "primary_notes";
         public static final String SECONDARY_NOTES = "secondary_notes";
 
-    }
-
-    public static class TemplateCN implements BaseColumns {
-        public static final String TABLE_NAME = "glaze_template_table";
-
-        public static final String FINISH = "finish";
-        public static final String OPACITY = "opacity";
-        public static final String ATMOSPHERE = "atmos";
-        public static final String CLAY_BODY = "clay_body";
-        public static final String APPLICATION = "application";
-        public static final String FIRING_CYCLE = "firing_cycle";
-        public static final String BISQUED_TO = "bisqued_to";
     }
 
     public static class FiringCycleCN implements BaseColumns {
@@ -245,19 +227,6 @@ public class DbHelper extends SQLiteOpenHelper {
                     ComboCN.SECONDARY_NOTES + " TEXT" +
                     ");";
 
-    private static final String SQL_CREATE_ENTRIES_TEMPLATE =
-            "CREATE TABLE IF NOT EXISTS " + TemplateCN.TABLE_NAME + " (" +
-                    TemplateCN._ID + " INTEGER PRIMARY KEY," +
-                    CREATE_ENTRIES_HEADER +
-                    TemplateCN.FINISH + " TEXT," +
-                    TemplateCN.OPACITY + " TEXT," +
-                    TemplateCN.ATMOSPHERE + " TEXT," +
-                    TemplateCN.CLAY_BODY + " TEXT," +
-                    TemplateCN.APPLICATION + " TEXT," +
-                    TemplateCN.FIRING_CYCLE + " TEXT," +
-                    TemplateCN.BISQUED_TO + " TEXT);";
-
-
     private static final String SQL_CREATE_ENTRIES_FIRINGCYCLE =
             "CREATE TABLE " + FiringCycleCN.TABLE_NAME + " (" +
                     FiringCycleCN._ID + " INTEGER PRIMARY KEY," +
@@ -281,13 +250,11 @@ public class DbHelper extends SQLiteOpenHelper {
         System.out.println("db onCreate called");
         db.execSQL("DROP TABLE IF EXISTS \"" + SingleCN.TABLE_NAME + "\"");
         db.execSQL("DROP TABLE IF EXISTS \"" + ComboCN.TABLE_NAME + "\"");
-        db.execSQL("DROP TABLE IF EXISTS \"" + TemplateCN.TABLE_NAME + "\"");
         db.execSQL("DROP TABLE IF EXISTS \"" + FiringCycleCN.TABLE_NAME + "\"");
         db.execSQL("DROP TABLE IF EXISTS \"" + IngredientCN.TABLE_NAME + "\"");
 
         db.execSQL(SQL_CREATE_ENTRIES_SINGLE);
         db.execSQL(SQL_CREATE_ENTRIES_COMBO);
-        db.execSQL(SQL_CREATE_ENTRIES_TEMPLATE);
         db.execSQL(SQL_CREATE_ENTRIES_FIRINGCYCLE);
         db.execSQL(SQL_CREATE_ENTRIES_INGREDIENT);
     }

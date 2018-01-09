@@ -16,7 +16,7 @@
         android:text="@string/dialog_name_label"/>
 
     <EditText
-        android:id="@+id/newNameEditText"
+        android:id="@+id/itemNameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textCapWords"
