@@ -22,6 +22,7 @@ public interface Storable {
     public String getDateEditedRaw();
     public void updateDateEdited();
     public String getTags();
+    public String getNotes();
 
     public interface CursorCreator<T> {
         public ArrayList<T> createFromCursor (Cursor cursor);
@@ -31,7 +32,6 @@ public interface Storable {
     public enum Type {
         SINGLE(DbHelper.SingleCN.TABLE_NAME, true),
         COMBO(DbHelper.ComboCN.TABLE_NAME, true),
-        TEMPLATE(DbHelper.TemplateCN.TABLE_NAME, false),
         FIRING_CYCLE(DbHelper.FiringCycleCN.TABLE_NAME, false),
         INGREDIENT(DbHelper.IngredientCN.TABLE_NAME, false);
 

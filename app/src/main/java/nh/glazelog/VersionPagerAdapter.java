@@ -12,7 +12,6 @@ import java.util.ArrayList;
 
 import nh.glazelog.database.DbHelper;
 import nh.glazelog.glaze.Glaze;
-import nh.glazelog.glaze.GlazeTemplate;
 
 /**
  * Created by Nick Hansen on 10/18/2017.
@@ -21,9 +20,6 @@ import nh.glazelog.glaze.GlazeTemplate;
 public class VersionPagerAdapter extends FragmentStatePagerAdapter {
 
     ArrayList<Glaze> glazeVersions;
-    private Activity parentActivity;
-    public static final String KEY_GLAZE_VERSION = "nh.glazelog.GLAZE_VERSION";
-    public static final String KEY_GLAZE_VERSION_NUMBER = "nh.glazelog.GLAZE_VERSION_NUMBER";
     private int currentPosition = -1;
     private static DbHelper dbHelper;
 
@@ -33,7 +29,6 @@ public class VersionPagerAdapter extends FragmentStatePagerAdapter {
 
     public VersionPagerAdapter (FragmentManager fm, Activity parentActivity, ArrayList<Glaze> glazeVersions) {
         super(fm);
-        this.parentActivity = parentActivity;
         this.glazeVersions = glazeVersions;
         dbHelper = DbHelper.getSingletonInstance(parentActivity);
     }
@@ -47,8 +42,8 @@ public class VersionPagerAdapter extends FragmentStatePagerAdapter {
         else {
             VersionFragment version = new VersionFragment();
             Bundle args = new Bundle();
-            args.putParcelable(KEY_GLAZE_VERSION, glazeVersions.get(position));
-            args.putInt(KEY_GLAZE_VERSION_NUMBER, position);
+            args.putParcelable(KeyValues.KEY_GLAZE_VERSION, glazeVersions.get(position));
+            args.putInt(KeyValues.KEY_GLAZE_VERSION_NUMBER, position);
             version.setArguments(args);
             return version;
         }
@@ -87,9 +82,10 @@ public class VersionPagerAdapter extends FragmentStatePagerAdapter {
     }
 
     public void addPage() {
-        GlazeTemplate newPageTemplate = new GlazeTemplate(glazeVersions.get(glazeVersions.size()-1),"");
-        Glaze newGlaze = new Glaze(newPageTemplate);
+        Glaze newGlaze = new Glaze(glazeVersions.get(glazeVersions.size()-1));
         newGlaze.setName(glazeVersions.get(0).getName());
+        newGlaze.setVersionNotes("");
+        newGlaze.setNotes("");
         dbHelper.write(newGlaze);
         glazeVersions.add(newGlaze);
         notifyDataSetChanged();

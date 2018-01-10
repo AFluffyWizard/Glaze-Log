@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import java.text.ParseException;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
@@ -17,9 +18,11 @@ import android.widget.TableLayout;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 import nh.glazelog.database.DbHelper;
+import nh.glazelog.glaze.Listable;
 
 /**
  * Created by Nick Hansen on 9/29/2017.
@@ -27,7 +30,7 @@ import nh.glazelog.database.DbHelper;
 
 public class Util {
 
-    public static final int CONST_WAIT_ADD_LISTENER = 50;
+    public static final int CONST_DELAY_ADD_LISTENER = 50;
 
     public static String[] stringToArray(String s, String separator) {
         ArrayList<String> strings = new ArrayList<>();
@@ -46,6 +49,18 @@ public class Util {
         return typed;
     }
 
+    public static <T extends Listable> String getMostRecentEditDate (ArrayList<T> itemList) {
+        ArrayList<Date> dateList = new ArrayList<>();
+        for (Listable item : itemList) {
+            try {
+                dateList.add(new SimpleDateFormat("yyyyMMdd_HHmmss").parse(item.getDateEditedRaw()));
+            } catch (ParseException e) {e.printStackTrace();};
+        }
+        Collections.sort(dateList,Collections.<Date>reverseOrder());
+        return new SimpleDateFormat("yyyyMMdd_HHmmss").format(dateList.get(0));
+    }
+
+    // should really be replaced, but it works for now
     public static String getFriendlyDate(String d, boolean includeTime) {
         final String year = d.substring(0,4);
         String month = d.substring(4,6);
@@ -74,6 +89,7 @@ public class Util {
         else return month + Integer.parseInt(day) + ", " + year;
     }
 
+    // should really be replaced, but works for now
     public static String getShortDate(String d) {
         final String year = d.substring(0,4);
         final String shortYear = d.substring(2,4);

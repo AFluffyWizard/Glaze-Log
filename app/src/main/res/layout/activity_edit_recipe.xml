@@ -9,7 +9,7 @@
     <include layout="@layout/actionbar_default"/>
 
     <TextView
-        android:id="@+id/spgrLabel1"
+        android:id="@+id/spgrLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/action_bar_plus_primary_inset"
@@ -28,8 +28,8 @@
         android:ems="10"
         android:hint="@string/hint_empty"
         android:inputType="numberDecimal"
-        app:layout_constraintBaseline_toBaselineOf="@+id/spgrLabel1"
-        app:layout_constraintLeft_toRightOf="@+id/spgrLabel1" />
+        app:layout_constraintBaseline_toBaselineOf="@+id/spgrLabel"
+        app:layout_constraintLeft_toRightOf="@+id/spgrLabel" />
 
     <TextView
         android:id="@+id/spgrLabel2"
@@ -39,7 +39,7 @@
         android:layout_marginStart="@dimen/layout_textview_to_textfield_separator"
         android:text="@string/recipe_spgr_label2"
         android:textAppearance="@style/SubtitleText"
-        app:layout_constraintBaseline_toBaselineOf="@+id/spgrLabel1"
+        app:layout_constraintBaseline_toBaselineOf="@+id/spgrLabel"
         app:layout_constraintLeft_toRightOf="@+id/spgrField" />
 
     <TextView
@@ -51,7 +51,7 @@
         android:text="@string/recipe_materials_label"
         android:textAppearance="@style/StandardText"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spgrLabel1"
+        app:layout_constraintTop_toBottomOf="@+id/spgrLabel"
         />
 
     <Button

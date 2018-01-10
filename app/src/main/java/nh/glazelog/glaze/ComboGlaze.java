@@ -23,26 +23,27 @@ public class ComboGlaze implements Parcelable,Storable,Listable {
     private String dateCreated;
     private String dateEdited;
     private String tags;
+    private String notes;
+    private String versionNotes;
     private String imageUriString;
     private String clayBody;
     private ArrayList<ComboGlazeInfo> glazes;
     private ArrayList<RampHold> firingCycle;
     private Cone bisquedTo;
-    private String primaryNotes;
-    private String secondaryNotes;
+
 
     public ComboGlaze() {
         this.name = "";
         this.dateCreated = Util.getDateTimeStamp();
         this.dateEdited = Util.getDateTimeStamp();
         this.tags = "";
+        this.notes = "";
+        this.versionNotes = "";
         this.imageUriString = "";
         this.clayBody = "";
         this.glazes = new ArrayList<ComboGlazeInfo>();
         this.firingCycle = new ArrayList<RampHold>();
         this.bisquedTo = Cone.C05;
-        this.primaryNotes = "";
-        this.secondaryNotes = "";
     }
 
     public ComboGlaze (String name) {
@@ -51,18 +52,18 @@ public class ComboGlaze implements Parcelable,Storable,Listable {
     }
 
 
-    public ComboGlaze(String name, String dateCreated, String dateEdited, String tags, String imageUriString, String clayBody, ArrayList<ComboGlazeInfo> glazes, ArrayList<RampHold> firingCycle, Cone bisquedTo, String primaryNotes, String secondaryNotes) {
+    public ComboGlaze(String name, String dateCreated, String dateEdited, String tags, String notes, String versionNotes, String imageUriString, String clayBody, ArrayList<ComboGlazeInfo> glazes, ArrayList<RampHold> firingCycle, Cone bisquedTo) {
         this.name = name;
         this.dateCreated = dateCreated;
         this.dateEdited = dateEdited;
         this.tags = tags;
+        this.notes = notes;
+        this.versionNotes = versionNotes;
         this.imageUriString = imageUriString;
         this.clayBody = clayBody;
         this.glazes = glazes;
         this.firingCycle = firingCycle;
         this.bisquedTo = bisquedTo;
-        this.primaryNotes = primaryNotes;
-        this.secondaryNotes = secondaryNotes;
     }
 
     public String getName() {return name;}
@@ -75,6 +76,10 @@ public class ComboGlaze implements Parcelable,Storable,Listable {
     public void setDateEdited(String date) {this.dateEdited = date;}
     public String getTags() {return tags;}
     public void setTags(String tags) {this.tags = tags;}
+    public String getNotes() {return notes;}
+    public void setNotes(String notes) {this.notes = notes;}
+    public String getVersionNotes() {return versionNotes;}
+    public void setVersionNotes(String versionNotes) {this.versionNotes = versionNotes;}
     public Uri getImageUri() {if (imageUriString.equals("")) return Uri.EMPTY; else return Uri.parse(imageUriString);}
     private String getImageUriString () {return imageUriString;}
     public void setImageUri(Uri imageUri) {this.imageUriString = imageUri.toString();}
@@ -87,10 +92,7 @@ public class ComboGlaze implements Parcelable,Storable,Listable {
     public void setFiringCycle(ArrayList<RampHold> firingCycle) {this.firingCycle = firingCycle;}
     public Cone getBisquedTo() {return bisquedTo;}
     public void setBisquedTo(Cone bisquedTo) {this.bisquedTo = bisquedTo;}
-    public String getPrimaryNotes() {return primaryNotes;}
-    public void setPrimaryNotes(String primaryNotes) {this.primaryNotes = primaryNotes;}
-    public String getSecondaryNotes() {return secondaryNotes;}
-    public void setSecondaryNotes(String secondaryNotes) {this.secondaryNotes = secondaryNotes;}
+
 
 
     //listable implementation
@@ -113,13 +115,13 @@ public class ComboGlaze implements Parcelable,Storable,Listable {
         values.put(DbHelper.CCN_DATE_CREATED, getDateCreatedRaw());
         values.put(DbHelper.CCN_DATE_EDITED, getDateEditedRaw());
         values.put(DbHelper.CCN_TAGS, getTags());
+        values.put(DbHelper.CCN_NOTES, getNotes());
+        values.put(DbHelper.ComboCN.VERSION_NOTES, getVersionNotes());
         values.put(DbHelper.ComboCN.IMAGE_URI_STRING, getImageUriString());
         values.put(DbHelper.ComboCN.CLAY_BODY, getClayBody());
         values.put(DbHelper.ComboCN.GLAZES, ComboGlazeInfo.toLongString(getGlazes()));
         values.put(DbHelper.ComboCN.FIRING_CYCLE,RampHold.toLongString(getFiringCycle()));
         values.put(DbHelper.ComboCN.BISQUED_TO, getBisquedTo().toString());
-        values.put(DbHelper.ComboCN.PRIMARY_NOTES,getPrimaryNotes());
-        values.put(DbHelper.ComboCN.SECONDARY_NOTES,getSecondaryNotes());
         return values;
     }
 
@@ -142,11 +144,11 @@ public class ComboGlaze implements Parcelable,Storable,Listable {
                         cursor.getString(4),
                         cursor.getString(5),
                         cursor.getString(6),
-                        ComboGlazeInfo.parseFromLongString(cursor.getString(7)),
-                        RampHold.parseFromLongString(cursor.getString(8)),
-                        Cone.getEnum(cursor.getString(9)),
-                        cursor.getString((10)),
-                        cursor.getString(11)
+                        cursor.getString(7),
+                        cursor.getString(8),
+                        ComboGlazeInfo.parseFromLongString(cursor.getString(9)),
+                        RampHold.parseFromLongString(cursor.getString(10)),
+                        Cone.getEnum(cursor.getString(11))
                 ));
             }
             cursor.close();
@@ -161,13 +163,13 @@ public class ComboGlaze implements Parcelable,Storable,Listable {
         dateCreated = in.readString();
         dateEdited = in.readString();
         tags = in.readString();
+        notes = in.readString();
+        versionNotes = in.readString();
         imageUriString = in.readString();
         clayBody = in.readString();
         glazes = in.createTypedArrayList(ComboGlazeInfo.CREATOR);
         firingCycle = in.createTypedArrayList(RampHold.CREATOR);
         bisquedTo = Cone.getEnum(in.readString());
-        primaryNotes = in.readString();
-        secondaryNotes = in.readString();
     }
 
     @Override
@@ -176,13 +178,13 @@ public class ComboGlaze implements Parcelable,Storable,Listable {
         dest.writeString(dateCreated);
         dest.writeString(dateEdited);
         dest.writeString(tags);
+        dest.writeString(notes);
+        dest.writeString(versionNotes);
         dest.writeString(imageUriString);
         dest.writeString(clayBody);
         dest.writeTypedList(glazes);
         dest.writeTypedList(firingCycle);
         dest.writeString(bisquedTo.toString());
-        dest.writeString(primaryNotes);
-        dest.writeString(secondaryNotes);
     }
 
     @Override

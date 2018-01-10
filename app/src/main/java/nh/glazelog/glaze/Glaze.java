@@ -1,5 +1,6 @@
 package nh.glazelog.glaze;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
@@ -23,38 +24,38 @@ public class Glaze implements Parcelable,Storable,Listable {
     private String dateCreated;
     private String dateEdited;
     private String tags;
+    private String notes;
     private Finish finish;
     private Opacity opacity;
     private Atmosphere atmos;
     private String clayBody;
     private String application;
+    private String versionNotes;
     private String imageUriString;
     private double spgr;
     private ArrayList<IngredientQuantity> materials;
     private ArrayList<IngredientQuantity> additions;
-    private ArrayList<RampHold> firingCycle;
+    private String firingCycle;
     private Cone bisquedTo;
-    private String primaryNotes;
-    private String secondaryNotes;
 
     public Glaze () {
         this.name = "";
         this.dateCreated = Util.getDateTimeStamp();
         this.dateEdited = Util.getDateTimeStamp();
         this.tags = "";
+        this.notes = "";
         this.finish = Finish.NONE;
         this.opacity = Opacity.NONE;
         this.atmos = Atmosphere.NONE;
         this.clayBody = "";
         this.application = "";
+        this.versionNotes = "";
         this.imageUriString = "";
         this.spgr = 0;
         this.materials = new ArrayList<IngredientQuantity>();
         this.additions = new ArrayList<IngredientQuantity>();
-        this.firingCycle = new ArrayList<RampHold>();
+        this.firingCycle = "";
         this.bisquedTo = Cone.C05;
-        this.primaryNotes = "";
-        this.secondaryNotes = "";
     }
 
     public Glaze (String name) {
@@ -74,39 +75,39 @@ public class Glaze implements Parcelable,Storable,Listable {
         this.dateCreated = Util.getDateTimeStamp();
         this.dateEdited = Util.getDateTimeStamp();
         this.tags = g.getTags();
+        this.notes = g.getNotes();
         this.finish = g.getFinish();
         this.opacity = g.getOpacity();
         this.atmos = g.getAtmos();
         this.clayBody = g.getClayBody();
         this.application = g.getApplication();
+        this.versionNotes = g.getVersionNotes();
         this.imageUriString = "";
         this.spgr = g.getSpgr();
         this.materials = g.getMaterials();
         this.additions = g.getAdditions();
-        this.firingCycle = g.getFiringCycle();
+        this.firingCycle = g.getFiringCycleName();
         this.bisquedTo = g.getBisquedTo();
-        this.primaryNotes = g.getPrimaryNotes();
-        this.secondaryNotes = g.getSecondaryNotes();
     }
 
-    public Glaze(String name, String dateCreated, String dateEdited, String tags, Finish finish, Opacity opacity, Atmosphere atmos, String clayBody, String application, String imageUri, double spgr, ArrayList<IngredientQuantity> materials, ArrayList<IngredientQuantity> additions, ArrayList<RampHold> firingCycle, Cone bisquedTo, String primaryNotes, String secondaryNotes) {
+    public Glaze(String name, String dateCreated, String dateEdited, String tags, String notes, Finish finish, Opacity opacity, Atmosphere atmos, String clayBody, String application, String versionNotes, String imageUri, double spgr, ArrayList<IngredientQuantity> materials, ArrayList<IngredientQuantity> additions, String firingCycle, Cone bisquedTo) {
         this.name = name;
         this.dateCreated = dateCreated;
         this.dateEdited = dateEdited;
         this.tags = tags;
+        this.notes = notes;
         this.finish = finish;
         this.opacity = opacity;
         this.atmos = atmos;
         this.clayBody = clayBody;
         this.application = application;
+        this.versionNotes = versionNotes;
         this.imageUriString = imageUri;
         this.spgr = spgr;
         this.materials = materials;
         this.additions = additions;
         this.firingCycle = firingCycle;
         this.bisquedTo = bisquedTo;
-        this.primaryNotes = primaryNotes;
-        this.secondaryNotes = secondaryNotes;
     }
 
     /* Old implementation where the getDate() functions returned a Date object.
@@ -130,6 +131,8 @@ public class Glaze implements Parcelable,Storable,Listable {
     public void setDateEdited(String date) {this.dateEdited = date;}
     public String getTags() {return tags;}
     public void setTags(String tags) {this.tags = tags;}
+    public String getNotes() {return notes;}
+    public void setNotes(String notes) {this.notes = notes;}
     public Finish getFinish() {return finish;}
     public void setFinish(Finish finish) {this.finish = finish;}
     public Opacity getOpacity() {return opacity;}
@@ -140,6 +143,8 @@ public class Glaze implements Parcelable,Storable,Listable {
     public void setClayBody(String clayBody) {this.clayBody = clayBody;}
     public String getApplication() {return application;}
     public void setApplication(String application) {this.application = application;}
+    public String getVersionNotes() {return versionNotes;}
+    public void setVersionNotes(String versionNotes) {this.versionNotes = versionNotes;}
     public Uri getImageUri() {if (imageUriString.equals("")) return Uri.EMPTY; else return Uri.parse(imageUriString);}
     private String getImageUriString () {return imageUriString;}
     public void setImageUri(Uri imageUri) {this.imageUriString = imageUri.toString();}
@@ -150,15 +155,28 @@ public class Glaze implements Parcelable,Storable,Listable {
     public void setMaterials(ArrayList<IngredientQuantity> materials) {this.materials = materials;}
     public ArrayList<IngredientQuantity> getAdditions() {return additions;}
     public void setAdditions(ArrayList<IngredientQuantity> additions) {this.additions = additions;}
-    public ArrayList<RampHold> getFiringCycle() {return firingCycle;}
-    public void setFiringCycle(ArrayList<RampHold> firingCycle) {this.firingCycle = firingCycle;}
+    public String getFiringCycleName() {return firingCycle;}
+    public ArrayList<RampHold> getFiringCycle() {
+        ArrayList<?> rh = DbHelper.getSingletonInstance(
+                new Activity()).readSingle(Type.FIRING_CYCLE,DbHelper.CCN_NAME, getFiringCycleName());
+                /* I am very much aware it is totally retarded
+                 * to pass a new activity as the Context parameter for this method.
+                 * However, there is no other way to obtain the application's context,
+                 * and at this point the singleton instance of DbHelper should be initialized,
+                 * and the Context is no longer needed.
+                 * The alternative would be to create a separate method with no parameters,
+                 * that would then have the ability to return a null instance, and hence
+                 * be EXTREMELY UNSAFE.
+                 * So, I'm doing it this way. As are the famous last words of any programmer,
+                 * it should work.
+                 *
+                 * Nick Hansen - 1/9/18
+                 */
+        return Util.typeUntypedList(rh);
+    }
+    public void setFiringCycle(String firingCycle) {this.firingCycle = firingCycle;}
     public Cone getBisquedTo() {return bisquedTo;}
     public void setBisquedTo(Cone bisquedTo) {this.bisquedTo = bisquedTo;}
-    public String getPrimaryNotes() {return primaryNotes;}
-    public void setPrimaryNotes(String primaryNotes) {this.primaryNotes = primaryNotes;}
-    public String getSecondaryNotes() {return secondaryNotes;}
-    public void setSecondaryNotes(String secondaryNotes) {this.secondaryNotes = secondaryNotes;}
-
 
 
     //listable implementation
@@ -181,20 +199,19 @@ public class Glaze implements Parcelable,Storable,Listable {
         values.put(DbHelper.CCN_DATE_CREATED,getDateCreatedRaw());
         values.put(DbHelper.CCN_DATE_EDITED,getDateEditedRaw());
         values.put(DbHelper.CCN_TAGS,getTags());
+        values.put(DbHelper.CCN_NOTES,getNotes());
         values.put(DbHelper.SingleCN.FINISH,getFinish().toString());
         values.put(DbHelper.SingleCN.OPACITY,getOpacity().toString());
         values.put(DbHelper.SingleCN.ATMOSPHERE,getAtmos().toString());
         values.put(DbHelper.SingleCN.CLAY_BODY,getClayBody());
         values.put(DbHelper.SingleCN.APPLICATION,getApplication());
+        values.put(DbHelper.SingleCN.VERSION_NOTES, getVersionNotes());
         values.put(DbHelper.SingleCN.IMAGE_URI_STRING,getImageUriString());
         values.put(DbHelper.SingleCN.SPGR,getSpgr());
         values.put(DbHelper.SingleCN.MATERIALS,IngredientQuantity.toLongString(getMaterials()));
         values.put(DbHelper.SingleCN.ADDITIONS,IngredientQuantity.toLongString(getAdditions()));
-        values.put(DbHelper.SingleCN.FIRING_CYCLE,RampHold.toLongString(getFiringCycle()));
+        values.put(DbHelper.SingleCN.FIRING_CYCLE, getFiringCycleName());
         values.put(DbHelper.SingleCN.BISQUED_TO,getBisquedTo().toString());
-        values.put(DbHelper.SingleCN.PRIMARY_NOTES,getPrimaryNotes());
-        values.put(DbHelper.SingleCN.SECONDARY_NOTES,getSecondaryNotes());
-
         return values;
     }
 
@@ -213,19 +230,19 @@ public class Glaze implements Parcelable,Storable,Listable {
                         cursor.getString(2),
                         cursor.getString(3),
                         cursor.getString(4),
-                        Finish.getEnum(cursor.getString(5)),
-                        Opacity.getEnum(cursor.getString(6)),
-                        Atmosphere.getEnum(cursor.getString(7)),
-                        cursor.getString(8),
+                        cursor.getString(5),
+                        Finish.getEnum(cursor.getString(6)),
+                        Opacity.getEnum(cursor.getString(7)),
+                        Atmosphere.getEnum(cursor.getString(8)),
                         cursor.getString(9),
                         cursor.getString(10),
-                        Double.parseDouble(cursor.getString(11)),
-                        IngredientQuantity.parseFromLongString(cursor.getString(12)),
-                        IngredientQuantity.parseFromLongString(cursor.getString(13)),
-                        RampHold.parseFromLongString(cursor.getString(14)),
-                        Cone.getEnum(cursor.getString(15)),
+                        cursor.getString(11),
+                        cursor.getString(12),
+                        Double.parseDouble(cursor.getString(13)),
+                        IngredientQuantity.parseFromLongString(cursor.getString(14)),
+                        IngredientQuantity.parseFromLongString(cursor.getString(15)),
                         cursor.getString(16),
-                        cursor.getString(17)
+                        Cone.getEnum(cursor.getString(17))
                 ));
             }
             cursor.close();
@@ -240,19 +257,19 @@ public class Glaze implements Parcelable,Storable,Listable {
         dateCreated = in.readString();
         dateEdited = in.readString();
         tags = in.readString();
+        notes = in.readString();
         finish = Finish.getEnum(in.readString());
         opacity = Opacity.getEnum(in.readString());
         atmos = Atmosphere.getEnum(in.readString());
         clayBody = in.readString();
         application = in.readString();
+        versionNotes = in.readString();
         imageUriString = in.readString();
         spgr = in.readDouble();
         materials = in.createTypedArrayList(IngredientQuantity.CREATOR);
         additions = in.createTypedArrayList(IngredientQuantity.CREATOR);
-        firingCycle = in.createTypedArrayList(RampHold.CREATOR);
+        firingCycle = in.readString();
         bisquedTo = Cone.getEnum(in.readString());
-        primaryNotes = in.readString();
-        secondaryNotes = in.readString();
     }
 
     @Override
@@ -261,19 +278,19 @@ public class Glaze implements Parcelable,Storable,Listable {
         dest.writeString(dateCreated);
         dest.writeString(dateEdited);
         dest.writeString(tags);
+        dest.writeString(notes);
         dest.writeString(finish.toString());
         dest.writeString(opacity.toString());
         dest.writeString(atmos.toString());
         dest.writeString(clayBody);
         dest.writeString(application);
+        dest.writeString(versionNotes);
         dest.writeString(imageUriString);
         dest.writeDouble(spgr);
         dest.writeTypedList(materials);
         dest.writeTypedList(additions);
-        dest.writeTypedList(firingCycle);
+        dest.writeString(firingCycle);
         dest.writeString(bisquedTo.toString());
-        dest.writeString(primaryNotes);
-        dest.writeString(secondaryNotes);
     }
 
     @Override

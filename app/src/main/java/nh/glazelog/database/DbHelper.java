@@ -74,13 +74,6 @@ public class DbHelper extends SQLiteOpenHelper {
                 CCN_NAME + " = ?",new String[]{s.getName()},SQLiteDatabase.CONFLICT_REPLACE);
     }
 
-    public void writeTemplate(Storable s) {
-        if (contains(s,false))
-            append(s,s.getContentValues());
-        else
-            write(s);
-    }
-
     public boolean contains(Storable s, boolean useDate) {
         if (useDate)
             return readSingle(s.getStorableType(), CCN_DATE_CREATED, s.getDateCreatedRaw()).size() > 0;
@@ -145,8 +138,9 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String CCN_DATE_CREATED = "creation_date";
     public static final String CCN_DATE_EDITED = "date_edited";
     public static final String CCN_TAGS = "tags";
+    public static final String CCN_NOTES = "notes";
     private static final String CREATE_ENTRIES_HEADER =
-            CCN_NAME + " TEXT," + CCN_DATE_CREATED + " TEXT," + CCN_DATE_EDITED + " TEXT," + CCN_TAGS + " TEXT,";
+            CCN_NAME + " TEXT," + CCN_DATE_CREATED + " TEXT," + CCN_DATE_EDITED + " TEXT," + CCN_TAGS + " TEXT," + CCN_NOTES + " TEXT";
 
     public static class SingleCN implements BaseColumns {
         public static final String TABLE_NAME = "single_glaze_table";
@@ -156,26 +150,24 @@ public class DbHelper extends SQLiteOpenHelper {
         public static final String ATMOSPHERE = "atmos";
         public static final String CLAY_BODY = "clay_body";
         public static final String APPLICATION = "application";
+        public static final String VERSION_NOTES = "version_notes";
         public static final String IMAGE_URI_STRING = "image_uri";
         public static final String SPGR = "sp_gr";
         public static final String MATERIALS = "recipe_materials";
         public static final String ADDITIONS = "recipe_additions";
         public static final String FIRING_CYCLE = "firing_cycle";
         public static final String BISQUED_TO = "bisqued_to";
-        public static final String PRIMARY_NOTES = "primary_notes";
-        public static final String SECONDARY_NOTES = "secondary_notes";
     }
 
     public static class ComboCN implements BaseColumns {
         public static final String TABLE_NAME = "combo_glaze_table";
 
+        public static final String VERSION_NOTES = "version_notes";
         public static final String IMAGE_URI_STRING = "image_uri";
         public static final String CLAY_BODY = "clay_body";
         public static final String GLAZES = "glazes";
         public static final String FIRING_CYCLE = "firing_cycle";
         public static final String BISQUED_TO = "bisqued_to";
-        public static final String PRIMARY_NOTES = "primary_notes";
-        public static final String SECONDARY_NOTES = "secondary_notes";
 
     }
 
@@ -184,7 +176,6 @@ public class DbHelper extends SQLiteOpenHelper {
 
         public static final String KILN_TYPE = "kiln_type";
         public static final String RAMP_HOLD_LONG_STRING = "ramp_hold_long_string";
-        public static final String NOTES = "notes";
     }
 
     public static class IngredientCN implements BaseColumns {
@@ -193,56 +184,55 @@ public class DbHelper extends SQLiteOpenHelper {
         public static final String ALIASES = "aliases";
         public static final String OXIDE_QUANTITY_LONG_STRING = "oxide_quantity_long_string";
         public static final String COST_PER_KG = "cost_per_kg";
-        public static final String NOTES = "notes";
+
+    }
+
+
+    private static String generateCreateEntriesString(String tableName, String... rowNames) {
+        String createEntriesString = "CREATE TABLE IF NOT EXISTS " + tableName +
+                " (" + BaseColumns._ID + " INTEGER PRIMARY KEY," + CREATE_ENTRIES_HEADER;
+
+        for (int i = 0; i < rowNames.length; i++)
+            createEntriesString += "," + rowNames[i] + " TEXT";
+        createEntriesString += ");";
+
+        return createEntriesString;
     }
 
     private static final String SQL_CREATE_ENTRIES_SINGLE =
-            "CREATE TABLE IF NOT EXISTS " + SingleCN.TABLE_NAME + " (" +
-                    SingleCN._ID + " INTEGER PRIMARY KEY," +
-                    CREATE_ENTRIES_HEADER +
-                    SingleCN.FINISH + " TEXT," +
-                    SingleCN.OPACITY + " TEXT," +
-                    SingleCN.ATMOSPHERE + " TEXT," +
-                    SingleCN.CLAY_BODY + " TEXT," +
-                    SingleCN.APPLICATION + " TEXT," +
-                    SingleCN.IMAGE_URI_STRING + " TEXT," +
-                    SingleCN.SPGR + " TEXT," +
-                    SingleCN.MATERIALS + " TEXT," +
-                    SingleCN.ADDITIONS + " TEXT," +
-                    SingleCN.FIRING_CYCLE + " TEXT," +
-                    SingleCN.BISQUED_TO + " TEXT," +
-                    SingleCN.PRIMARY_NOTES + " TEXT," +
-                    SingleCN.SECONDARY_NOTES + " TEXT);";
+            generateCreateEntriesString(SingleCN.TABLE_NAME,
+                    SingleCN.FINISH,
+                    SingleCN.OPACITY,
+                    SingleCN.ATMOSPHERE,
+                    SingleCN.CLAY_BODY,
+                    SingleCN.APPLICATION,
+                    SingleCN.VERSION_NOTES,
+                    SingleCN.IMAGE_URI_STRING,
+                    SingleCN.SPGR,
+                    SingleCN.MATERIALS,
+                    SingleCN.ADDITIONS,
+                    SingleCN.FIRING_CYCLE,
+                    SingleCN.BISQUED_TO);
 
     private static final String SQL_CREATE_ENTRIES_COMBO =
-            "CREATE TABLE " + ComboCN.TABLE_NAME + " (" +
-                    ComboCN._ID + " INTEGER PRIMARY KEY," +
-                    CREATE_ENTRIES_HEADER +
-                    ComboCN.IMAGE_URI_STRING + " TEXT," +
-                    ComboCN.CLAY_BODY + " TEXT," +
-                    ComboCN.GLAZES + " TEXT," +
-                    ComboCN.FIRING_CYCLE + " TEXT," +
-                    ComboCN.BISQUED_TO + " TEXT," +
-                    ComboCN.PRIMARY_NOTES + " TEXT," +
-                    ComboCN.SECONDARY_NOTES + " TEXT" +
-                    ");";
+            generateCreateEntriesString(ComboCN.TABLE_NAME,
+                    ComboCN.VERSION_NOTES,
+                    ComboCN.IMAGE_URI_STRING,
+                    ComboCN.CLAY_BODY,
+                    ComboCN.GLAZES,
+                    ComboCN.FIRING_CYCLE,
+                    ComboCN.BISQUED_TO);
 
     private static final String SQL_CREATE_ENTRIES_FIRINGCYCLE =
-            "CREATE TABLE " + FiringCycleCN.TABLE_NAME + " (" +
-                    FiringCycleCN._ID + " INTEGER PRIMARY KEY," +
-                    CREATE_ENTRIES_HEADER +
-                    FiringCycleCN.KILN_TYPE + " TEXT," +
-                    FiringCycleCN.RAMP_HOLD_LONG_STRING + " TEXT," +
-                    FiringCycleCN.NOTES + " TEXT);";
+            generateCreateEntriesString(FiringCycleCN.TABLE_NAME,
+                    FiringCycleCN.KILN_TYPE,
+                    FiringCycleCN.RAMP_HOLD_LONG_STRING);
 
     private static final String SQL_CREATE_ENTRIES_INGREDIENT =
-            "CREATE TABLE " + IngredientCN.TABLE_NAME + " (" +
-                    IngredientCN._ID + " INTEGER PRIMARY KEY," +
-                    CREATE_ENTRIES_HEADER +
-                    IngredientCN.ALIASES + " TEXT," +
-                    IngredientCN.OXIDE_QUANTITY_LONG_STRING + " TEXT," +
-                    IngredientCN.COST_PER_KG + " TEXT," +
-                    IngredientCN.NOTES + " TEXT);";
+            generateCreateEntriesString(IngredientCN.TABLE_NAME,
+                    IngredientCN.ALIASES,
+                    IngredientCN.OXIDE_QUANTITY_LONG_STRING,
+                    IngredientCN.COST_PER_KG);
 
 
     /*--------------------INHERITED DB FUNCTIONS--------------------*/

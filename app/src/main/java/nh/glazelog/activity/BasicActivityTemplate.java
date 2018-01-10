@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import nh.glazelog.DeleteDialog;
+import nh.glazelog.KeyValues;
 import nh.glazelog.R;
 import nh.glazelog.RenameDialog;
 import nh.glazelog.Util;
@@ -37,9 +38,9 @@ public class BasicActivityTemplate extends AppCompatActivity {
         ab.show();
 
         Intent intent = getIntent();
-        firingCycle = intent.getParcelableExtra(GlazeList.KEY_FIRING_CYCLE);
+        firingCycle = intent.getParcelableExtra(KeyValues.KEY_FIRING_CYCLE);
         if (firingCycle == null){
-            String name = intent.getStringExtra(GlazeList.KEY_NAME);
+            String name = intent.getStringExtra(KeyValues.KEY_NAME);
             firingCycle = new FiringCycle(name);
         }
 

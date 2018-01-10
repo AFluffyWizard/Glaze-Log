@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TableLayout;
@@ -32,20 +33,20 @@ public class EditRecipe extends AppCompatActivity {
 
     DbHelper dbHelper;
     Glaze parentGlaze;
-    TableLayout recipeMaterialsTable;
-    TableLayout recipeAdditionsTable;
+    TableLayout materialsTable;
+    TableLayout additionsTable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_recipe);
-        recipeMaterialsTable = (TableLayout)findViewById(R.id.recipeMaterialsTable);
-        recipeAdditionsTable = (TableLayout)findViewById(R.id.recipeAdditionsTable);
+        materialsTable = (TableLayout)findViewById(R.id.recipeMaterialsTable);
+        additionsTable = (TableLayout)findViewById(R.id.recipeAdditionsTable);
 
         dbHelper = DbHelper.getSingletonInstance(getApplicationContext());
 
         Intent intent = getIntent();
-        parentGlaze = intent.getParcelableExtra(KeyValues.KEY_RECIPE);
+        parentGlaze = intent.getParcelableExtra(KeyValues.KEY_GLAZE_EDITRECIPE);
 
         setSupportActionBar((Toolbar) findViewById(R.id.actionbarDefault));
         ActionBar ab = getSupportActionBar();
@@ -55,11 +56,27 @@ public class EditRecipe extends AppCompatActivity {
 
 
         for (IngredientQuantity iq : parentGlaze.getMaterials())
-            addRecipeRow(iq,recipeMaterialsTable,true);
+            addRecipeRow(iq,materialsTable,true);
 
         for (IngredientQuantity iq : parentGlaze.getAdditions())
-            addRecipeRow(iq,recipeAdditionsTable,false);
+            addRecipeRow(iq,additionsTable,false);
 
+
+        Button materialsAddLineButton = (Button) findViewById(R.id.materialAddLineButton);
+        materialsAddLineButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addRecipeRow(null,materialsTable,true);
+            }
+        });
+
+        Button additionsAddLineButton = (Button) findViewById(R.id.additionsAddLineButton);
+        additionsAddLineButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addRecipeRow(null,additionsTable,true);
+            }
+        });
 
 
     }
@@ -118,7 +135,7 @@ public class EditRecipe extends AppCompatActivity {
                 ingredient.setOnItemSelectedListener(new IngredientSpinnerSaver(getApplicationContext(), parentGlaze,recipeTable,isMaterials));
                 amount.addTextChangedListener(new IngredientTextSaver(getApplicationContext(), parentGlaze,recipeTable,isMaterials));
             }
-        }, Util.CONST_WAIT_ADD_LISTENER);
+        }, Util.CONST_DELAY_ADD_LISTENER);
 
         recipeTable.addView(recipeRow);
     }
@@ -149,8 +166,8 @@ public class EditRecipe extends AppCompatActivity {
      * Nick Hansen 11/13/17
      */
     void fixTables () {
-        recipeMaterialsTable.requestLayout();
-        recipeAdditionsTable.requestLayout();
+        materialsTable.requestLayout();
+        additionsTable.requestLayout();
     }
 
 

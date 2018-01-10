@@ -1,18 +1,15 @@
 package nh.glazelog.activity;
 
 import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -20,7 +17,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import nh.glazelog.ConfirmDialog;
 import nh.glazelog.DeleteDialog;
 import nh.glazelog.KeyValues;
 import nh.glazelog.R;
@@ -56,6 +52,7 @@ public class SingleGlaze extends AppCompatActivity {
         glaze = intent.getParcelableArrayListExtra(KeyValues.KEY_GLAZE_SINGLE);
         if (glaze == null) {
             glaze = new ArrayList<>();
+            // TODO - CREATE SOME SYSTEM TO NAME NEW GLAZES, AND ENSURE THERE ARE NO CONFLICTS (other glazes with that name)
             glaze.add(new Glaze());
             dbHelper.write(glaze.get(0));
         }
@@ -91,13 +88,10 @@ public class SingleGlaze extends AppCompatActivity {
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setHomeButtonEnabled(true);
-        ab.setTitle("");
+        ab.setTitle(rootGlaze.getName());
         ab.show();
 
         // fills in the version-independent fields
-        TextView glazeName = (TextView) findViewById(R.id.glazeNameTextView);
-        glazeName.setText(rootGlaze.getName());
-
         final Spinner finishSpinner = (Spinner) findViewById(R.id.finishSpinner);
         finishSpinner.setAdapter(new ArrayAdapter<Finish>(this, R.layout.spinner_item_small, Finish.values()));
         Util.setSpinnerSelection(finishSpinner,rootGlaze.getFinish());

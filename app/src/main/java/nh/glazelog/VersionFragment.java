@@ -15,7 +15,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -28,10 +30,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import nh.glazelog.activity.EditFiringCycle;
+import nh.glazelog.activity.EditRecipe;
 import nh.glazelog.database.DbHelper;
 import nh.glazelog.database.SimpleSpinnerSaver;
 import nh.glazelog.database.SimpleTextSaver;
+import nh.glazelog.database.Storable;
 import nh.glazelog.glaze.Cone;
+import nh.glazelog.glaze.FiringCycle;
 import nh.glazelog.glaze.Glaze;
 import nh.glazelog.glaze.IngredientQuantity;
 import nh.glazelog.glaze.RampHold;
@@ -49,6 +55,7 @@ import static nh.glazelog.Util.PERMISSION_USE_INTERNAL_STORAGE;
 public class VersionFragment extends Fragment {
 
     Glaze gVer;
+    ArrayList<FiringCycle> firingCycles;
     int verNum;
     LayoutInflater inflater;
     private View page;
@@ -58,31 +65,33 @@ public class VersionFragment extends Fragment {
     private static final double newImageScale = 0.1;
 
     private TextView versionField;
-    private EditText primaryNotes;
+    private EditText versionNotes;
     private ImageView deleteVersion;
     private ImageView testTileImage;
     private File imageFile;
     private Uri imageUri;
     private TextView spgrField;
+    private Button recipeEditButton;
     private TableLayout recipeMaterialsTable;
     private TableLayout recipeAdditionsTable;
+    private Spinner firingcycleSpinner;
     private Spinner bisqueSpinner;
     private TableLayout firingCycleTable;
-    private EditText secondaryNotes;
+    private EditText notes;
 
     @Override
     public View onCreateView (final LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
         Bundle args = getArguments();
-        gVer = args.getParcelable(VersionPagerAdapter.KEY_GLAZE_VERSION);
-        verNum = args.getInt(VersionPagerAdapter.KEY_GLAZE_VERSION_NUMBER) + 1;
+        gVer = args.getParcelable(KeyValues.KEY_GLAZE_VERSION);
+        verNum = args.getInt(KeyValues.KEY_GLAZE_VERSION_NUMBER) + 1;
         this.inflater = inflater;
         page = inflater.inflate(R.layout.versionfragment_single, container, false);
 
         versionField = (TextView) page.findViewById(R.id.versionField);
         versionField.setText(new Integer(verNum).toString());
 
-        primaryNotes = (EditText) page.findViewById(R.id.primaryNotes);
-        primaryNotes.setText(gVer.getPrimaryNotes());
+        versionNotes = (EditText) page.findViewById(R.id.versionNotes);
+        versionNotes.setText(gVer.getVersionNotes());
 
         deleteVersion = (ImageView) page.findViewById(R.id.deleteVersionImageView);
 
@@ -92,33 +101,34 @@ public class VersionFragment extends Fragment {
         spgrField = (TextView) page.findViewById(R.id.spgrField);
         spgrField.setText(new Double(gVer.getSpgr()).toString());
 
+        recipeEditButton = (Button) page.findViewById(R.id.recipeEditButton);
+
         recipeMaterialsTable = (TableLayout) page.findViewById(R.id.recipeMaterialsTable);
         ArrayList<IngredientQuantity> materialsList = gVer.getMaterials();
-        if (materialsList.size() == 0)
-            addRecipeRow(null,recipeMaterialsTable);
-        else
-            for (IngredientQuantity iq : materialsList) addRecipeRow(iq,recipeMaterialsTable);
+        if (materialsList.size() == 0)  addRecipeRow(null,recipeMaterialsTable);
+        else  for (IngredientQuantity iq : materialsList) addRecipeRow(iq,recipeMaterialsTable);
 
         recipeAdditionsTable = (TableLayout) page.findViewById(R.id.recipeAdditionsTable);
         ArrayList<IngredientQuantity> additionsList = gVer.getAdditions();
-        if (additionsList.size() == 0)
-            addRecipeRow(null,recipeAdditionsTable);
-        else
-            for (IngredientQuantity iq : additionsList) addRecipeRow(iq,recipeAdditionsTable);
+        if (additionsList.size() == 0)  addRecipeRow(null,recipeAdditionsTable);
+        else  for (IngredientQuantity iq : additionsList) addRecipeRow(iq,recipeAdditionsTable);
+
+        firingcycleSpinner = (Spinner) page.findViewById(R.id.firingcycleSpinner);
+        firingCycles = Util.typeUntypedList(DbHelper.getSingletonInstance(getContext()).readAll(Storable.Type.FIRING_CYCLE));
+        firingCycles.add(0,new FiringCycle(getString(R.string.glaze_firingcycle_makenew)));
+        firingcycleSpinner.setAdapter(new FiringCycleArrayAdapter<>(getContext(),R.layout.spinner_item_small,firingCycles));
 
         bisqueSpinner = (Spinner) page.findViewById(R.id.bisqueSpinner);
-        bisqueSpinner.setAdapter(new ArrayAdapter<Cone>(this.getContext(),R.layout.spinner_item_small,Cone.values()));
-        Util.setSpinnerSelection(bisqueSpinner,gVer.getBisquedTo()); // default selection
+        bisqueSpinner.setAdapter(new ArrayAdapter<>(getContext(),R.layout.spinner_item_small,Cone.values()));
+        Util.setSpinnerSelection(bisqueSpinner,gVer.getBisquedTo());
 
         firingCycleTable = (TableLayout) page.findViewById(R.id.firingcycleTable);
         ArrayList<RampHold> firingCycle = gVer.getFiringCycle();
-        if (firingCycle.size() == 0)
-            addFiringCycleRow(null);
-        else
-            for (RampHold rh : firingCycle) addFiringCycleRow(rh);
+        if (firingCycle.size() == 0)  addFiringCycleRow(null);
+        else  for (RampHold rh : firingCycle) addFiringCycleRow(rh);
 
-        secondaryNotes = (EditText) page.findViewById(R.id.secondaryNotes);
-        secondaryNotes.setText(gVer.getSecondaryNotes());
+        notes = (EditText) page.findViewById(R.id.notes);
+        notes.setText(gVer.getNotes());
 
 
 
@@ -127,31 +137,39 @@ public class VersionFragment extends Fragment {
             public void run() {
                 addChangeListeners();
             }
-        },Util.CONST_WAIT_ADD_LISTENER);
+        },Util.CONST_DELAY_ADD_LISTENER);
 
         return page;
     }
 
     private void addChangeListeners() {
-        primaryNotes.addTextChangedListener(new SimpleTextSaver(getContext(),gVer, DbHelper.SingleCN.PRIMARY_NOTES,false));
+        versionNotes.addTextChangedListener(new SimpleTextSaver(getContext(),gVer, DbHelper.SingleCN.VERSION_NOTES,false));
 
         if (verNum == 1) deleteVersion.setVisibility(GONE);
         else {
             deleteVersion.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ConfirmDialog confirmDelete = new ConfirmDialog(getContext(), true, "to delete this version? \nWARNING: this CANNOT be undone.",
-                            new ConfirmDialog.Action() {
-                                @Override
-                                public void action() {
-                                    deleteVersion();
-                                }
-                            });
-                    confirmDelete.show();
+                    DeleteDialog deleteVersionDialog = new DeleteDialog(getContext(), "version", new DeleteDialog.Action() {
+                        @Override
+                        public void action() {
+                            deleteVersion();
+                        }
+                    });
+                    deleteVersionDialog.show();
                 }
             });
 
         }
+
+        recipeEditButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent editRecipeIntent = new Intent(getContext(),EditRecipe.class);
+                editRecipeIntent.putExtra(KeyValues.KEY_GLAZE_EDITRECIPE,gVer);
+                startActivity(editRecipeIntent);
+            }
+        });
 
         testTileImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -161,9 +179,23 @@ public class VersionFragment extends Fragment {
             }
         });
 
+        firingcycleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Intent editFcIntent = new Intent(getContext(), EditFiringCycle.class);
+                editFcIntent.putExtra(KeyValues.KEY_FIRING_CYCLE,firingCycles.get(position));
+                startActivity(editFcIntent);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // do nothing
+            }
+        });
+
         bisqueSpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getContext(),gVer, DbHelper.SingleCN.BISQUED_TO,false));
 
-        secondaryNotes.addTextChangedListener(new SimpleTextSaver(getContext(),gVer, DbHelper.SingleCN.SECONDARY_NOTES,false));
+        notes.addTextChangedListener(new SimpleTextSaver(getContext(),gVer, DbHelper.CCN_NOTES,false));
     }
 
 
@@ -189,9 +221,9 @@ public class VersionFragment extends Fragment {
     private void addFiringCycleRow(@Nullable RampHold rh) {
         final TableRow firingCycleRow = (TableRow) inflater.inflate(R.layout.tablerow_firingcycle,null);
 
-        final TextView temperature = (TextView) firingCycleRow.findViewById(R.id.temperatureEditText);
-        final TextView rate = (TextView) firingCycleRow.findViewById(R.id.rateEditText);
-        final TextView hold = (TextView) firingCycleRow.findViewById(R.id.holdEditText);
+        final TextView temperature = (TextView) firingCycleRow.findViewById(R.id.temperatureLabel);
+        final TextView rate = (TextView) firingCycleRow.findViewById(R.id.rateLabel);
+        final TextView hold = (TextView) firingCycleRow.findViewById(R.id.holdLabel);
 
         if (rh == null) {
             temperature.setText("");

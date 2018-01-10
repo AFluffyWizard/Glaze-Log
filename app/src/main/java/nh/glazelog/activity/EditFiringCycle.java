@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TableLayout;
@@ -81,6 +82,13 @@ public class EditFiringCycle extends AppCompatActivity {
             addFiringCycleRow(rh);
         }
 
+        Button addLineButton = (Button) findViewById(R.id.firingCycleAddLineButton);
+        addLineButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addFiringCycleRow(null);
+            }
+        });
 
 
 
@@ -132,7 +140,7 @@ public class EditFiringCycle extends AppCompatActivity {
                 rate.addTextChangedListener(new FiringCycleTextSaver(getApplicationContext(),firingCycle,firingCycleTable));
                 hold.addTextChangedListener(new FiringCycleTextSaver(getApplicationContext(),firingCycle,firingCycleTable));
             }
-        }, Util.CONST_WAIT_ADD_LISTENER);
+        }, Util.CONST_DELAY_ADD_LISTENER);
 
         firingCycleTable.addView(firingCycleRow);
     }

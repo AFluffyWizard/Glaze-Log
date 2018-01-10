@@ -96,7 +96,8 @@ public class GlazeList extends AppCompatActivity {
         // perform init actions
         getSupportActionBar().setTitle(listTitleResId);
         if (navDrawer != null) navDrawer.closeDrawer(Gravity.LEFT,true);
-        newItemDialog.setTitle(getString(R.string.dialog_newitem_title) + getString(listTitleResId));
+        String listTitle = getString(listTitleResId);
+        newItemDialog.setTitle(getString(R.string.dialog_newitem_title) + " " + listTitle.substring(0,listTitle.length()-1));
 
         // create a reference to the list
         LinearLayout list = (LinearLayout) findViewById(R.id.layoutList);
@@ -129,7 +130,7 @@ public class GlazeList extends AppCompatActivity {
             nameLabel.setText(rootItem.getName());
 
             TextView editDateLabel = (TextView) itemView.findViewById(R.id.dateEditedLabel);
-            editDateLabel.setText(Util.getShortDate(rootItem.getDateEditedRaw()));
+            editDateLabel.setText(Util.getShortDate(Util.getMostRecentEditDate(itemList)));
 
             TextView secondaryInfoLabel = (TextView) itemView.findViewById(R.id.secondaryInfoLabel);
             secondaryInfoLabel.setText(currentItem.getSecondaryInfo(itemList));
