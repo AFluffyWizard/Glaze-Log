@@ -206,25 +206,25 @@
         android:layout_marginEnd="@dimen/layout_secondary_inset">
     </TableLayout>
 
-    <TextView
-        android:id="@+id/firingcycleLabel"
+    <Spinner
+        android:id="@+id/firingcycleSpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/layout_primary_inset"
         android:layout_marginTop="@dimen/layout_inter_section_separator"
-        android:text="@string/glaze_firingcycle_label"
         android:textAppearance="@style/HeaderText"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/recipeAdditionsTable"
         android:layout_marginStart="@dimen/layout_primary_inset" />
 
-    <Spinner
-        android:id="@+id/firingcycleSpinner"
+    <Button
+        android:id="@+id/firingcycleEditButton"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/button_addline_height"
+        android:layout_height="wrap_content"
+        android:text="@string/glaze_button_label_edit"
         android:layout_marginLeft="@dimen/layout_header_to_field_separator"
-        app:layout_constraintLeft_toRightOf="@+id/firingcycleLabel"
-        app:layout_constraintBaseline_toBaselineOf="@+id/firingcycleLabel"
+        app:layout_constraintLeft_toRightOf="@+id/firingcycleSpinner"
+        app:layout_constraintBaseline_toBaselineOf="@+id/firingcycleSpinner"
         />
 
     <TextView
@@ -234,7 +234,7 @@
         android:layout_marginLeft="@dimen/layout_secondary_inset"
         android:text="@string/firingcycle_bisque_label"
         android:textAppearance="@style/SubtitleText"
-        app:layout_constraintTop_toBottomOf="@+id/firingcycleLabel"
+        app:layout_constraintTop_toBottomOf="@+id/firingcycleSpinner"
         app:layout_constraintLeft_toLeftOf="parent" />
 
     <Spinner

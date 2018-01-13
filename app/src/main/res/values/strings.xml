@@ -56,5 +56,7 @@
     <string name="dialog_delete_warning">WARNING: This can not be undone.</string>
     <string name="dialog_name_label">Name:</string>
     <string name="glaze_button_label_edit">Edit</string>
-    <string name="glaze_firingcycle_makenew">New Firing Cycle...</string>
+    <string name="glaze_firingcycle_makenew">Create New Firing Cycle</string>
+    <string name="glaze_firingcycle_spinner_hint">Select Firing Cycle</string>
+    <string name="glaze_button_label_norecipe">Enter Recipe</string>
 </resources>

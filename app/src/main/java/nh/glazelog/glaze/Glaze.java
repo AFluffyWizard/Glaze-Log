@@ -156,7 +156,7 @@ public class Glaze implements Parcelable,Storable,Listable {
     public ArrayList<IngredientQuantity> getAdditions() {return additions;}
     public void setAdditions(ArrayList<IngredientQuantity> additions) {this.additions = additions;}
     public String getFiringCycleName() {return firingCycle;}
-    public ArrayList<RampHold> getFiringCycle() {
+    public FiringCycle getFiringCycle() {
         ArrayList<?> rh = DbHelper.getSingletonInstance(
                 new Activity()).readSingle(Type.FIRING_CYCLE,DbHelper.CCN_NAME, getFiringCycleName());
                 /* I am very much aware it is totally retarded
@@ -172,7 +172,8 @@ public class Glaze implements Parcelable,Storable,Listable {
                  *
                  * Nick Hansen - 1/9/18
                  */
-        return Util.typeUntypedList(rh);
+        if (rh.size() == 0) return new FiringCycle();
+        else return (FiringCycle)rh.get(0);
     }
     public void setFiringCycle(String firingCycle) {this.firingCycle = firingCycle;}
     public Cone getBisquedTo() {return bisquedTo;}
@@ -184,8 +185,8 @@ public class Glaze implements Parcelable,Storable,Listable {
     public String getSecondaryInfo(ArrayList<?> itemInfo) {
         Glaze currentGlaze = (Glaze) itemInfo.get(itemInfo.size()-1);
         Cone closestCone = Cone.NONE;
-        if (currentGlaze.getFiringCycle().size() != 0)
-            closestCone = Cone.getClosestConeF(RampHold.getHighestTemp(currentGlaze.getFiringCycle()));
+        if (currentGlaze.getFiringCycle().getRampHolds().size() != 0)
+            closestCone = Cone.getClosestConeF(RampHold.getHighestTemp(currentGlaze.getFiringCycle().getRampHolds()));
 
         return closestCone.toString();
     }

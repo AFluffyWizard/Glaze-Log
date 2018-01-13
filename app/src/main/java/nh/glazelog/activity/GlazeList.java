@@ -31,6 +31,8 @@ import nh.glazelog.Util;
 import nh.glazelog.database.*;
 import nh.glazelog.glaze.*;
 
+import static android.view.View.GONE;
+
 public class GlazeList extends AppCompatActivity {
 
 
@@ -78,7 +80,7 @@ public class GlazeList extends AppCompatActivity {
         });
         newItemDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Create", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                openNewItem(itemNameEditText.getText().toString());
+                openNewItem(itemNameEditText.getText().toString().trim());
             }
         });
 
@@ -133,6 +135,7 @@ public class GlazeList extends AppCompatActivity {
 
             TextView secondaryInfoLabel = (TextView) itemView.findViewById(R.id.secondaryInfoLabel);
             secondaryInfoLabel.setText(currentItem.getSecondaryInfo(itemList));
+            if (secondaryInfoLabel.getText().equals("GONE")) secondaryInfoLabel.setVisibility(GONE);
 
             if (type.hasImage()) {
                 ImageView previewImage = (ImageView) itemView.findViewById(R.id.previewImageView);

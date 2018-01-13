@@ -62,17 +62,27 @@ public class FiringCycleArrayAdapter<T> extends ArrayAdapter<T> {
         TextView subtitle = (TextView) convertView.findViewById(R.id.firingcycleSubtitle);
         subtitle.setText(fc.getSecondaryInfo(null));
 
+        if (fc.getName().equals(getContext().getString(R.string.glaze_firingcycle_makenew))) {
+            name.setTextColor(name.getHintTextColors());
+            subtitle.setVisibility(GONE);
+        }
+
         return convertView;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
-        if (convertView == null) convertView = inflater.inflate(R.layout.spinner_item_small,parent,false);
+        if (convertView == null) convertView = inflater.inflate(R.layout.spinner_item_large,parent,false);
         FiringCycle fc = (FiringCycle)getItem(position);
 
         TextView name = (TextView) convertView.findViewById(R.id.spinnerItem);
         name.setText(fc.getName());
+
+        if (fc.getName().equals(getContext().getString(R.string.glaze_firingcycle_makenew))) {
+            name.setTextColor(name.getHintTextColors());
+            name.setText(R.string.glaze_firingcycle_spinner_hint);
+        }
 
         return convertView;
     }

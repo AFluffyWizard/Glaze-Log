@@ -42,7 +42,7 @@ public class RenameDialog extends AlertDialog{
 
         setButton(DialogInterface.BUTTON_POSITIVE, "Rename", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                String newName = ((TextView)renameView.findViewById(R.id.newNameField)).getText().toString();
+                String newName = ((TextView)renameView.findViewById(R.id.newNameField)).getText().toString().trim();
                 onRename.action(newName);
             }
         });

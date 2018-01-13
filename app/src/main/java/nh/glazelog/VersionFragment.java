@@ -30,7 +30,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import nh.glazelog.activity.EditFiringCycle;
 import nh.glazelog.activity.EditRecipe;
 import nh.glazelog.database.DbHelper;
 import nh.glazelog.database.SimpleSpinnerSaver;
@@ -56,6 +55,7 @@ public class VersionFragment extends Fragment {
 
     Glaze gVer;
     ArrayList<FiringCycle> firingCycles;
+    FiringCycle selectedFiringCycle;
     int verNum;
     LayoutInflater inflater;
     private View page;
@@ -75,6 +75,7 @@ public class VersionFragment extends Fragment {
     private TableLayout recipeMaterialsTable;
     private TableLayout recipeAdditionsTable;
     private Spinner firingcycleSpinner;
+    private Button firingcycleEditButton;
     private Spinner bisqueSpinner;
     private TableLayout firingCycleTable;
     private EditText notes;
@@ -99,33 +100,37 @@ public class VersionFragment extends Fragment {
         if (!gVer.getImageUri().equals(Uri.EMPTY)) testTileImage.setImageURI(gVer.getImageUri());
 
         spgrField = (TextView) page.findViewById(R.id.spgrField);
-        spgrField.setText(new Double(gVer.getSpgr()).toString());
+        Double spgr = new Double(gVer.getSpgr());
+        if (spgr != 0) spgrField.setText(spgr.toString());
+        else {
+            TextView spgrLabel = (TextView) page.findViewById(R.id.spgrLabel);
+            TextView spgrLabel2 = (TextView) page.findViewById(R.id.spgrLabel2);
+            spgrField.setVisibility(GONE);
+            spgrLabel.setVisibility(GONE);
+            spgrLabel2.setVisibility(GONE);
+        }
 
         recipeEditButton = (Button) page.findViewById(R.id.recipeEditButton);
 
         recipeMaterialsTable = (TableLayout) page.findViewById(R.id.recipeMaterialsTable);
-        ArrayList<IngredientQuantity> materialsList = gVer.getMaterials();
-        if (materialsList.size() == 0)  addRecipeRow(null,recipeMaterialsTable);
-        else  for (IngredientQuantity iq : materialsList) addRecipeRow(iq,recipeMaterialsTable);
-
         recipeAdditionsTable = (TableLayout) page.findViewById(R.id.recipeAdditionsTable);
-        ArrayList<IngredientQuantity> additionsList = gVer.getAdditions();
-        if (additionsList.size() == 0)  addRecipeRow(null,recipeAdditionsTable);
-        else  for (IngredientQuantity iq : additionsList) addRecipeRow(iq,recipeAdditionsTable);
+        populateRecipeTables();
 
         firingcycleSpinner = (Spinner) page.findViewById(R.id.firingcycleSpinner);
         firingCycles = Util.typeUntypedList(DbHelper.getSingletonInstance(getContext()).readAll(Storable.Type.FIRING_CYCLE));
         firingCycles.add(0,new FiringCycle(getString(R.string.glaze_firingcycle_makenew)));
         firingcycleSpinner.setAdapter(new FiringCycleArrayAdapter<>(getContext(),R.layout.spinner_item_small,firingCycles));
 
-        bisqueSpinner = (Spinner) page.findViewById(R.id.bisqueSpinner);
+        firingcycleEditButton = (Button) page.findViewById(R.id.firingcycleEditButton);
+        if (firingcycleSpinner.getSelectedItemPosition() == 0) firingcycleEditButton.setVisibility(GONE);
+
+            bisqueSpinner = (Spinner) page.findViewById(R.id.bisqueSpinner);
         bisqueSpinner.setAdapter(new ArrayAdapter<>(getContext(),R.layout.spinner_item_small,Cone.values()));
         Util.setSpinnerSelection(bisqueSpinner,gVer.getBisquedTo());
 
         firingCycleTable = (TableLayout) page.findViewById(R.id.firingcycleTable);
-        ArrayList<RampHold> firingCycle = gVer.getFiringCycle();
-        if (firingCycle.size() == 0)  addFiringCycleRow(null);
-        else  for (RampHold rh : firingCycle) addFiringCycleRow(rh);
+        selectedFiringCycle = gVer.getFiringCycle();
+        populateFiringcycleTable();
 
         notes = (EditText) page.findViewById(R.id.notes);
         notes.setText(gVer.getNotes());
@@ -185,15 +190,23 @@ public class VersionFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 System.out.println("FIRING CYCLE SPINNER SELECTED");
-                Intent editFcIntent = new Intent(getContext(), EditFiringCycle.class);
-                System.out.println(firingCycles.get(position));
-                editFcIntent.putExtra(KeyValues.KEY_FIRING_CYCLE,firingCycles.get(position));
-                startActivity(editFcIntent);
+                selectedFiringCycle = firingCycles.get(position);
+                if (position == 0) firingcycleEditButton.callOnClick();
+                else populateFiringcycleTable();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 System.out.println("NOTHING SELECTED");
+            }
+        });
+
+        firingcycleEditButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent editFcIntent = new Intent(getContext(),EditRecipe.class);
+                editFcIntent.putExtra(KeyValues.KEY_FIRING_CYCLE, selectedFiringCycle);
+                startActivity(editFcIntent);
             }
         });
 
@@ -204,6 +217,31 @@ public class VersionFragment extends Fragment {
 
 
     /*--------------------ADD TABLE ROWS--------------------*/
+
+    private void populateFiringcycleTable () {
+        ArrayList<RampHold> ramps = selectedFiringCycle.getRampHolds();
+        if (ramps.size() == 0) firingCycleTable.setVisibility(GONE);
+        else for (RampHold rh : ramps) addFiringCycleRow(rh);
+    }
+
+    private void populateRecipeTables() {
+        TextView recipeMaterialsLabel = (TextView)page.findViewById(R.id.materialsLabel);
+        TextView recipeAdditionsLabel = (TextView)page.findViewById(R.id.additionsLabel);
+        ArrayList<IngredientQuantity> materialsList = gVer.getMaterials();
+        ArrayList<IngredientQuantity> additionsList = gVer.getAdditions();
+
+        if (materialsList.size() == 0)  {
+            recipeMaterialsLabel.setVisibility(GONE);
+            recipeAdditionsLabel.setVisibility(GONE);
+            recipeMaterialsTable.setVisibility(GONE);
+            recipeAdditionsTable.setVisibility(GONE);
+            recipeEditButton.setText(R.string.glaze_button_label_norecipe);
+        }
+        else {
+            for (IngredientQuantity iq : materialsList) addRecipeRow(iq,recipeMaterialsTable);
+            for (IngredientQuantity iq : additionsList) addRecipeRow(iq,recipeAdditionsTable);
+        }
+    }
 
     private void addRecipeRow (@Nullable IngredientQuantity iq, final TableLayout recipeTable) {
         final TableRow recipeRow = (TableRow) inflater.inflate(R.layout.tablerow_recipe,null);

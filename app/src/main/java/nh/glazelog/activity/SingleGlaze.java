@@ -199,8 +199,8 @@ public class SingleGlaze extends AppCompatActivity {
     @Override
     public boolean onPrepareOptionsMenu (Menu menu) {
         Cone closestCone = Cone.NONE;
-        if (rootGlaze.getFiringCycle().size() != 0)
-            closestCone = Cone.getClosestConeF(RampHold.getHighestTemp(glaze.get(glaze.size()-1).getFiringCycle()));
+        if (rootGlaze.getFiringCycle().getRampHolds().size() != 0)
+            closestCone = Cone.getClosestConeF(RampHold.getHighestTemp(glaze.get(glaze.size()-1).getFiringCycle().getRampHolds()));
         menu.findItem(R.id.text_cone).setTitle(closestCone.toString());
         return true;
     }
