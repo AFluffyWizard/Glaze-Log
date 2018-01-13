@@ -58,7 +58,7 @@ public class EditFiringCycle extends AppCompatActivity {
         ab.setDisplayHomeAsUpEnabled(true);
         ab.show();
 
-        renameDialog = new RenameDialog(getApplicationContext(), new RenameDialog.Action() {
+        renameDialog = new RenameDialog(this, new RenameDialog.Action() {
             @Override
             public void action(String newName) {
                 getSupportActionBar().setTitle(newName);
@@ -68,7 +68,7 @@ public class EditFiringCycle extends AppCompatActivity {
             }
         });
 
-        deleteDialog = new DeleteDialog(getApplicationContext(), "", new DeleteDialog.Action() {
+        deleteDialog = new DeleteDialog(this, "", new DeleteDialog.Action() {
             @Override
             public void action() {
                 dbHelper.delete(firingCycle, false);
@@ -102,7 +102,7 @@ public class EditFiringCycle extends AppCompatActivity {
 
     private void addFiringCycleRow(RampHold rh) {
         final TableRow firingCycleRow = (TableRow) getLayoutInflater().inflate(R.layout.tablerow_firingcycle,null);
-        final DeleteDialog deleteRowDialog = new DeleteDialog(getApplicationContext(), "row",
+        final DeleteDialog deleteRowDialog = new DeleteDialog(this, "row",
                 new DeleteDialog.Action() {
                     @Override
                     public void action() {

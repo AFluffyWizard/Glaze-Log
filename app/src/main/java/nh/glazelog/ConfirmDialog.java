@@ -24,7 +24,7 @@ public class ConfirmDialog extends AlertDialog {
     public ConfirmDialog(@NonNull Context context, boolean includePrefix, String text, @Nullable final Action onConfirm) {
         super(context);
         setTitle(R.string.app_name);
-        if (includePrefix) setMessage(getContext().getString(R.string.dialog_confirm_pretext) + text);
+        if (includePrefix) setMessage(getContext().getString(R.string.dialog_confirm_pretext) + " " + text);
         else setMessage(text);
         setCancelable(true);
 

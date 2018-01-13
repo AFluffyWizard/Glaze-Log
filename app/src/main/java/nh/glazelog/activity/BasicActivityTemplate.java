@@ -44,7 +44,7 @@ public class BasicActivityTemplate extends AppCompatActivity {
             firingCycle = new FiringCycle(name);
         }
 
-        renameDialog = new RenameDialog(getApplicationContext(), new RenameDialog.Action() {
+        renameDialog = new RenameDialog(this, new RenameDialog.Action() {
             @Override
             public void action(String newName) {
                 getSupportActionBar().setTitle(newName);
@@ -54,7 +54,7 @@ public class BasicActivityTemplate extends AppCompatActivity {
             }
         });
 
-        deleteDialog = new DeleteDialog(getApplicationContext(), "", new DeleteDialog.Action() {
+        deleteDialog = new DeleteDialog(this, "", new DeleteDialog.Action() {
             @Override
             public void action() {
                 dbHelper.delete(firingCycle, false);

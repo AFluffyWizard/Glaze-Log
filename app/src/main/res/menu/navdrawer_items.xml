@@ -3,22 +3,22 @@
 
     <item
         android:id="@+id/navDrawerSingle"
-        android:title="Glazes"
+        android:title="@string/list_title_single"
         android:orderInCategory="1"
         />
     <item
         android:id="@+id/navDrawerCombo"
-        android:title="Glaze Combinations"
+        android:title="@string/list_title_combo"
         android:orderInCategory="2"
         />
     <item
         android:id="@+id/navDrawerFiringCycle"
-        android:title="Firing Cycle"
+        android:title="@string/list_title_firingcycle"
         android:orderInCategory="3"
         />
     <item
         android:id="@+id/navDrawerIngredient"
-        android:title="Ingredients"
+        android:title="@string/list_title_ingredients"
         android:orderInCategory="4"
         />
 

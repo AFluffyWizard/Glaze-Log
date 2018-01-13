@@ -84,7 +84,7 @@ public class EditRecipe extends AppCompatActivity {
 
     private void addRecipeRow (IngredientQuantity iq, final TableLayout recipeTable, final boolean isMaterials) {
         final TableRow recipeRow = (TableRow) getLayoutInflater().inflate(R.layout.tablerow_recipe,null);
-        final DeleteDialog deleteDialog = new DeleteDialog(getApplicationContext(), "row", new DeleteDialog.Action() {
+        final DeleteDialog deleteDialog = new DeleteDialog(this, "row", new DeleteDialog.Action() {
             @Override
             public void action() {
                 recipeTable.removeView(recipeRow);

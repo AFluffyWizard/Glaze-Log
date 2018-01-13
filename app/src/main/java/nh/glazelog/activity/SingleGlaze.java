@@ -1,6 +1,8 @@
 package nh.glazelog.activity;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.PagerAdapter;
@@ -10,6 +12,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -17,6 +20,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import nh.glazelog.ConfirmDialog;
 import nh.glazelog.DeleteDialog;
 import nh.glazelog.KeyValues;
 import nh.glazelog.R;
@@ -37,8 +41,8 @@ public class SingleGlaze extends AppCompatActivity {
     DbHelper dbHelper;
     VersionPager versionPager;
 
-    private static RenameDialog renameDialog;
-    private static DeleteDialog deleteDialog;
+    private RenameDialog renameDialog;
+    private DeleteDialog deleteDialog;
 
     private static final int WAIT_ADD_LISTENER = 50;
 
@@ -52,24 +56,27 @@ public class SingleGlaze extends AppCompatActivity {
         glaze = intent.getParcelableArrayListExtra(KeyValues.KEY_GLAZE_SINGLE);
         if (glaze == null) {
             glaze = new ArrayList<>();
-            // TODO - CREATE SOME SYSTEM TO NAME NEW GLAZES, AND ENSURE THERE ARE NO CONFLICTS (other glazes with that name)
-            glaze.add(new Glaze());
+            // TODO - CREATE SOME SYSTEM TO ENSURE THERE ARE NO CONFLICTS IN NAMING (no other items with that name)
+            String newGlazeName = intent.getStringExtra(KeyValues.KEY_NAME);
+            glaze.add(new Glaze(newGlazeName));
             dbHelper.write(glaze.get(0));
         }
         rootGlaze = glaze.get(0);
         currentGlaze = glaze.get(glaze.size()-1);
 
-        renameDialog = new RenameDialog(getApplicationContext(), new RenameDialog.Action() {
+        renameDialog = new RenameDialog(this, new RenameDialog.Action() {
             @Override
             public void action(String newName) {
-                getSupportActionBar().setTitle(newName);
-                ContentValues newNameCv = new ContentValues();
-                newNameCv.put(DbHelper.CCN_NAME,newName);
-                dbHelper.appendAllVersions(glaze.get(0),newNameCv);
+                if (!newName.equals("")) {
+                    getSupportActionBar().setTitle(newName);
+                    ContentValues newNameCv = new ContentValues();
+                    newNameCv.put(DbHelper.CCN_NAME,newName);
+                    dbHelper.appendAllVersions(glaze.get(0),newNameCv);
+                }
             }
         });
 
-        deleteDialog = new DeleteDialog(getApplicationContext(), "", new DeleteDialog.Action() {
+        deleteDialog = new DeleteDialog(this, "glaze", new DeleteDialog.Action() {
             @Override
             public void action() {
                 dbHelper.delete(rootGlaze,true);

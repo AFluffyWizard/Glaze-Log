@@ -21,7 +21,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -69,7 +68,7 @@ public class GlazeList extends AppCompatActivity {
         ab.show();
 
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_new_name,null);
-        final EditText itemNameEditText = (EditText) dialogView.findViewById(R.id.nameEditText);
+        final EditText itemNameEditText = (EditText) dialogView.findViewById(R.id.newNameField);
         newItemDialog = new AlertDialog.Builder(this).create();
         newItemDialog.setView(dialogView);
         newItemDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {

@@ -142,6 +142,8 @@ public class VersionFragment extends Fragment {
         return page;
     }
 
+    /*--------------------CHANGE LISTENERS--------------------*/
+
     private void addChangeListeners() {
         versionNotes.addTextChangedListener(new SimpleTextSaver(getContext(),gVer, DbHelper.SingleCN.VERSION_NOTES,false));
 
@@ -150,7 +152,7 @@ public class VersionFragment extends Fragment {
             deleteVersion.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    DeleteDialog deleteVersionDialog = new DeleteDialog(getContext(), "version", new DeleteDialog.Action() {
+                    DeleteDialog deleteVersionDialog = new DeleteDialog(getActivity(), "version", new DeleteDialog.Action() {
                         @Override
                         public void action() {
                             deleteVersion();
@@ -182,14 +184,16 @@ public class VersionFragment extends Fragment {
         firingcycleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                System.out.println("FIRING CYCLE SPINNER SELECTED");
                 Intent editFcIntent = new Intent(getContext(), EditFiringCycle.class);
+                System.out.println(firingCycles.get(position));
                 editFcIntent.putExtra(KeyValues.KEY_FIRING_CYCLE,firingCycles.get(position));
                 startActivity(editFcIntent);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // do nothing
+                System.out.println("NOTHING SELECTED");
             }
         });
 

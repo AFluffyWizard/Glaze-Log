@@ -15,6 +15,12 @@ import nh.glazelog.database.Storable;
 
 /**
  * Created by Nick Hansen on 12/31/2017.
+ *
+ * I'd prefer to use an ArrayList of RampHold objects to represent firing cycles, and I did originally.
+ * However, I've realized there is more information I normally want to store about firing cycles,
+ * and not all firing cycles are as simple as electric ones.
+ * I've also built the database around saving/loading a column to/from a table with an object.
+ * These two reasons are why I've created this class.
  */
 
 public class FiringCycle implements Parcelable,Storable,Listable{
@@ -79,6 +85,11 @@ public class FiringCycle implements Parcelable,Storable,Listable{
     public void setKilnType(KilnType kilnType) {this.kilnType = kilnType;}
     public ArrayList<RampHold> getRampHolds() {return rampHolds;}
     public void setRampHolds(ArrayList<RampHold> rampHolds) {this.rampHolds = rampHolds;}
+
+
+    public String toString() {
+        return name + " " + kilnType + " " + getRampHolds().size() + "ramps";
+    }
 
 
     //listable implementation

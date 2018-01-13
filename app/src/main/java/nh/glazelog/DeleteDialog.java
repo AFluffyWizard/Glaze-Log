@@ -1,5 +1,6 @@
 package nh.glazelog;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
@@ -7,54 +8,47 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.TextView;
 
+//import android.app.AlertDialog;
+
 /**
  * Created by Nick Hansen on 11/3/2017.
+ *
+ * See RenameDialog for notes regarding my frustration with this fucking class
+ *
+ * Nick Hansen - 1/12/18
  */
 
-public class DeleteDialog extends AlertDialog {
+public class DeleteDialog extends AlertDialog{
 
-    Context context;
     public interface Action {
         public void action();
     }
-    Action onDeleteAction;
+    Action onDelete;
 
-    public DeleteDialog(@NonNull Context context, @NonNull String nameOfItem, @NonNull final Action onDelete) {
-        super(context);
-        this.context = context;
+    public DeleteDialog(@NonNull Activity parent, String toBeDeletedName, @NonNull final Action onDelete) {
+        super(parent);
+        this.onDelete = onDelete;
         setTitle(R.string.app_name);
-        setOnDeleteAction(onDelete);
-        setNameOfDeletedItem(nameOfItem);
+        setMessage(parent.getString(R.string.dialog_delete_text) + " " + toBeDeletedName + "?\n" +
+                parent.getString(R.string.dialog_delete_warning));
         setCancelable(true);
 
-        setButton(DialogInterface.BUTTON_POSITIVE, "Rename", new OnClickListener() {
+        setButton(DialogInterface.BUTTON_POSITIVE, "Delete", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                onDeleteAction.action();
+                onDelete.action();
             }
         });
-        setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new OnClickListener() {
+        setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 cancel();
             }
         });
     }
 
-    public void setNameOfDeletedItem(String nameOfItem) {
-        String text = context.getString(R.string.dialog_delete_text) + nameOfItem + "?\n" +
-                context.getString(R.string.dialog_delete_warning);
-        setMessage(text);
-    }
+    /* EXAMPLE onDelete()
 
-    public void setOnDeleteAction (Action onDelete) {
-        onDeleteAction = onDelete;
-    }
-
-    /* EXAMPLE onRename()
-
-        getSupportActionBar().setTitle(newName);
-        ContentValues newNameCv = new ContentValues();
-        newNameCv.put(DbHelper.CCN_NAME,newName);
-        dbHelper.append(firingCycle,newNameCv);
+        dbHelper.delete(rootGlaze,true);
+        navigateUp();
 
      */
 
