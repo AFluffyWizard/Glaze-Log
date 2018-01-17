@@ -36,11 +36,8 @@ public interface Storable {
         FIRING_CYCLE(DbHelper.FiringCycleCN.TABLE_NAME, false, EditFiringCycle.class, R.string.list_title_firingcycle, R.string.list_dialog_title_firingcycle),
         INGREDIENT(DbHelper.IngredientCN.TABLE_NAME, false, SingleGlaze.class, R.string.list_title_ingredient, R.string.list_dialog_title_ingredient);
 
-        // used for database
-        private String tableName;
-
-        // used for list
-        private boolean hasImage;
+        private String tableName; // used for database
+        private boolean hasImage; // used for list
         private Class activityClass;
         private int listTitle;
         private int dialogTitle;

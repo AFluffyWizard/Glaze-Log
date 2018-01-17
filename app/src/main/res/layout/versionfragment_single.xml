@@ -2,7 +2,6 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -29,18 +28,6 @@
         app:layout_constraintLeft_toRightOf="@+id/versionLabel"
         android:layout_marginStart="@dimen/layout_textview_to_textfield_separator" />
 
-    <Space
-        android:id="@+id/space2"
-        android:layout_width="2dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/space3"
-        app:layout_constraintLeft_toRightOf="@+id/versionField"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="16dp" />
-
     <EditText
         android:id="@+id/versionNotes"
         android:layout_width="0dp"
@@ -55,22 +42,12 @@
         android:inputType="text"
         android:maxLines="1"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toRightOf="@+id/space2"
+        app:layout_constraintLeft_toRightOf="@+id/versionField"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/deleteVersionImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/ic_clear_black_24dp"
-        android:layout_marginLeft="@dimen/layout_primary_inset"
-        android:layout_marginRight="@dimen/layout_primary_inset"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toRightOf="@+id/versionNotes"
-        app:layout_constraintBaseline_toBaselineOf="@+id/versionNotes"/>
-
     <Space
+        android:id="@+id/space"
         android:layout_width="0dp"
         android:layout_height="2dp"
         android:layout_marginLeft="16dp"
@@ -79,7 +56,6 @@
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="16dp"
         app:layout_constraintTop_toBottomOf="@+id/versionLabel"
-        android:id="@+id/space3"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp" />
 
@@ -90,13 +66,164 @@
         android:background="@drawable/noimg"
         android:scaleType="fitCenter"
         android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/space3"
+        app:layout_constraintTop_toBottomOf="@+id/space"
         android:layout_marginLeft="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginRight="16dp"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp" />
+
+    <TextView
+        android:id="@+id/finishLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/layout_primary_inset"
+        android:layout_marginStart="@dimen/layout_primary_inset"
+        android:layout_marginTop="@dimen/layout_primary_inset"
+        android:text="@string/glaze_finish_label"
+        android:textAppearance="@style/StandardText"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/finishSpinner"
+        app:layout_constraintTop_toBottomOf="@id/previewImageView" />
+
+    <Spinner
+        android:id="@+id/finishSpinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/layout_primary_inset"
+        android:layout_marginLeft="@dimen/layout_label_to_field_separator"
+        android:layout_marginRight="@dimen/layout_primary_inset"
+        android:layout_marginStart="@dimen/layout_label_to_field_separator"
+        app:layout_constraintBaseline_toBaselineOf="@+id/finishLabel"
+        app:layout_constraintLeft_toRightOf="@+id/finishLabel"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+        android:id="@+id/opacityLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/layout_primary_inset"
+        android:layout_marginStart="@dimen/layout_primary_inset"
+        android:layout_marginTop="@dimen/layout_intra_section_separator"
+        android:text="@string/glaze_opacity_label"
+        android:textAppearance="@style/StandardText"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/opacitySpinner"
+        app:layout_constraintTop_toBottomOf="@+id/finishLabel" />
+
+    <Spinner
+        android:id="@+id/opacitySpinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/layout_primary_inset"
+        android:layout_marginLeft="@dimen/layout_label_to_field_separator"
+        android:layout_marginRight="@dimen/layout_primary_inset"
+        android:layout_marginStart="@dimen/layout_label_to_field_separator"
+        app:layout_constraintBaseline_toBaselineOf="@+id/opacityLabel"
+        app:layout_constraintLeft_toRightOf="@+id/opacityLabel"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+        android:id="@+id/atmosLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/layout_primary_inset"
+        android:layout_marginStart="@dimen/layout_primary_inset"
+        android:layout_marginTop="@dimen/layout_intra_section_separator"
+        android:text="@string/glaze_atmos_label"
+        android:textAppearance="@style/StandardText"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/atmosSpinner"
+        app:layout_constraintTop_toBottomOf="@+id/opacityLabel" />
+
+    <Spinner
+        android:id="@+id/atmosSpinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/layout_primary_inset"
+        android:layout_marginLeft="@dimen/layout_label_to_field_separator"
+        android:layout_marginRight="@dimen/layout_primary_inset"
+        android:layout_marginStart="@dimen/layout_label_to_field_separator"
+        app:layout_constraintBaseline_toBaselineOf="@+id/atmosLabel"
+        app:layout_constraintLeft_toRightOf="@+id/atmosLabel"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+        android:id="@+id/bodyLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/layout_primary_inset"
+        android:layout_marginStart="@dimen/layout_primary_inset"
+        android:layout_marginTop="@dimen/layout_intra_section_separator"
+        android:text="@string/glaze_body_label"
+        android:textAppearance="@style/StandardText"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/bodyTextField"
+        app:layout_constraintTop_toBottomOf="@+id/atmosLabel" />
+
+    <EditText
+        android:id="@+id/bodyTextField"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/layout_primary_inset"
+        android:layout_marginLeft="@dimen/layout_label_to_field_separator"
+        android:layout_marginRight="@dimen/layout_primary_inset"
+        android:layout_marginStart="@dimen/layout_label_to_field_separator"
+        android:ems="10"
+        android:hint="@string/glaze_body_hint"
+        android:inputType="text"
+        app:layout_constraintBaseline_toBaselineOf="@+id/bodyLabel"
+        app:layout_constraintLeft_toRightOf="@+id/bodyLabel"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+        android:id="@+id/bisqueLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/layout_secondary_inset"
+        android:layout_marginTop="6dp"
+        android:text="@string/firingcycle_bisque_label"
+        android:textAppearance="@style/SubtitleText"
+        app:layout_constraintTop_toBottomOf="@+id/bodyLabel"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <Spinner
+        android:id="@+id/bisqueSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/layout_header_to_field_separator"
+        android:spinnerMode="dialog"
+        app:layout_constraintBaseline_toBaselineOf="@+id/bisqueLabel"
+        app:layout_constraintLeft_toRightOf="@+id/bisqueLabel" />
+
+    <TextView
+        android:id="@+id/applicationLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/layout_primary_inset"
+        android:layout_marginStart="@dimen/layout_primary_inset"
+        android:layout_marginTop="6dp"
+        android:text="@string/glaze_application_label"
+        android:textAppearance="@style/StandardText"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/applicationTextField"
+        app:layout_constraintTop_toBottomOf="@+id/bisqueLabel" />
+
+    <EditText
+        android:id="@+id/applicationTextField"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/layout_primary_inset"
+        android:layout_marginLeft="@dimen/layout_label_to_field_separator"
+        android:layout_marginRight="@dimen/layout_primary_inset"
+        android:layout_marginStart="@dimen/layout_label_to_field_separator"
+        android:ems="10"
+        android:hint="@string/glaze_applicaiton_hint"
+        android:inputType="text"
+        app:layout_constraintBaseline_toBaselineOf="@+id/applicationLabel"
+        app:layout_constraintLeft_toRightOf="@+id/applicationLabel"
+        app:layout_constraintRight_toRightOf="parent" />
 
     <TextView
         android:id="@+id/recipeLabel"
@@ -107,7 +234,7 @@
         android:text="@string/recipe_label"
         android:textAppearance="@style/HeaderText"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/previewImageView"
+        app:layout_constraintTop_toBottomOf="@+id/applicationLabel"
         android:layout_marginStart="@dimen/layout_primary_inset" />
 
     <Button
@@ -227,24 +354,6 @@
         app:layout_constraintBaseline_toBaselineOf="@+id/firingcycleSpinner"
         />
 
-    <TextView
-        android:id="@+id/bisqueLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/layout_secondary_inset"
-        android:text="@string/firingcycle_bisque_label"
-        android:textAppearance="@style/SubtitleText"
-        app:layout_constraintTop_toBottomOf="@+id/firingcycleSpinner"
-        app:layout_constraintLeft_toLeftOf="parent" />
-
-    <Spinner
-        android:id="@+id/bisqueSpinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/layout_header_to_field_separator"
-        app:layout_constraintBaseline_toBaselineOf="@+id/bisqueLabel"
-        app:layout_constraintLeft_toRightOf="@+id/bisqueLabel" />
-
     <TableLayout
         android:id="@+id/firingcycleTable"
         android:layout_width="0dp"
@@ -254,7 +363,7 @@
         android:layout_marginTop="@dimen/layout_header_to_field_separator"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bisqueLabel"
+        app:layout_constraintTop_toBottomOf="@+id/firingcycleSpinner"
         android:layout_marginStart="@dimen/layout_secondary_inset"
         android:layout_marginEnd="@dimen/layout_secondary_inset">
 

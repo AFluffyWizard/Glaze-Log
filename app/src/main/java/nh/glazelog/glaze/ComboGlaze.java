@@ -25,11 +25,12 @@ public class ComboGlaze implements Parcelable,Storable,Listable {
     private String tags;
     private String notes;
     private String versionNotes;
+    private int lastVersionOpen;
     private String imageUriString;
     private String clayBody;
+    private Cone bisquedTo;
     private ArrayList<ComboGlazeInfo> glazes;
     private ArrayList<RampHold> firingCycle;
-    private Cone bisquedTo;
 
 
     public ComboGlaze() {
@@ -39,11 +40,12 @@ public class ComboGlaze implements Parcelable,Storable,Listable {
         this.tags = "";
         this.notes = "";
         this.versionNotes = "";
+        this.lastVersionOpen = 0;
         this.imageUriString = "";
         this.clayBody = "";
+        this.bisquedTo = Cone.C05;
         this.glazes = new ArrayList<ComboGlazeInfo>();
         this.firingCycle = new ArrayList<RampHold>();
-        this.bisquedTo = Cone.C05;
     }
 
     public ComboGlaze (String name) {
@@ -52,18 +54,19 @@ public class ComboGlaze implements Parcelable,Storable,Listable {
     }
 
 
-    public ComboGlaze(String name, String dateCreated, String dateEdited, String tags, String notes, String versionNotes, String imageUriString, String clayBody, ArrayList<ComboGlazeInfo> glazes, ArrayList<RampHold> firingCycle, Cone bisquedTo) {
+    public ComboGlaze(String name, String dateCreated, String dateEdited, String tags, String notes, String versionNotes, int lastVersionOpen, String imageUriString, String clayBody, Cone bisquedTo, ArrayList<ComboGlazeInfo> glazes, ArrayList<RampHold> firingCycle) {
         this.name = name;
         this.dateCreated = dateCreated;
         this.dateEdited = dateEdited;
         this.tags = tags;
         this.notes = notes;
         this.versionNotes = versionNotes;
+        this.lastVersionOpen = lastVersionOpen;
         this.imageUriString = imageUriString;
         this.clayBody = clayBody;
+        this.bisquedTo = bisquedTo;
         this.glazes = glazes;
         this.firingCycle = firingCycle;
-        this.bisquedTo = bisquedTo;
     }
 
     public String getName() {return name;}
@@ -80,18 +83,20 @@ public class ComboGlaze implements Parcelable,Storable,Listable {
     public void setNotes(String notes) {this.notes = notes;}
     public String getVersionNotes() {return versionNotes;}
     public void setVersionNotes(String versionNotes) {this.versionNotes = versionNotes;}
+    public int getLastVersionOpen() {return lastVersionOpen;}
+    public void setLastVersionOpen(int lastVersionOpen) {this.lastVersionOpen = lastVersionOpen;}
     public Uri getImageUri() {if (imageUriString.equals("")) return Uri.EMPTY; else return Uri.parse(imageUriString);}
     private String getImageUriString () {return imageUriString;}
     public void setImageUri(Uri imageUri) {this.imageUriString = imageUri.toString();}
     public void setImageUri(String imageUriString) {this.imageUriString = imageUriString;}
     public String getClayBody() {return clayBody;}
     public void setClayBody(String clayBody) {this.clayBody = clayBody;}
+    public Cone getBisquedTo() {return bisquedTo;}
+    public void setBisquedTo(Cone bisquedTo) {this.bisquedTo = bisquedTo;}
     public ArrayList<ComboGlazeInfo> getGlazes() {return glazes;}
     public void setGlazes(ArrayList<ComboGlazeInfo> glazes) {this.glazes = glazes;}
     public ArrayList<RampHold> getFiringCycle() {return firingCycle;}
     public void setFiringCycle(ArrayList<RampHold> firingCycle) {this.firingCycle = firingCycle;}
-    public Cone getBisquedTo() {return bisquedTo;}
-    public void setBisquedTo(Cone bisquedTo) {this.bisquedTo = bisquedTo;}
 
 
 
@@ -117,11 +122,12 @@ public class ComboGlaze implements Parcelable,Storable,Listable {
         values.put(DbHelper.CCN_TAGS, getTags());
         values.put(DbHelper.CCN_NOTES, getNotes());
         values.put(DbHelper.ComboCN.VERSION_NOTES, getVersionNotes());
+        values.put(DbHelper.ComboCN.LAST_VERSION_OPEN, getLastVersionOpen());
         values.put(DbHelper.ComboCN.IMAGE_URI_STRING, getImageUriString());
         values.put(DbHelper.ComboCN.CLAY_BODY, getClayBody());
+        values.put(DbHelper.ComboCN.BISQUED_TO, getBisquedTo().toString());
         values.put(DbHelper.ComboCN.GLAZES, ComboGlazeInfo.toLongString(getGlazes()));
         values.put(DbHelper.ComboCN.FIRING_CYCLE,RampHold.toLongString(getFiringCycle()));
-        values.put(DbHelper.ComboCN.BISQUED_TO, getBisquedTo().toString());
         return values;
     }
 
@@ -144,11 +150,12 @@ public class ComboGlaze implements Parcelable,Storable,Listable {
                         cursor.getString(4),
                         cursor.getString(5),
                         cursor.getString(6),
+                        cursor.getInt(7),
                         cursor.getString(7),
                         cursor.getString(8),
+                        Cone.getEnum(cursor.getString(11)),
                         ComboGlazeInfo.parseFromLongString(cursor.getString(9)),
-                        RampHold.parseFromLongString(cursor.getString(10)),
-                        Cone.getEnum(cursor.getString(11))
+                        RampHold.parseFromLongString(cursor.getString(10))
                 ));
             }
             cursor.close();
@@ -165,11 +172,12 @@ public class ComboGlaze implements Parcelable,Storable,Listable {
         tags = in.readString();
         notes = in.readString();
         versionNotes = in.readString();
+        lastVersionOpen = in.readInt();
         imageUriString = in.readString();
         clayBody = in.readString();
+        bisquedTo = Cone.getEnum(in.readString());
         glazes = in.createTypedArrayList(ComboGlazeInfo.CREATOR);
         firingCycle = in.createTypedArrayList(RampHold.CREATOR);
-        bisquedTo = Cone.getEnum(in.readString());
     }
 
     @Override
@@ -180,11 +188,12 @@ public class ComboGlaze implements Parcelable,Storable,Listable {
         dest.writeString(tags);
         dest.writeString(notes);
         dest.writeString(versionNotes);
+        dest.writeInt(lastVersionOpen);
         dest.writeString(imageUriString);
         dest.writeString(clayBody);
+        dest.writeString(bisquedTo.toString());
         dest.writeTypedList(glazes);
         dest.writeTypedList(firingCycle);
-        dest.writeString(bisquedTo.toString());
     }
 
     @Override

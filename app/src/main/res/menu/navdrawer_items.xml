@@ -18,7 +18,7 @@
         />
     <item
         android:id="@+id/navDrawerIngredient"
-        android:title="@string/list_title_ingredients"
+        android:title="@string/list_title_ingredient"
         android:orderInCategory="4"
         />
 

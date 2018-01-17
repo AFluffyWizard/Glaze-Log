@@ -22,7 +22,7 @@ import nh.glazelog.glaze.Ingredient;
 public class DbHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "GlazeData.db";
-    public static final int DATABASE_VERSION = 10;
+    public static final int DATABASE_VERSION = 11;
 
     // for storing/parsing lists of data
     public static final String SHORT_SEP = ":";
@@ -166,30 +166,31 @@ public class DbHelper extends SQLiteOpenHelper {
     public static class SingleCN implements BaseColumns {
         public static final String TABLE_NAME = "single_glaze_table";
 
+        public static final String VERSION_NOTES = "version_notes";
+        public static final String LAST_VERSION_OPEN = "last_version_open";
+        public static final String IMAGE_URI_STRING = "image_uri";
         public static final String FINISH = "finish";
         public static final String OPACITY = "opacity";
         public static final String ATMOSPHERE = "atmos";
         public static final String CLAY_BODY = "clay_body";
+        public static final String BISQUED_TO = "bisqued_to";
         public static final String APPLICATION = "application";
-        public static final String VERSION_NOTES = "version_notes";
-        public static final String IMAGE_URI_STRING = "image_uri";
         public static final String SPGR = "sp_gr";
         public static final String MATERIALS = "recipe_materials";
         public static final String ADDITIONS = "recipe_additions";
         public static final String FIRING_CYCLE_ID = "firing_cycle_creation_date";
-        public static final String BISQUED_TO = "bisqued_to";
     }
 
     public static class ComboCN implements BaseColumns {
         public static final String TABLE_NAME = "combo_glaze_table";
 
+        public static final String LAST_VERSION_OPEN = "last_version_open";
         public static final String VERSION_NOTES = "version_notes";
         public static final String IMAGE_URI_STRING = "image_uri";
         public static final String CLAY_BODY = "clay_body";
+        public static final String BISQUED_TO = "bisqued_to";
         public static final String GLAZES = "glazes";
         public static final String FIRING_CYCLE = "firing_cycle";
-        public static final String BISQUED_TO = "bisqued_to";
-
     }
 
     public static class FiringCycleCN implements BaseColumns {
@@ -222,27 +223,29 @@ public class DbHelper extends SQLiteOpenHelper {
 
     private static final String SQL_CREATE_ENTRIES_SINGLE =
             generateCreateEntriesString(SingleCN.TABLE_NAME,
+                    SingleCN.VERSION_NOTES,
+                    SingleCN.LAST_VERSION_OPEN,
+                    SingleCN.IMAGE_URI_STRING,
                     SingleCN.FINISH,
                     SingleCN.OPACITY,
                     SingleCN.ATMOSPHERE,
                     SingleCN.CLAY_BODY,
+                    SingleCN.BISQUED_TO,
                     SingleCN.APPLICATION,
-                    SingleCN.VERSION_NOTES,
-                    SingleCN.IMAGE_URI_STRING,
                     SingleCN.SPGR,
                     SingleCN.MATERIALS,
                     SingleCN.ADDITIONS,
-                    SingleCN.FIRING_CYCLE_ID,
-                    SingleCN.BISQUED_TO);
+                    SingleCN.FIRING_CYCLE_ID);
 
     private static final String SQL_CREATE_ENTRIES_COMBO =
             generateCreateEntriesString(ComboCN.TABLE_NAME,
                     ComboCN.VERSION_NOTES,
+                    ComboCN.LAST_VERSION_OPEN,
                     ComboCN.IMAGE_URI_STRING,
                     ComboCN.CLAY_BODY,
+                    ComboCN.BISQUED_TO,
                     ComboCN.GLAZES,
-                    ComboCN.FIRING_CYCLE,
-                    ComboCN.BISQUED_TO);
+                    ComboCN.FIRING_CYCLE);
 
     private static final String SQL_CREATE_ENTRIES_FIRINGCYCLE =
             generateCreateEntriesString(FiringCycleCN.TABLE_NAME,

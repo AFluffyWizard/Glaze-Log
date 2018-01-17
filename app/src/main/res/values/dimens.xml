@@ -12,7 +12,7 @@
     <dimen name="layout_primary_inset">8dp</dimen>
     <dimen name="layout_secondary_inset">16dp</dimen>
     <dimen name="layout_tertiary_inset">16dp</dimen>
-    <dimen name="layout_intra_section_separator">16dp</dimen>
+    <dimen name="layout_intra_section_separator">12dp</dimen>
     <dimen name="layout_inter_section_separator">24dp</dimen>
     <dimen name="layout_label_to_field_separator">16dp</dimen>
     <dimen name="layout_header_to_field_separator">8dp</dimen>

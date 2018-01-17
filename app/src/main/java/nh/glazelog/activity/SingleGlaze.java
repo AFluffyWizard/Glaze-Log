@@ -2,16 +2,13 @@ package nh.glazelog.activity;
 
 import android.content.ContentValues;
 import android.content.Intent;
-import android.support.v4.app.NavUtils;
+
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.Spinner;
 
 import java.util.ArrayList;
 
@@ -19,12 +16,9 @@ import nh.glazelog.DeleteDialog;
 import nh.glazelog.KeyValues;
 import nh.glazelog.R;
 import nh.glazelog.RenameDialog;
-import nh.glazelog.Util;
 import nh.glazelog.VersionPager;
 import nh.glazelog.VersionPagerAdapter;
 import nh.glazelog.database.DbHelper;
-import nh.glazelog.database.SimpleTextSaver;
-import nh.glazelog.database.SimpleSpinnerSaver;
 import nh.glazelog.glaze.*;
 
 public class SingleGlaze extends AppCompatActivity {
@@ -72,7 +66,7 @@ public class SingleGlaze extends AppCompatActivity {
             @Override
             public void action() {
                 dbHelper.delete(rootGlaze,true);
-                navigateUp();
+                finish();
             }
         });
 
@@ -89,25 +83,6 @@ public class SingleGlaze extends AppCompatActivity {
         ab.setTitle(rootGlaze.getName());
         ab.show();
 
-        // fills in the version-independent fields
-        final Spinner finishSpinner = (Spinner) findViewById(R.id.finishSpinner);
-        finishSpinner.setAdapter(new ArrayAdapter<Finish>(this, R.layout.spinner_item_small, Finish.values()));
-        Util.setSpinnerSelection(finishSpinner,rootGlaze.getFinish());
-
-        final Spinner opacitySpinner = (Spinner) findViewById(R.id.opacitySpinner);
-        opacitySpinner.setAdapter(new ArrayAdapter<Opacity>(this, R.layout.spinner_item_small, Opacity.values()));
-        Util.setSpinnerSelection(opacitySpinner,rootGlaze.getOpacity());
-
-        final Spinner atmosSpinner = (Spinner) findViewById(R.id.atmosSpinner);
-        atmosSpinner.setAdapter(new ArrayAdapter<Atmosphere>(this, R.layout.spinner_item_small, Atmosphere.values()));
-        Util.setSpinnerSelection(atmosSpinner,rootGlaze.getAtmos());
-
-        final EditText clayBody = (EditText) findViewById(R.id.bodyTextField);
-        clayBody.setText(rootGlaze.getClayBody());
-        
-        final EditText application = (EditText) findViewById(R.id.applicationTextField);
-        application.setText(rootGlaze.getApplication());
-
 
         // init the version pager
         versionPager = (VersionPager) findViewById(R.id.versionPager);
@@ -115,17 +90,6 @@ public class SingleGlaze extends AppCompatActivity {
         versionPager.setAdapter(versionPagerAdapter);
         versionPager.setCurrentItem(0);
         versionPager.setCurrentItem(versionPager.getAdapter().getCount()-2,true);
-        // add change listeners
-        versionPager.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                finishSpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getThis(),rootGlaze, DbHelper.SingleCN.FINISH,true));
-                opacitySpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getThis(),rootGlaze, DbHelper.SingleCN.OPACITY,true));
-                atmosSpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getThis(),rootGlaze, DbHelper.SingleCN.ATMOSPHERE,true));
-                clayBody.addTextChangedListener(new SimpleTextSaver(getThis(),rootGlaze, DbHelper.SingleCN.CLAY_BODY,true));
-                application.addTextChangedListener(new SimpleTextSaver(getThis(),rootGlaze, DbHelper.SingleCN.APPLICATION,true));
-            }
-        },Util.CONST_DELAY_ADD_LISTENER);
 
     }
 
@@ -174,15 +138,5 @@ public class SingleGlaze extends AppCompatActivity {
             closestCone = Cone.getClosestConeF(RampHold.getHighestTemp(glaze.get(glaze.size()-1).getFiringCycle().getRampHolds()));
         menu.findItem(R.id.text_cone).setTitle(closestCone.toString());
         return true;
-    }
-
-    private void navigateUp() {
-        NavUtils.navigateUpFromSameTask(this);
-        //NavUtils.navigateUpTo(this,null);
-        //this.finish();
-    }
-
-    private SingleGlaze getThis() {
-        return this;
     }
 }

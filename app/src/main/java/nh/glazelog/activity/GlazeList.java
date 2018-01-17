@@ -68,7 +68,7 @@ public class GlazeList extends AppCompatActivity {
         ab.show();
 
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_new_item,null);
-        final EditText itemNameField = (EditText) dialogView.findViewById(R.id.newNameField);
+        final EditText itemNameField = (EditText) dialogView.findViewById(R.id.itemNameField);
         newItemDialog = new AlertDialog.Builder(this)
             .setPositiveButton(R.string.list_dialog_button_positive,null)
             .setNegativeButton(R.string.list_dialog_button_negative,null)
@@ -85,8 +85,10 @@ public class GlazeList extends AppCompatActivity {
                         String newItemName = itemNameField.getText().toString();
                         if (itemNames.contains(newItemName))
                             Toast.makeText(getApplicationContext(),R.string.list_dialog_failed,Toast.LENGTH_LONG).show();
-                        else
+                        else {
                             openNewItem(newItemName);
+                            newItemDialog.dismiss();
+                        }
                     }
                 });
                 newItemDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener() {
@@ -181,13 +183,13 @@ public class GlazeList extends AppCompatActivity {
                         populateList(Storable.Type.SINGLE);
                         return true;
                     case R.id.navDrawerCombo:
-                        populateList(Storable.Type.SINGLE);
+                        populateList(Storable.Type.COMBO);
                         return true;
                     case R.id.navDrawerFiringCycle:
-                        populateList(Storable.Type.SINGLE);
+                        populateList(Storable.Type.FIRING_CYCLE);
                         return true;
                     case R.id.navDrawerIngredient:
-                        populateList(Storable.Type.SINGLE);
+                        populateList(Storable.Type.INGREDIENT);
                         return true;
                 }
                 return false;
@@ -202,7 +204,6 @@ public class GlazeList extends AppCompatActivity {
         super.onStart();
         System.out.println("onStart called");
         initNavDrawer();
-        itemActivityClass = SingleGlaze.class;
         if (dbHelper == null) {
             glazeDbLoader.execute("");
         }
