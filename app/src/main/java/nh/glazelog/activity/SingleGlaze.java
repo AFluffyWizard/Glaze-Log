@@ -1,26 +1,20 @@
 package nh.glazelog.activity;
 
-import android.app.AlertDialog;
 import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import nh.glazelog.ConfirmDialog;
 import nh.glazelog.DeleteDialog;
 import nh.glazelog.KeyValues;
 import nh.glazelog.R;
@@ -44,8 +38,6 @@ public class SingleGlaze extends AppCompatActivity {
     private RenameDialog renameDialog;
     private DeleteDialog deleteDialog;
 
-    private static final int WAIT_ADD_LISTENER = 50;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,11 +45,11 @@ public class SingleGlaze extends AppCompatActivity {
         dbHelper = DbHelper.getSingletonInstance(getBaseContext());
 
         Intent intent = getIntent();
-        glaze = intent.getParcelableArrayListExtra(KeyValues.KEY_GLAZE_SINGLE);
-        if (glaze == null) {
+        if (intent.hasExtra(KeyValues.KEY_ITEM_FROM_LIST))
+            glaze = intent.getParcelableArrayListExtra(KeyValues.KEY_ITEM_FROM_LIST);
+        else {
             glaze = new ArrayList<>();
-            // TODO - CREATE SOME SYSTEM TO ENSURE THERE ARE NO CONFLICTS IN NAMING (no other items with that name)
-            String newGlazeName = intent.getStringExtra(KeyValues.KEY_NAME);
+            String newGlazeName = intent.getStringExtra(KeyValues.KEY_ITEM_NEWNAME);
             glaze.add(new Glaze(newGlazeName));
             dbHelper.write(glaze.get(0));
         }
@@ -76,7 +68,7 @@ public class SingleGlaze extends AppCompatActivity {
             }
         });
 
-        deleteDialog = new DeleteDialog(this, "glaze", new DeleteDialog.Action() {
+        deleteDialog = new DeleteDialog(this, new DeleteDialog.Action() {
             @Override
             public void action() {
                 dbHelper.delete(rootGlaze,true);
@@ -91,7 +83,6 @@ public class SingleGlaze extends AppCompatActivity {
         findViewById(R.id.baseScrollView).requestFocus();
 
         // enables the action bar
-        setSupportActionBar((Toolbar) findViewById(R.id.actionbarDefault));
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setHomeButtonEnabled(true);
@@ -102,51 +93,20 @@ public class SingleGlaze extends AppCompatActivity {
         final Spinner finishSpinner = (Spinner) findViewById(R.id.finishSpinner);
         finishSpinner.setAdapter(new ArrayAdapter<Finish>(this, R.layout.spinner_item_small, Finish.values()));
         Util.setSpinnerSelection(finishSpinner,rootGlaze.getFinish());
-        finishSpinner.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                finishSpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getThis(),rootGlaze, DbHelper.SingleCN.FINISH,true));
-            }
-        },WAIT_ADD_LISTENER);
 
         final Spinner opacitySpinner = (Spinner) findViewById(R.id.opacitySpinner);
         opacitySpinner.setAdapter(new ArrayAdapter<Opacity>(this, R.layout.spinner_item_small, Opacity.values()));
         Util.setSpinnerSelection(opacitySpinner,rootGlaze.getOpacity());
-        opacitySpinner.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                opacitySpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getThis(),rootGlaze, DbHelper.SingleCN.OPACITY,true));
-            }
-        },WAIT_ADD_LISTENER);
 
         final Spinner atmosSpinner = (Spinner) findViewById(R.id.atmosSpinner);
         atmosSpinner.setAdapter(new ArrayAdapter<Atmosphere>(this, R.layout.spinner_item_small, Atmosphere.values()));
         Util.setSpinnerSelection(atmosSpinner,rootGlaze.getAtmos());
-        atmosSpinner.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                atmosSpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getThis(),rootGlaze, DbHelper.SingleCN.ATMOSPHERE,true));
-            }
-        },WAIT_ADD_LISTENER);
 
         final EditText clayBody = (EditText) findViewById(R.id.bodyTextField);
         clayBody.setText(rootGlaze.getClayBody());
-        clayBody.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                clayBody.addTextChangedListener(new SimpleTextSaver(getThis(),rootGlaze, DbHelper.SingleCN.CLAY_BODY,true));
-            }
-        },WAIT_ADD_LISTENER);
         
         final EditText application = (EditText) findViewById(R.id.applicationTextField);
         application.setText(rootGlaze.getApplication());
-        application.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                application.addTextChangedListener(new SimpleTextSaver(getThis(),rootGlaze, DbHelper.SingleCN.APPLICATION,true));
-            }
-        },WAIT_ADD_LISTENER);
-
 
 
         // init the version pager
@@ -155,10 +115,21 @@ public class SingleGlaze extends AppCompatActivity {
         versionPager.setAdapter(versionPagerAdapter);
         versionPager.setCurrentItem(0);
         versionPager.setCurrentItem(versionPager.getAdapter().getCount()-2,true);
+        // add change listeners
+        versionPager.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                finishSpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getThis(),rootGlaze, DbHelper.SingleCN.FINISH,true));
+                opacitySpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getThis(),rootGlaze, DbHelper.SingleCN.OPACITY,true));
+                atmosSpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getThis(),rootGlaze, DbHelper.SingleCN.ATMOSPHERE,true));
+                clayBody.addTextChangedListener(new SimpleTextSaver(getThis(),rootGlaze, DbHelper.SingleCN.CLAY_BODY,true));
+                application.addTextChangedListener(new SimpleTextSaver(getThis(),rootGlaze, DbHelper.SingleCN.APPLICATION,true));
+            }
+        },Util.CONST_DELAY_ADD_LISTENER);
 
     }
 
-    // these two enable each versionFragment to handle the results on their own (Used for pictures)
+    // these two enable each versionFragment to handle activity results on their own (Used primarily for pictures)
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -180,11 +151,11 @@ public class SingleGlaze extends AppCompatActivity {
         switch (item.getItemId()) {
             default: break;
             case android.R.id.home:
-                navigateUp();
+                finish();
                 return true;
             case R.id.action_copy:
-                DbHelper.getSingletonInstance(getApplicationContext()).write(new Glaze(glaze.get(versionPager.getCurrentItem())));
-                navigateUp();
+                dbHelper.write(new Glaze(glaze.get(versionPager.getCurrentItem())));
+                finish();
                 return true;
             case R.id.action_rename:
                 renameDialog.show();

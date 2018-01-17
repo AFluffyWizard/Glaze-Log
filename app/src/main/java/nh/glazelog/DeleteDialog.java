@@ -25,12 +25,11 @@ public class DeleteDialog extends AlertDialog{
     }
     Action onDelete;
 
-    public DeleteDialog(@NonNull Activity parent, String toBeDeletedName, @NonNull final Action onDelete) {
+    public DeleteDialog(@NonNull Activity parent, @NonNull final Action onDelete) {
         super(parent);
         this.onDelete = onDelete;
         setTitle(R.string.app_name);
-        setMessage(parent.getString(R.string.dialog_delete_text) + " " + toBeDeletedName + "?\n" +
-                parent.getString(R.string.dialog_delete_warning));
+        setMessage(parent.getString(R.string.dialog_delete_text) + "\n" + parent.getString(R.string.dialog_delete_warning));
         setCancelable(true);
 
         setButton(DialogInterface.BUTTON_POSITIVE, "Delete", new DialogInterface.OnClickListener() {
@@ -40,7 +39,7 @@ public class DeleteDialog extends AlertDialog{
         });
         setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                cancel();
+                dismiss();
             }
         });
     }

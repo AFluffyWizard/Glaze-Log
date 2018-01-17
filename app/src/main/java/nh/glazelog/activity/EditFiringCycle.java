@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,7 +23,6 @@ import nh.glazelog.RenameDialog;
 import nh.glazelog.Util;
 import nh.glazelog.database.DbHelper;
 import nh.glazelog.database.FiringCycleTextSaver;
-import nh.glazelog.database.Saver;
 import nh.glazelog.glaze.Cone;
 import nh.glazelog.glaze.FiringCycle;
 import nh.glazelog.glaze.RampHold;
@@ -46,13 +44,16 @@ public class EditFiringCycle extends AppCompatActivity {
         dbHelper = DbHelper.getSingletonInstance(getApplicationContext());
 
         Intent intent = getIntent();
-        firingCycle = intent.getParcelableExtra(KeyValues.KEY_FIRING_CYCLE);
-        if (firingCycle == null){
-            String name = intent.getStringExtra(KeyValues.KEY_NAME);
+        if (intent.hasExtra(KeyValues.KEY_ITEM_FROM_LIST))
+            firingCycle = intent.getParcelableExtra(KeyValues.KEY_ITEM_FROM_LIST);
+        else if (intent.hasExtra(KeyValues.KEY_ITEM_NEWNAME)) {
+            String name = intent.getStringExtra(KeyValues.KEY_ITEM_NEWNAME);
             firingCycle = new FiringCycle(name);
+            dbHelper.write(firingCycle);
         }
+        else
+            firingCycle = intent.getParcelableExtra(KeyValues.KEY_GLAZE_EDIT_FIRINGCYCLE);
 
-        setSupportActionBar((Toolbar) findViewById(R.id.actionbarDefault));
         ActionBar ab = getSupportActionBar();
         ab.setTitle(firingCycle.getName());
         ab.setDisplayHomeAsUpEnabled(true);
@@ -68,18 +69,20 @@ public class EditFiringCycle extends AppCompatActivity {
             }
         });
 
-        deleteDialog = new DeleteDialog(this, "", new DeleteDialog.Action() {
+        deleteDialog = new DeleteDialog(this, new DeleteDialog.Action() {
             @Override
             public void action() {
                 dbHelper.delete(firingCycle, false);
-                Util.navigateUp(getParent());
+                finish();
             }
         });
 
 
-
-        for (RampHold rh : firingCycle.getRampHolds()) {
-            addFiringCycleRow(rh);
+        if (firingCycle.getRampHolds().size() == 0) addFiringCycleRow(null);
+        else {
+            for (RampHold rh : firingCycle.getRampHolds()) {
+                addFiringCycleRow(rh);
+            }
         }
 
         Button addLineButton = (Button) findViewById(R.id.firingCycleAddLineButton);
@@ -101,13 +104,13 @@ public class EditFiringCycle extends AppCompatActivity {
 
 
     private void addFiringCycleRow(RampHold rh) {
-        final TableRow firingCycleRow = (TableRow) getLayoutInflater().inflate(R.layout.tablerow_firingcycle,null);
-        final DeleteDialog deleteRowDialog = new DeleteDialog(this, "row",
+        final TableRow firingCycleRow = (TableRow) getLayoutInflater().inflate(R.layout.tablerow_firingcycle_activity,null);
+        final DeleteDialog deleteRowDialog = new DeleteDialog(this,
                 new DeleteDialog.Action() {
                     @Override
                     public void action() {
                         firingCycleTable.removeView(firingCycleRow);
-                        Saver.firingCycleRampHold(getApplicationContext(),firingCycle,firingCycleTable);
+                        FiringCycle.saveFiringCycleRH(getApplicationContext(),firingCycle,firingCycleTable);
                     }
                 });
 
@@ -167,7 +170,7 @@ public class EditFiringCycle extends AppCompatActivity {
         switch (item.getItemId()) {
             default: break;
             case android.R.id.home:
-                Util.navigateUp(this);
+                finish();
                 return true;
             case R.id.action_copy:
                 dbHelper.write(new FiringCycle(firingCycle));

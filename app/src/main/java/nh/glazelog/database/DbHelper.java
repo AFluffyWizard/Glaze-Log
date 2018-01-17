@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
 import java.util.ArrayList;
+import java.util.IllegalFormatCodePointException;
 
 import nh.glazelog.glaze.ComboGlaze;
 import nh.glazelog.glaze.FiringCycle;
@@ -21,7 +22,7 @@ import nh.glazelog.glaze.Ingredient;
 public class DbHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "GlazeData.db";
-    public static final int DATABASE_VERSION = 7;
+    public static final int DATABASE_VERSION = 10;
 
     // for storing/parsing lists of data
     public static final String SHORT_SEP = ":";
@@ -52,12 +53,20 @@ public class DbHelper extends SQLiteOpenHelper {
 
 
     /*--------------------READING AND WRITING FROM DB--------------------*/
-    public boolean write(Storable s) {
+    public void write(Storable s) {
         ArrayList<String> names = getDistinctNames(s.getStorableType());
-        for (String name : names)
-            if (name == s.getName()) return false;
-        long newRowId = singletonDatabase.insertOrThrow(s.getStorableType().getTableName(), null, s.getContentValues());
-        return true;
+        if(names.contains(s.getName()))
+            throw new IllegalArgumentException("An item in \"" + s.getStorableType().getTableName() + "\" with \"" + s.getName() + "\" already exists");
+        else
+            singletonDatabase.insertOrThrow(s.getStorableType().getTableName(), null, s.getContentValues());
+    }
+
+    public void writeVersion(Storable s) {
+        ArrayList<String> names = getDistinctNames(s.getStorableType());
+        if(!names.contains(s.getName()))
+            throw new IllegalArgumentException("Cannot add version. No other item with the name \"" + s.getName() + "\" exists in \"" + s.getStorableType().getTableName() + "\".");
+        else
+            singletonDatabase.insertOrThrow(s.getStorableType().getTableName(), null, s.getContentValues());
     }
 
     public void append(Storable s, ContentValues values) {
@@ -128,6 +137,18 @@ public class DbHelper extends SQLiteOpenHelper {
         return null;
     }
 
+    // for saving lists of data without needing a field to be changed
+    // basically, for updating the database if a row is deleted from a table
+    public static void genericSave(Context context, Storable sToSave, String key, String dataToSave) {
+        System.out.println("Firing Cycle Text Saver called without instance");
+        String cvKey = key;
+        if (singletonInstance == null) singletonInstance = DbHelper.getSingletonInstance(context);
+        ContentValues cvToSave = new ContentValues();
+        cvToSave.put(cvKey,dataToSave);
+        singletonInstance.append(sToSave,cvToSave);
+        System.out.println("\"" + cvToSave.get(cvKey).toString() + "\" saved in column \"" + cvKey + "\" of " + sToSave.getName() + ".");
+    }
+
 
 
     /*--------------------DATABASE COLUMN NAMES--------------------*/
@@ -155,7 +176,7 @@ public class DbHelper extends SQLiteOpenHelper {
         public static final String SPGR = "sp_gr";
         public static final String MATERIALS = "recipe_materials";
         public static final String ADDITIONS = "recipe_additions";
-        public static final String FIRING_CYCLE = "firing_cycle";
+        public static final String FIRING_CYCLE_ID = "firing_cycle_creation_date";
         public static final String BISQUED_TO = "bisqued_to";
     }
 
@@ -211,7 +232,7 @@ public class DbHelper extends SQLiteOpenHelper {
                     SingleCN.SPGR,
                     SingleCN.MATERIALS,
                     SingleCN.ADDITIONS,
-                    SingleCN.FIRING_CYCLE,
+                    SingleCN.FIRING_CYCLE_ID,
                     SingleCN.BISQUED_TO);
 
     private static final String SQL_CREATE_ENTRIES_COMBO =

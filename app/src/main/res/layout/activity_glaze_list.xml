@@ -15,13 +15,11 @@
         android:fillViewport="true"
         tools:context="nh.glazelog.activity.GlazeList">
 
-        <include layout="@layout/actionbar_default"/>
-
         <ScrollView
             android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="@dimen/action_bar_height"
+            android:paddingTop="@dimen/layout_primary_inset"
             android:fillViewport="true">
 
             <LinearLayout

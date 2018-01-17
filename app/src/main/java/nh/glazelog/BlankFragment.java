@@ -3,6 +3,7 @@ package nh.glazelog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,32 +14,41 @@ import android.view.ViewGroup;
 
 public class BlankFragment extends Fragment {
 
-    ConfirmDialog confirmAddVersionDialog;
+    AlertDialog addVersionDialog;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
-        View empty = inflater.inflate(R.layout.empty,container,false);
-        confirmAddVersionDialog = new ConfirmDialog(getContext(), false, "Would you like to create a new version?",
-                new ConfirmDialog.Action() {
-                    @Override
-                    public void action() {
-                        addNewVersion();
-                    }
-                });
-        confirmAddVersionDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+        View emptyView = inflater.inflate(R.layout.empty,container,false);
+        addVersionDialog = new AlertDialog.Builder(getContext()).create();
+        addVersionDialog.setMessage(getString(R.string.dialog_addnewversion_text));
+        addVersionDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Add", new DialogInterface.OnClickListener() {
             @Override
-            public void onCancel(DialogInterface dialog) {
+            public void onClick(DialogInterface dialog, int which) {
+                addNewVersion();
+            }
+        });
+        addVersionDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                addVersionDialog.dismiss();
+            }
+        });
+        addVersionDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
                 cancelAddNewVersion();
             }
         });
-        return empty;
+
+
+        return emptyView;
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser && confirmAddVersionDialog != null) {
-            confirmAddVersionDialog.show();
+        if (isVisibleToUser && addVersionDialog != null) {
+            addVersionDialog.show();
         }
     }
 

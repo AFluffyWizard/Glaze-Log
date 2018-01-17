@@ -86,7 +86,7 @@ public class VersionPagerAdapter extends FragmentStatePagerAdapter {
         newGlaze.setName(glazeVersions.get(0).getName());
         newGlaze.setVersionNotes("");
         newGlaze.setNotes("");
-        dbHelper.write(newGlaze);
+        dbHelper.writeVersion(newGlaze);
         glazeVersions.add(newGlaze);
         notifyDataSetChanged();
     }

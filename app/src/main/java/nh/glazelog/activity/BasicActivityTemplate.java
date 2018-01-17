@@ -38,9 +38,9 @@ public class BasicActivityTemplate extends AppCompatActivity {
         ab.show();
 
         Intent intent = getIntent();
-        firingCycle = intent.getParcelableExtra(KeyValues.KEY_FIRING_CYCLE);
+        firingCycle = intent.getParcelableExtra(KeyValues.KEY_ITEM_FROM_LIST);
         if (firingCycle == null){
-            String name = intent.getStringExtra(KeyValues.KEY_NAME);
+            String name = intent.getStringExtra(KeyValues.KEY_ITEM_NEWNAME);
             firingCycle = new FiringCycle(name);
         }
 
@@ -54,7 +54,7 @@ public class BasicActivityTemplate extends AppCompatActivity {
             }
         });
 
-        deleteDialog = new DeleteDialog(this, "", new DeleteDialog.Action() {
+        deleteDialog = new DeleteDialog(this, new DeleteDialog.Action() {
             @Override
             public void action() {
                 dbHelper.delete(firingCycle, false);

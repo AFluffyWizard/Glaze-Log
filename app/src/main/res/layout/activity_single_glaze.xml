@@ -8,8 +8,6 @@
     android:layout_height="match_parent"
     tools:context="nh.glazelog.activity.SingleGlaze">
 
-    <include layout="@layout/actionbar_default"></include>
-
     <ScrollView
         android:id="@+id/baseScrollView"
         android:layout_width="match_parent"
@@ -27,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/layout_primary_inset"
                 android:layout_marginStart="@dimen/layout_primary_inset"
-                android:layout_marginTop="@dimen/action_bar_plus_primary_inset"
+                android:layout_marginTop="@dimen/layout_primary_inset"
                 android:text="@string/glaze_finish_label"
                 android:textAppearance="@style/StandardText"
                 app:layout_constraintLeft_toLeftOf="parent"

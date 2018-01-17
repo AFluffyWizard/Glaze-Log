@@ -6,14 +6,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -44,7 +43,7 @@ public class GlazeList extends AppCompatActivity {
         @Override
         protected void onPostExecute(DbHelper result) {
             dbHelper = result;
-            populateList(R.string.list_title_single, Storable.Type.SINGLE);
+            populateList(Storable.Type.SINGLE);
         }
 
     }
@@ -54,8 +53,8 @@ public class GlazeList extends AppCompatActivity {
     NavigationView navView;
     AlertDialog newItemDialog;
 
+    ArrayList<String> itemNames;
     Class itemActivityClass;
-    String itemIntentKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,51 +62,60 @@ public class GlazeList extends AppCompatActivity {
         System.out.println("onCreate called");
         setContentView(R.layout.activity_glaze_list);
 
-        setSupportActionBar((Toolbar) findViewById(R.id.actionbarDefault));
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
         ab.show();
 
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_new_name,null);
-        final EditText itemNameEditText = (EditText) dialogView.findViewById(R.id.newNameField);
-        newItemDialog = new AlertDialog.Builder(this).create();
-        newItemDialog.setView(dialogView);
-        newItemDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                newItemDialog.hide();
-            }
-        });
-        newItemDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Create", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                openNewItem(itemNameEditText.getText().toString().trim());
-            }
-        });
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_new_item,null);
+        final EditText itemNameField = (EditText) dialogView.findViewById(R.id.newNameField);
+        newItemDialog = new AlertDialog.Builder(this)
+            .setPositiveButton(R.string.list_dialog_button_positive,null)
+            .setNegativeButton(R.string.list_dialog_button_negative,null)
+            .setView(dialogView)
+            .create();
 
         FloatingActionButton addGlazeFab = (FloatingActionButton) findViewById(R.id.fabAddGlaze);
         addGlazeFab.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 newItemDialog.show();
+                newItemDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String newItemName = itemNameField.getText().toString();
+                        if (itemNames.contains(newItemName))
+                            Toast.makeText(getApplicationContext(),R.string.list_dialog_failed,Toast.LENGTH_LONG).show();
+                        else
+                            openNewItem(newItemName);
+                    }
+                });
+                newItemDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        newItemDialog.dismiss();
+                    }
+                });
             }
         });
     }
 
-
-    private <T extends Listable> boolean populateList(@StringRes int listTitleResId, Storable.Type type) {
+    private <T extends Listable> void populateList(Storable.Type type) {
         // perform init actions
-        getSupportActionBar().setTitle(listTitleResId);
         if (navDrawer != null) navDrawer.closeDrawer(Gravity.LEFT,true);
-        String listTitle = getString(listTitleResId);
-        newItemDialog.setTitle(getString(R.string.dialog_newitem_title) + " " + listTitle.substring(0,listTitle.length()-1));
+        this.itemActivityClass = type.getActivityClass();
+        getSupportActionBar().setTitle(type.getListTitle());
+        newItemDialog.setTitle(type.getDialogTitle());
+        itemNames = dbHelper.getDistinctNames(type);
 
-        // create a reference to the list
+        // obtain a reference to the list
         LinearLayout list = (LinearLayout) findViewById(R.id.layoutList);
         list.removeAllViews();
 
         // load necessary components
         final ArrayList<ArrayList<T>> itemsWithVersions = new ArrayList<>();
         for (String name : dbHelper.getDistinctNames(type)) {
-            itemsWithVersions.add(Util.<T>typeUntypedList(dbHelper.readSingle(type, dbHelper.CCN_NAME,name)));
+            ArrayList<T> item = Util.<T>typeUntypedList(dbHelper.readSingle(type, dbHelper.CCN_NAME,name));
+            if (item.size() != 0) itemsWithVersions.add(item);
         }
 
         // create view for each item
@@ -119,7 +127,7 @@ public class GlazeList extends AppCompatActivity {
             final ArrayList<T> item = itemList;
             itemView.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    openItem(item.get(0).getName(), itemIntentKey, item);
+                    openItem(item);
                 }
             });
 
@@ -146,19 +154,17 @@ public class GlazeList extends AppCompatActivity {
             list.addView(itemView);
         }
         System.out.println("Item list loaded");
-        return true;
     }
 
-    public <T> void openItem (String name, String key, ArrayList<T> itemToOpen) {
+    public <T> void openItem (ArrayList<T> itemToOpen) {
         Intent itemIntent = new Intent(this, itemActivityClass);
-        itemIntent.putExtra(key,itemToOpen);
-        itemIntent.putExtra(KeyValues.KEY_NAME,name);
+        itemIntent.putExtra(KeyValues.KEY_ITEM_FROM_LIST,itemToOpen);
         startActivity(itemIntent);
     }
 
     public <T> void openNewItem (String name) {
         Intent itemIntent = new Intent(this, itemActivityClass);
-        itemIntent.putExtra(KeyValues.KEY_NAME,name);
+        itemIntent.putExtra(KeyValues.KEY_ITEM_NEWNAME,name);
         startActivity(itemIntent);
     }
 
@@ -171,23 +177,18 @@ public class GlazeList extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch(item.getItemId()) {
-                    default: break;
                     case R.id.navDrawerSingle:
-                        itemActivityClass = SingleGlaze.class;
-                        itemIntentKey = KeyValues.KEY_GLAZE_SINGLE;
-                        return populateList(R.string.list_title_single, Storable.Type.SINGLE);
+                        populateList(Storable.Type.SINGLE);
+                        return true;
                     case R.id.navDrawerCombo:
-                        //itemActivityClass = SingleGlaze.class;
-                        itemIntentKey = KeyValues.KEY_GLAZE_COMBO;
-                        return populateList(R.string.list_title_combo, Storable.Type.COMBO);
+                        populateList(Storable.Type.SINGLE);
+                        return true;
                     case R.id.navDrawerFiringCycle:
-                        itemActivityClass = EditFiringCycle.class;
-                        itemIntentKey = KeyValues.KEY_FIRING_CYCLE;
-                        return populateList(R.string.list_title_firingcycle, Storable.Type.FIRING_CYCLE);
+                        populateList(Storable.Type.SINGLE);
+                        return true;
                     case R.id.navDrawerIngredient:
-                        //itemActivityClass = EditFiringCycle.class;
-                        itemIntentKey = KeyValues.KEY_INGREDIENT;
-                        return populateList(R.string.list_title_ingredients, Storable.Type.INGREDIENT);
+                        populateList(Storable.Type.SINGLE);
+                        return true;
                 }
                 return false;
             }
@@ -206,7 +207,7 @@ public class GlazeList extends AppCompatActivity {
             glazeDbLoader.execute("");
         }
         else {
-            populateList(R.string.list_title_single, Storable.Type.SINGLE);
+            populateList(Storable.Type.SINGLE);
         }
     }
 

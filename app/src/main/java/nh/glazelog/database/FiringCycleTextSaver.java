@@ -30,7 +30,7 @@ public class FiringCycleTextSaver extends TextSaver {
     }
 
     public void save(String newString) {
-        Saver.firingCycleRampHold(context,(FiringCycle)sToSave,firingCycleTable);
+        FiringCycle.saveFiringCycleRH(context,(FiringCycle)sToSave,firingCycleTable);
         /*
         System.out.println("Firing Cycle Text Saver called");
         ArrayList<RampHold> rampHolds = new ArrayList<>();

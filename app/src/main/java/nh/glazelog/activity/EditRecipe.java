@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,8 +23,8 @@ import nh.glazelog.Util;
 import nh.glazelog.database.DbHelper;
 import nh.glazelog.database.IngredientSpinnerSaver;
 import nh.glazelog.database.IngredientTextSaver;
-import nh.glazelog.database.Saver;
 import nh.glazelog.glaze.Glaze;
+import nh.glazelog.glaze.Ingredient;
 import nh.glazelog.glaze.IngredientEnum;
 import nh.glazelog.glaze.IngredientQuantity;
 
@@ -46,9 +45,8 @@ public class EditRecipe extends AppCompatActivity {
         dbHelper = DbHelper.getSingletonInstance(getApplicationContext());
 
         Intent intent = getIntent();
-        parentGlaze = intent.getParcelableExtra(KeyValues.KEY_GLAZE_EDITRECIPE);
+        parentGlaze = intent.getParcelableExtra(KeyValues.KEY_GLAZE_EDIT_RECIPE);
 
-        setSupportActionBar((Toolbar) findViewById(R.id.actionbarDefault));
         ActionBar ab = getSupportActionBar();
         ab.setTitle(parentGlaze.getName() + " Recipe");
         ab.setDisplayHomeAsUpEnabled(true);
@@ -84,11 +82,11 @@ public class EditRecipe extends AppCompatActivity {
 
     private void addRecipeRow (IngredientQuantity iq, final TableLayout recipeTable, final boolean isMaterials) {
         final TableRow recipeRow = (TableRow) getLayoutInflater().inflate(R.layout.tablerow_recipe,null);
-        final DeleteDialog deleteDialog = new DeleteDialog(this, "row", new DeleteDialog.Action() {
+        final DeleteDialog deleteDialog = new DeleteDialog(this, new DeleteDialog.Action() {
             @Override
             public void action() {
                 recipeTable.removeView(recipeRow);
-                Saver.ingredientWithoutInstance(getApplicationContext(), parentGlaze,recipeTable,isMaterials);
+                Ingredient.saveRecipe(getApplicationContext(), parentGlaze,recipeTable,isMaterials);
                 fixTables();
             }
         });

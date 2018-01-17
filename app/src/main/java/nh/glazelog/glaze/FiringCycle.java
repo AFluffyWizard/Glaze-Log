@@ -1,14 +1,19 @@
 package nh.glazelog.glaze;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Date;
 
+import nh.glazelog.R;
 import nh.glazelog.Util;
 import nh.glazelog.database.DbHelper;
 import nh.glazelog.database.Storable;
@@ -92,6 +97,20 @@ public class FiringCycle implements Parcelable,Storable,Listable{
     }
 
 
+    public static void saveFiringCycleRH(Context context, FiringCycle fcToSave, TableLayout firingCycleTable) {
+        String cvKey = DbHelper.FiringCycleCN.RAMP_HOLD_LONG_STRING;
+        ArrayList<RampHold> rampHolds = new ArrayList<>();
+        for (int i = 1; i < firingCycleTable.getChildCount(); i++) {
+            TableRow row = (TableRow) firingCycleTable.getChildAt(i);
+            String temp = ((TextView)row.findViewById(R.id.temperatureEditText)).getText().toString();
+            String rate = ((TextView)row.findViewById(R.id.rateEditText)).getText().toString();
+            String hold = ((TextView)row.findViewById(R.id.holdEditText)).getText().toString();
+            rampHolds.add(new RampHold(temp,rate,hold));
+        }
+        DbHelper.genericSave(context,fcToSave,cvKey,RampHold.toLongString(rampHolds));
+    }
+
+
     //listable implementation
     @Override
     public String getSecondaryInfo(ArrayList<?> itemInfo) {
@@ -101,7 +120,7 @@ public class FiringCycle implements Parcelable,Storable,Listable{
         if (getRampHolds().size() == 1) rampString = "1 ramp";
         else                            rampString = getRampHolds().size() + " ramps";
 
-        return kilnTypeString + getRampHolds().size() + rampString;
+        return kilnTypeString + rampString;
     }
     @Override
     public Uri getImageUri() {return Uri.EMPTY;}

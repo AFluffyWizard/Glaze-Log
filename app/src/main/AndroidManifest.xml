@@ -42,7 +42,6 @@
         <activity
             android:name=".activity.SingleGlaze"
             android:parentActivityName=".activity.GlazeList"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -50,7 +49,11 @@
         </activity>
         <activity
             android:name=".activity.EditFiringCycle"
-            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme">
+        </activity>
+        <activity
+            android:name=".activity.EditRecipe"
+            android:parentActivityName=".activity.SingleGlaze"
             android:theme="@style/AppTheme">
         </activity>
     </application>

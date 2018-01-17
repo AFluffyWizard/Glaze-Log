@@ -206,7 +206,7 @@
         android:layout_marginEnd="@dimen/layout_secondary_inset">
     </TableLayout>
 
-    <Spinner
+    <nh.glazelog.AlwaysSelectSpinner
         android:id="@+id/firingcycleSpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

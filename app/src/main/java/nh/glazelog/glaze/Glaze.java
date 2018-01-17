@@ -86,7 +86,7 @@ public class Glaze implements Parcelable,Storable,Listable {
         this.spgr = g.getSpgr();
         this.materials = g.getMaterials();
         this.additions = g.getAdditions();
-        this.firingCycle = g.getFiringCycleName();
+        this.firingCycle = g.getFiringCycleID();
         this.bisquedTo = g.getBisquedTo();
     }
 
@@ -155,10 +155,10 @@ public class Glaze implements Parcelable,Storable,Listable {
     public void setMaterials(ArrayList<IngredientQuantity> materials) {this.materials = materials;}
     public ArrayList<IngredientQuantity> getAdditions() {return additions;}
     public void setAdditions(ArrayList<IngredientQuantity> additions) {this.additions = additions;}
-    public String getFiringCycleName() {return firingCycle;}
+    public String getFiringCycleID() {return firingCycle;}
     public FiringCycle getFiringCycle() {
         ArrayList<?> rh = DbHelper.getSingletonInstance(
-                new Activity()).readSingle(Type.FIRING_CYCLE,DbHelper.CCN_NAME, getFiringCycleName());
+                new Activity()).readSingle(Type.FIRING_CYCLE,DbHelper.CCN_DATE_CREATED, getFiringCycleID());
                 /* I am very much aware it is totally retarded
                  * to pass a new activity as the Context parameter for this method.
                  * However, there is no other way to obtain the application's context,
@@ -211,7 +211,7 @@ public class Glaze implements Parcelable,Storable,Listable {
         values.put(DbHelper.SingleCN.SPGR,getSpgr());
         values.put(DbHelper.SingleCN.MATERIALS,IngredientQuantity.toLongString(getMaterials()));
         values.put(DbHelper.SingleCN.ADDITIONS,IngredientQuantity.toLongString(getAdditions()));
-        values.put(DbHelper.SingleCN.FIRING_CYCLE, getFiringCycleName());
+        values.put(DbHelper.SingleCN.FIRING_CYCLE_ID, getFiringCycleID());
         values.put(DbHelper.SingleCN.BISQUED_TO,getBisquedTo().toString());
         return values;
     }

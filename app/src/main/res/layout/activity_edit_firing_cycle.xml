@@ -6,13 +6,11 @@
     android:layout_height="match_parent"
     tools:context="nh.glazelog.activity.EditFiringCycle">
 
-    <include layout="@layout/actionbar_default"/>
-
     <TableLayout
         android:id="@+id/firingcycleTable"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/action_bar_plus_primary_inset"
+        android:layout_marginTop="@dimen/layout_primary_inset"
         android:layout_marginLeft="@dimen/layout_primary_inset"
         android:layout_marginRight="@dimen/layout_primary_inset"
         app:layout_constraintTop_toTopOf="parent"

@@ -1,15 +1,21 @@
 package nh.glazelog.glaze;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.widget.Spinner;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 
+import nh.glazelog.R;
 import nh.glazelog.Util;
 import nh.glazelog.database.DbHelper;
 import nh.glazelog.database.Storable;
@@ -83,9 +89,25 @@ public class Ingredient implements Parcelable,Storable,Listable{
         this.aliases = aliasString;
     }
     public ArrayList<OxideQuantity> getOxideQuantitys() {return oxideQuantities;}
-    public void setOxideQuantitys(ArrayList<OxideQuantity> oxideQuantities) {this.oxideQuantities = oxideQuantities;}
+    public void setOxideQuantities(ArrayList<OxideQuantity> oxideQuantities) {this.oxideQuantities = oxideQuantities;}
     public double getCostPerKg() {return costPerKg;}
     public void setCostPerKg(Double costPerKg) {this.costPerKg = costPerKg;}
+
+
+    public static void saveRecipe(Context context, Glaze gToSave, TableLayout ingredientTable, boolean isMaterialsTable) {
+        String cvKey;
+        if (isMaterialsTable)   cvKey = DbHelper.SingleCN.MATERIALS;
+        else                    cvKey = DbHelper.SingleCN.ADDITIONS;
+
+        ArrayList<IngredientQuantity> ingredientQuantities = new ArrayList<>();
+        for (int i = 1; i < ingredientTable.getChildCount(); i++) {
+            TableRow row = (TableRow) ingredientTable.getChildAt(i);
+            String ingredient = ((Spinner)row.findViewById(R.id.ingredientSpinner)).getSelectedItem().toString();
+            String amount = ((TextView)row.findViewById(R.id.amountEditText)).getText().toString();
+            ingredientQuantities.add(new IngredientQuantity(ingredient,amount));
+        }
+        DbHelper.genericSave(context,gToSave,cvKey,IngredientQuantity.toLongString(ingredientQuantities));
+    }
 
 
     //listable implementation

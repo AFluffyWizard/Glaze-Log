@@ -142,7 +142,7 @@ public class Util {
                 PERMISSION_USE_INTERNAL_STORAGE);
     }
 
-    public static <T extends Object> void setSpinnerSelection (Spinner spinner, Class<T> o) {
+    public static <T extends Object> void setSpinnerSelection (Spinner spinner, Object o) {
         int itemPos = ((ArrayAdapter<T>)spinner.getAdapter()).getPosition((T)o);
         spinner.setSelection(itemPos);
     }

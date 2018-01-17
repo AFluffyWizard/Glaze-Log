@@ -34,7 +34,7 @@
     <string name="dialog_newitem_title">Create New </string>
     <string name="list_date_edited">Last Edited</string>
     <string name="appbar_glazename_hint">Glaze Name Here…</string>
-    <string name="dialog_confirm_pretext">Are you sure you want</string>
+    <string name="dialog_addnewversion_text">Would you like to add a new version?</string>
     <string name="appbar_actionbutton_delete">Delete</string>
     <string name="__imagespath">/Android/data/nh.glazelog/files/Pictures</string>
     <string name="appbar_actionbutton_rename_label">Rename</string>
@@ -46,17 +46,25 @@
     <string name="list_title_single">Glazes</string>
     <string name="list_title_combo">Glaze Combinations</string>
     <string name="list_title_firingcycle">Firing Cycles</string>
-    <string name="list_title_ingredients">Ingredients</string>
+    <string name="list_title_ingredient">Ingredients</string>
     <string name="appbar_actionbutton_settings_title">Settings</string>
     <string name="navdrawer_open">Open navigation drawer</string>
     <string name="navdrawer_close">Close navigation drawer</string>
     <string name="navdrawer_header">Databases</string>
     <string name="comboglaze_notes_hint">Notes About Application...</string>
-    <string name="dialog_delete_text">Are you sure you want to delete this</string>
+    <string name="dialog_delete_text">Are you sure you want to delete this item?</string>
     <string name="dialog_delete_warning">WARNING: This can not be undone.</string>
     <string name="dialog_name_label">Name:</string>
     <string name="glaze_button_label_edit">Edit</string>
     <string name="glaze_firingcycle_makenew">Create New Firing Cycle</string>
     <string name="glaze_firingcycle_spinner_hint">Select Firing Cycle</string>
     <string name="glaze_button_label_norecipe">Enter Recipe</string>
+    <string name="list_dialog_title_single">Create New Glaze</string>
+    <string name="list_dialog_title_combo">Create New Glaze Combination</string>
+    <string name="list_dialog_title_firingcycle">Create New Firing Cycle</string>
+    <string name="list_dialog_title_ingredient">Create New Ingredient</string>
+    <string name="list_dialog_failed">An item with this name already exists! Please choose another name.</string>
+    <string name="glaze_fcdialog_failed">A firing cycle with this name already exists! Please choose another name.</string>
+    <string name="list_dialog_button_positive">Create</string>
+    <string name="list_dialog_button_negative">Cancel</string>
 </resources>

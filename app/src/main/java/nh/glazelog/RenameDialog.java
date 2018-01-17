@@ -48,7 +48,7 @@ public class RenameDialog extends AlertDialog{
         });
         setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                cancel();
+                dismiss();
             }
         });
     }

@@ -1,6 +1,8 @@
 package nh.glazelog;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -24,12 +26,14 @@ import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import nh.glazelog.activity.EditFiringCycle;
 import nh.glazelog.activity.EditRecipe;
 import nh.glazelog.database.DbHelper;
 import nh.glazelog.database.SimpleSpinnerSaver;
@@ -54,10 +58,12 @@ import static nh.glazelog.Util.PERMISSION_USE_INTERNAL_STORAGE;
 public class VersionFragment extends Fragment {
 
     Glaze gVer;
+    DbHelper dbHelper;
     ArrayList<FiringCycle> firingCycles;
     FiringCycle selectedFiringCycle;
     int verNum;
     LayoutInflater inflater;
+    AlertDialog newFcDialog;
     private View page;
     private static File preCompressImageFile;
     private static Uri preCompressImageUri;
@@ -74,7 +80,7 @@ public class VersionFragment extends Fragment {
     private Button recipeEditButton;
     private TableLayout recipeMaterialsTable;
     private TableLayout recipeAdditionsTable;
-    private Spinner firingcycleSpinner;
+    private AlwaysSelectSpinner firingcycleSpinner;
     private Button firingcycleEditButton;
     private Spinner bisqueSpinner;
     private TableLayout firingCycleTable;
@@ -86,7 +92,9 @@ public class VersionFragment extends Fragment {
         gVer = args.getParcelable(KeyValues.KEY_GLAZE_VERSION);
         verNum = args.getInt(KeyValues.KEY_GLAZE_VERSION_NUMBER) + 1;
         this.inflater = inflater;
+        dbHelper = DbHelper.getSingletonInstance(getContext());
         page = inflater.inflate(R.layout.versionfragment_single, container, false);
+
 
         versionField = (TextView) page.findViewById(R.id.versionField);
         versionField.setText(new Integer(verNum).toString());
@@ -100,11 +108,16 @@ public class VersionFragment extends Fragment {
         if (!gVer.getImageUri().equals(Uri.EMPTY)) testTileImage.setImageURI(gVer.getImageUri());
 
         spgrField = (TextView) page.findViewById(R.id.spgrField);
+        TextView spgrLabel = (TextView) page.findViewById(R.id.spgrLabel);
+        TextView spgrLabel2 = (TextView) page.findViewById(R.id.spgrLabel2);
         Double spgr = new Double(gVer.getSpgr());
-        if (spgr != 0) spgrField.setText(spgr.toString());
+        if (spgr != 0){
+            spgrField.setVisibility(View.VISIBLE);
+            spgrLabel.setVisibility(View.VISIBLE);
+            spgrLabel2.setVisibility(View.VISIBLE);
+            spgrField.setText(spgr.toString());
+        }
         else {
-            TextView spgrLabel = (TextView) page.findViewById(R.id.spgrLabel);
-            TextView spgrLabel2 = (TextView) page.findViewById(R.id.spgrLabel2);
             spgrField.setVisibility(GONE);
             spgrLabel.setVisibility(GONE);
             spgrLabel2.setVisibility(GONE);
@@ -116,10 +129,11 @@ public class VersionFragment extends Fragment {
         recipeAdditionsTable = (TableLayout) page.findViewById(R.id.recipeAdditionsTable);
         populateRecipeTables();
 
-        firingcycleSpinner = (Spinner) page.findViewById(R.id.firingcycleSpinner);
-        firingCycles = Util.typeUntypedList(DbHelper.getSingletonInstance(getContext()).readAll(Storable.Type.FIRING_CYCLE));
+        firingcycleSpinner = (AlwaysSelectSpinner) page.findViewById(R.id.firingcycleSpinner);
+        firingCycles = Util.typeUntypedList(dbHelper.readAll(Storable.Type.FIRING_CYCLE));
         firingCycles.add(0,new FiringCycle(getString(R.string.glaze_firingcycle_makenew)));
         firingcycleSpinner.setAdapter(new FiringCycleArrayAdapter<>(getContext(),R.layout.spinner_item_small,firingCycles));
+        Util.setSpinnerSelection(firingcycleSpinner, gVer.getFiringCycle());
 
         firingcycleEditButton = (Button) page.findViewById(R.id.firingcycleEditButton);
         if (firingcycleSpinner.getSelectedItemPosition() == 0) firingcycleEditButton.setVisibility(GONE);
@@ -129,7 +143,7 @@ public class VersionFragment extends Fragment {
         Util.setSpinnerSelection(bisqueSpinner,gVer.getBisquedTo());
 
         firingCycleTable = (TableLayout) page.findViewById(R.id.firingcycleTable);
-        selectedFiringCycle = gVer.getFiringCycle();
+        if (!gVer.getFiringCycleID().equals("")) selectedFiringCycle = gVer.getFiringCycle();
         populateFiringcycleTable();
 
         notes = (EditText) page.findViewById(R.id.notes);
@@ -157,7 +171,7 @@ public class VersionFragment extends Fragment {
             deleteVersion.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    DeleteDialog deleteVersionDialog = new DeleteDialog(getActivity(), "version", new DeleteDialog.Action() {
+                    DeleteDialog deleteVersionDialog = new DeleteDialog(getActivity(), new DeleteDialog.Action() {
                         @Override
                         public void action() {
                             deleteVersion();
@@ -173,7 +187,7 @@ public class VersionFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent editRecipeIntent = new Intent(getContext(),EditRecipe.class);
-                editRecipeIntent.putExtra(KeyValues.KEY_GLAZE_EDITRECIPE,gVer);
+                editRecipeIntent.putExtra(KeyValues.KEY_GLAZE_EDIT_RECIPE,gVer);
                 startActivity(editRecipeIntent);
             }
         });
@@ -189,23 +203,55 @@ public class VersionFragment extends Fragment {
         firingcycleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                System.out.println("FIRING CYCLE SPINNER SELECTED");
-                selectedFiringCycle = firingCycles.get(position);
-                if (position == 0) firingcycleEditButton.callOnClick();
-                else populateFiringcycleTable();
+                if (position == 0) {
+                    View dialogView = inflater.inflate(R.layout.dialog_new_item,null);
+                    final EditText itemNameField = (EditText) dialogView.findViewById(R.id.newNameField);
+                    newFcDialog = new AlertDialog.Builder(getActivity())
+                            .setPositiveButton(R.string.list_dialog_button_positive,null)
+                            .setNegativeButton(R.string.list_dialog_button_negative,null)
+                            .setView(dialogView)
+                            .setTitle(R.string.list_dialog_title_firingcycle)
+                            .create();
+                    newFcDialog.show();
+                    newFcDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            String newFcName = itemNameField.getText().toString();
+                            ArrayList<String> fcNames = dbHelper.getDistinctNames(Storable.Type.FIRING_CYCLE);
+                            if (fcNames.contains(newFcName))
+                                Toast.makeText(getContext(),R.string.glaze_fcdialog_failed,Toast.LENGTH_LONG).show();
+                            else {
+                                ContentValues glazeFcCv = new ContentValues();
+                                glazeFcCv.put(DbHelper.SingleCN.FIRING_CYCLE_ID,selectedFiringCycle.getDateCreatedRaw());
+                                dbHelper.append(gVer,glazeFcCv);
+                                Intent editFcIntent = new Intent(getContext(),EditFiringCycle.class);
+                                editFcIntent.putExtra(KeyValues.KEY_ITEM_NEWNAME, newFcName);
+                                startActivity(editFcIntent);
+                            }
+                        }
+                    });
+                    newFcDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            newFcDialog.dismiss();
+                        }
+                    });
+                }
+                else {
+                    selectedFiringCycle = firingCycles.get(position);
+                    populateFiringcycleTable();
+                }
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                System.out.println("NOTHING SELECTED");
-            }
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
 
         firingcycleEditButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent editFcIntent = new Intent(getContext(),EditRecipe.class);
-                editFcIntent.putExtra(KeyValues.KEY_FIRING_CYCLE, selectedFiringCycle);
+                Intent editFcIntent = new Intent(getContext(),EditFiringCycle.class);
+                editFcIntent.putExtra(KeyValues.KEY_GLAZE_EDIT_FIRINGCYCLE, selectedFiringCycle);
                 startActivity(editFcIntent);
             }
         });
@@ -219,9 +265,14 @@ public class VersionFragment extends Fragment {
     /*--------------------ADD TABLE ROWS--------------------*/
 
     private void populateFiringcycleTable () {
-        ArrayList<RampHold> ramps = selectedFiringCycle.getRampHolds();
+        ArrayList<RampHold> ramps = new ArrayList<>();
+        if (selectedFiringCycle != null)
+            ramps = selectedFiringCycle.getRampHolds();
         if (ramps.size() == 0) firingCycleTable.setVisibility(GONE);
-        else for (RampHold rh : ramps) addFiringCycleRow(rh);
+        else {
+            firingCycleTable.setVisibility(View.VISIBLE);
+            for (RampHold rh : ramps) addFiringCycleRow(rh);
+        }
     }
 
     private void populateRecipeTables() {
@@ -238,6 +289,11 @@ public class VersionFragment extends Fragment {
             recipeEditButton.setText(R.string.glaze_button_label_norecipe);
         }
         else {
+            recipeMaterialsLabel.setVisibility(View.VISIBLE);
+            recipeAdditionsLabel.setVisibility(View.VISIBLE);
+            recipeMaterialsTable.setVisibility(View.VISIBLE);
+            recipeAdditionsTable.setVisibility(View.VISIBLE);
+            recipeEditButton.setText(R.string.glaze_button_label_edit);
             for (IngredientQuantity iq : materialsList) addRecipeRow(iq,recipeMaterialsTable);
             for (IngredientQuantity iq : additionsList) addRecipeRow(iq,recipeAdditionsTable);
         }
@@ -382,7 +438,7 @@ public class VersionFragment extends Fragment {
 
             ContentValues imageUriCV= new ContentValues();
             imageUriCV.put(DbHelper.SingleCN.IMAGE_URI_STRING,imageUri.toString());
-            DbHelper.getSingletonInstance(getContext()).append(gVer,imageUriCV);
+            dbHelper.append(gVer,imageUriCV);
             System.out.println("Image saved with Uri " + imageUri.toString());
             testTileImage.setImageBitmap(imageBitmap);
         }
