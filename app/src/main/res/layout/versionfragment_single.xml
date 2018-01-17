@@ -333,12 +333,13 @@
         android:layout_marginEnd="@dimen/layout_secondary_inset">
     </TableLayout>
 
-    <nh.glazelog.AlwaysSelectSpinner
-        android:id="@+id/firingcycleSpinner"
+    <TextView
+        android:id="@+id/firingcycleLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/layout_primary_inset"
-        android:layout_marginTop="@dimen/layout_inter_section_separator"
+        android:layout_marginTop="@dimen/layout_intra_section_separator"
+        android:text="@string/glaze_firingcycle_label"
         android:textAppearance="@style/HeaderText"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/recipeAdditionsTable"
@@ -350,9 +351,22 @@
         android:layout_height="wrap_content"
         android:text="@string/glaze_button_label_edit"
         android:layout_marginLeft="@dimen/layout_header_to_field_separator"
-        app:layout_constraintLeft_toRightOf="@+id/firingcycleSpinner"
-        app:layout_constraintBaseline_toBaselineOf="@+id/firingcycleSpinner"
+        app:layout_constraintLeft_toRightOf="@+id/firingcycleLabel"
+        app:layout_constraintBaseline_toBaselineOf="@+id/firingcycleLabel"
         />
+
+    <nh.glazelog.AlwaysSelectSpinner
+        android:id="@+id/firingcycleSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/layout_secondary_inset"
+        android:layout_marginTop="@dimen/layout_header_to_field_separator"
+        android:textAppearance="@style/StandardText"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/firingcycleLabel"
+        android:layout_marginStart="@dimen/layout_primary_inset" />
+
+
 
     <TableLayout
         android:id="@+id/firingcycleTable"

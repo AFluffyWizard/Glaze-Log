@@ -13,19 +13,19 @@
         android:layout_marginRight="4dp"/>
 
     <EditText
-        android:id="@+id/temperatureEditText"
+        android:id="@+id/rateEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:inputType="number"
+        android:inputType="number|numberSigned"
         android:layout_marginRight="8dp"
         android:layout_weight="0.3"
         />
 
     <EditText
-        android:id="@+id/rateEditText"
+        android:id="@+id/temperatureEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:inputType="number|numberSigned"
+        android:inputType="number"
         android:layout_marginRight="8dp"
         android:layout_weight="0.3"
         />

@@ -6,16 +6,6 @@
     android:weightSum="3">
 
     <TextView
-        android:id="@+id/temperatureLabel"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="8dp"
-        android:layout_weight="1"
-        android:layout_gravity="center"
-        android:text="@string/firingcycle_temp_label"
-        android:textAppearance="@style/StandardText" />
-
-    <TextView
         android:id="@+id/rateLabel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -23,6 +13,16 @@
         android:layout_weight="1"
         android:layout_gravity="center"
         android:text="@string/firingcycle_rate_label"
+        android:textAppearance="@style/StandardText" />
+
+    <TextView
+        android:id="@+id/temperatureLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="8dp"
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        android:text="@string/firingcycle_temp_label"
         android:textAppearance="@style/StandardText" />
 
     <TextView

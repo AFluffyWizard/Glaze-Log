@@ -15,34 +15,34 @@ import nh.glazelog.database.DbHelper;
 
 public class RampHold implements Parcelable {
 
-    private double temperature;
     private double rate;
+    private double temperature;
     private double hold; // in hours
 
 
     public RampHold() {
-        temperature = 0;
         rate = 0;
+        temperature = 0;
         hold = 0;
     }
 
-    public RampHold (double temp, double rateOfChange, double holdTime) {
-        temperature = temp;
+    public RampHold ( double rateOfChange, double temp, double holdTime) {
         rate = rateOfChange;
+        temperature = temp;
         hold = holdTime;
     }
 
     public RampHold (String temp, String rateOfChange, String holdTime) {
-        if (!temp.equals("")) temperature = Double.parseDouble(temp);
         if (!rateOfChange.equals("")) rate = Double.parseDouble(rateOfChange);
+        if (!temp.equals("")) temperature = Double.parseDouble(temp);
         if (!holdTime.equals("")) hold = Double.parseDouble(holdTime);
     }
 
-    public void setTemperature (double temp) {temperature = temp;}
     public void setRate (double rateOfChange) {rate = rateOfChange;}
+    public void setTemperature (double temp) {temperature = temp;}
     public void setHold (double holdTime) {hold = holdTime;}
-    public double getTemperature () {return temperature;}
     public double getRate () {return rate;}
+    public double getTemperature () {return temperature;}
     public double getHold () {return hold;}
 
     public static double getHighestTemp (ArrayList<RampHold> fc) {
@@ -54,7 +54,7 @@ public class RampHold implements Parcelable {
     }
 
     public String toString() {
-        return temperature + DbHelper.SHORT_SEP + rate + DbHelper.SHORT_SEP + hold + DbHelper.SHORT_SEP;
+        return rate + DbHelper.SHORT_SEP + temperature + DbHelper.SHORT_SEP + hold + DbHelper.SHORT_SEP;
     }
 
     public static String toLongString (RampHold... data) {

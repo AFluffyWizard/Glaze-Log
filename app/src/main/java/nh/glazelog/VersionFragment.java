@@ -235,8 +235,8 @@ public class VersionFragment extends Fragment {
                             if (fcNames.contains(newFcName))
                                 Toast.makeText(getContext(),R.string.glaze_fcdialog_failed,Toast.LENGTH_LONG).show();
                             else {
-                                ContentValues glazeFcCv = new ContentValues();
                                 selectedFiringCycle.setDateCreated(Util.getDateTimeStamp());
+                                ContentValues glazeFcCv = new ContentValues();
                                 glazeFcCv.put(DbHelper.SingleCN.FIRING_CYCLE_ID,selectedFiringCycle.getDateCreatedRaw());
                                 dbHelper.append(gVer,glazeFcCv);
                                 Intent editFcIntent = new Intent(getContext(),EditFiringCycle.class);
@@ -278,17 +278,21 @@ public class VersionFragment extends Fragment {
     /*--------------------ADD TABLE ROWS--------------------*/
 
     private void populateFiringcycleTable () {
+        firingCycleTable.removeAllViews();
         ArrayList<RampHold> ramps = new ArrayList<>();
         if (selectedFiringCycle != null)
             ramps = selectedFiringCycle.getRampHolds();
         if (ramps.size() == 0) firingCycleTable.setVisibility(GONE);
         else {
             firingCycleTable.setVisibility(View.VISIBLE);
+            addFiringCycleRow(null);
             for (RampHold rh : ramps) addFiringCycleRow(rh);
         }
     }
 
     private void populateRecipeTables() {
+        recipeMaterialsTable.removeAllViews();
+        recipeAdditionsTable.removeAllViews();
         TextView recipeMaterialsLabel = (TextView)page.findViewById(R.id.materialsLabel);
         TextView recipeAdditionsLabel = (TextView)page.findViewById(R.id.additionsLabel);
         ArrayList<IngredientQuantity> materialsList = gVer.getMaterials();
@@ -336,12 +340,7 @@ public class VersionFragment extends Fragment {
         final TextView rate = (TextView) firingCycleRow.findViewById(R.id.rateLabel);
         final TextView hold = (TextView) firingCycleRow.findViewById(R.id.holdLabel);
 
-        if (rh == null) {
-            temperature.setText("");
-            rate.setText("");
-            hold.setText("");
-        }
-        else {
+        if (rh != null) {
             temperature.setText(new Double(rh.getTemperature()).toString());
             rate.setText(new Double(rh.getRate()).toString());
             hold.setText(new Double(rh.getHold()).toString());

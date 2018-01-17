@@ -37,7 +37,7 @@ public class Glaze implements Parcelable,Storable,Listable {
     private double spgr;
     private ArrayList<IngredientQuantity> materials;
     private ArrayList<IngredientQuantity> additions;
-    private String firingCycle;
+    private String firingCycleID;
 
     public Glaze () {
         this.name = "";
@@ -57,7 +57,7 @@ public class Glaze implements Parcelable,Storable,Listable {
         this.spgr = 0;
         this.materials = new ArrayList<IngredientQuantity>();
         this.additions = new ArrayList<IngredientQuantity>();
-        this.firingCycle = "";
+        this.firingCycleID = "";
     }
 
     public Glaze (String name) {
@@ -83,10 +83,10 @@ public class Glaze implements Parcelable,Storable,Listable {
         this.spgr = g.getSpgr();
         this.materials = g.getMaterials();
         this.additions = g.getAdditions();
-        this.firingCycle = g.getFiringCycleID();
+        this.firingCycleID = g.getFiringCycleID();
     }
 
-    public Glaze(String name, String dateCreated, String dateEdited, String tags, String notes, String versionNotes, int lastVersionOpen, String imageUriString, Finish finish, Opacity opacity, Atmosphere atmos, String clayBody, Cone bisquedTo, String application, double spgr, ArrayList<IngredientQuantity> materials, ArrayList<IngredientQuantity> additions, String firingCycle) {
+    public Glaze(String name, String dateCreated, String dateEdited, String tags, String notes, String versionNotes, int lastVersionOpen, String imageUriString, Finish finish, Opacity opacity, Atmosphere atmos, String clayBody, Cone bisquedTo, String application, double spgr, ArrayList<IngredientQuantity> materials, ArrayList<IngredientQuantity> additions, String firingCycleID) {
         this.name = name;
         this.dateCreated = dateCreated;
         this.dateEdited = dateEdited;
@@ -104,7 +104,7 @@ public class Glaze implements Parcelable,Storable,Listable {
         this.spgr = spgr;
         this.materials = materials;
         this.additions = additions;
-        this.firingCycle = firingCycle;
+        this.firingCycleID = firingCycleID;
     }
 
     /* Old implementation where the getDate() functions returned a Date object.
@@ -156,19 +156,18 @@ public class Glaze implements Parcelable,Storable,Listable {
     public void setMaterials(ArrayList<IngredientQuantity> materials) {this.materials = materials;}
     public ArrayList<IngredientQuantity> getAdditions() {return additions;}
     public void setAdditions(ArrayList<IngredientQuantity> additions) {this.additions = additions;}
-    public String getFiringCycleID() {return firingCycle;}
+    public String getFiringCycleID() {return firingCycleID;}
+    public void setFiringCycleID(String firingCycleID) {this.firingCycleID = firingCycleID;}
     public FiringCycle getFiringCycle() {
-        ArrayList<?> rh = DbHelper.getSingletonInstance(
-                new Activity()).readSingle(Type.FIRING_CYCLE,DbHelper.CCN_DATE_CREATED, getFiringCycleID());
-                /* I am very much aware it is totally retarded
-                 * to pass a new activity as the Context parameter for this method.
+        ArrayList<?> rh = DbHelper.getSingletonInstance(null)
+                .readSingle(Type.FIRING_CYCLE,DbHelper.CCN_DATE_CREATED, getFiringCycleID());
+                /* I am very much aware it is totally retarded to pass null as the Context parameter for this method.
                  * However, there is no other way to obtain the application's context,
                  * and at this point the singleton instance of DbHelper should be initialized,
-                 * and the Context is no longer needed.
+                 * meaning the Context is no longer needed.
                  * The alternative would be to create a separate method with no parameters,
-                 * that would then have the ability to return a null instance, and hence
-                 * be EXTREMELY UNSAFE.
-                 * So, I'm doing it this way. As are the famous last words of any programmer,
+                 * that would then have the ability to return a null instance. Such a method would be EXTREMELY UNSAFE.
+                 * So, I'm doing it this way.
                  * it should work.
                  *
                  * Nick Hansen - 1/9/18
@@ -176,7 +175,6 @@ public class Glaze implements Parcelable,Storable,Listable {
         if (rh.size() == 0) return new FiringCycle();
         else return (FiringCycle)rh.get(0);
     }
-    public void setFiringCycle(String firingCycle) {this.firingCycle = firingCycle;}
 
 
     //listable implementation
@@ -272,7 +270,7 @@ public class Glaze implements Parcelable,Storable,Listable {
         spgr = in.readDouble();
         materials = in.createTypedArrayList(IngredientQuantity.CREATOR);
         additions = in.createTypedArrayList(IngredientQuantity.CREATOR);
-        firingCycle = in.readString();
+        firingCycleID = in.readString();
     }
 
     @Override
@@ -294,7 +292,7 @@ public class Glaze implements Parcelable,Storable,Listable {
         dest.writeDouble(spgr);
         dest.writeTypedList(materials);
         dest.writeTypedList(additions);
-        dest.writeString(firingCycle);
+        dest.writeString(firingCycleID);
     }
 
     @Override
