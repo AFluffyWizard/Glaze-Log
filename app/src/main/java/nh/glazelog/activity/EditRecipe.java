@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +25,7 @@ import nh.glazelog.Util;
 import nh.glazelog.database.DbHelper;
 import nh.glazelog.database.IngredientSpinnerSaver;
 import nh.glazelog.database.IngredientTextSaver;
+import nh.glazelog.database.SimpleTextSaver;
 import nh.glazelog.glaze.Glaze;
 import nh.glazelog.glaze.Ingredient;
 import nh.glazelog.glaze.IngredientEnum;
@@ -59,6 +62,27 @@ public class EditRecipe extends AppCompatActivity {
         for (IngredientQuantity iq : parentGlaze.getAdditions())
             addRecipeRow(iq,additionsTable,false);
 
+        EditText spgrField = (EditText) findViewById(R.id.spgrField);
+        if (parentGlaze.getSpgr() != 0)
+            spgrField.setText(Double.toString(parentGlaze.getSpgr()));
+        spgrField.addTextChangedListener(new SimpleTextSaver(getApplicationContext(),parentGlaze,DbHelper.SingleCN.SPGR,false));
+        spgrField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                try {
+                    parentGlaze.setSpgr(Double.valueOf(s.toString()));
+                }
+                catch (NumberFormatException e) {
+                    System.out.println("Number Format Exception in Spgr Field. Set to 0.");
+                    parentGlaze.setSpgr(0);
+                }
+
+            }
+        });
 
         Button materialsAddLineButton = (Button) findViewById(R.id.materialAddLineButton);
         materialsAddLineButton.setOnClickListener(new View.OnClickListener() {
@@ -72,16 +96,22 @@ public class EditRecipe extends AppCompatActivity {
         additionsAddLineButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addRecipeRow(null,additionsTable,true);
+                addRecipeRow(null,additionsTable,false);
             }
         });
+
+
+
+        Intent upIntent = new Intent();
+        upIntent.putExtra(KeyValues.KEY_GLAZE_FROM_EDIT_RECIPE, parentGlaze);
+        setResult(RESULT_OK,upIntent);
 
 
     }
 
 
     private void addRecipeRow (IngredientQuantity iq, final TableLayout recipeTable, final boolean isMaterials) {
-        final TableRow recipeRow = (TableRow) getLayoutInflater().inflate(R.layout.tablerow_recipe,null);
+        final TableRow recipeRow = (TableRow) getLayoutInflater().inflate(R.layout.tablerow_recipe_activity,null);
         final DeleteDialog deleteDialog = new DeleteDialog(this, new DeleteDialog.Action() {
             @Override
             public void action() {
@@ -123,7 +153,7 @@ public class EditRecipe extends AppCompatActivity {
         }
         else {
             Util.setSpinnerSelection(ingredient,iq.getIngredientEnum());
-            amount.setText(new Double(iq.getAmount()).toString());
+            amount.setText(Double.toString(iq.getAmount()));
         }
 
 
@@ -181,7 +211,7 @@ public class EditRecipe extends AppCompatActivity {
         switch (item.getItemId()) {
             default: break;
             case android.R.id.home:
-                Util.navigateUp(this);
+                finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);

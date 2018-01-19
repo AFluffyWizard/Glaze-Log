@@ -9,8 +9,10 @@ import java.util.Map;
 
 public enum KilnType {
     NONE("N/A"),
+    MANUAL("Manual"),
     ELECTRIC("Electric"),
     GAS("Gas"),
+    GAS_PROG("Programmable Gas"),
     OTHER("Other");
 
     String friendlyName;

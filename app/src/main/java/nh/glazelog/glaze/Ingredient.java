@@ -113,10 +113,13 @@ public class Ingredient implements Parcelable,Storable,Listable{
     //listable implementation
     @Override
     public String getSecondaryInfo(ArrayList<?> itemInfo) {
+        /*
         String costString = "Unknown cost";
         if (getCostPerKg() != 0) costString = "$" + getCostPerKg() + " per KG";
 
         return costString;
+        */
+        return "GONE";
     }
     @Override
     public Uri getImageUri() {return Uri.EMPTY;}

@@ -11,6 +11,7 @@ import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -136,20 +137,6 @@ public class VersionFragment extends Fragment {
         application.setText(gVer.getApplication());
 
         spgrField = (TextView) page.findViewById(R.id.spgrField);
-        TextView spgrLabel = (TextView) page.findViewById(R.id.spgrLabel);
-        TextView spgrLabel2 = (TextView) page.findViewById(R.id.spgrLabel2);
-        Double spgr = new Double(gVer.getSpgr());
-        if (spgr != 0){
-            spgrField.setVisibility(View.VISIBLE);
-            spgrLabel.setVisibility(View.VISIBLE);
-            spgrLabel2.setVisibility(View.VISIBLE);
-            spgrField.setText(spgr.toString());
-        }
-        else {
-            spgrField.setVisibility(GONE);
-            spgrLabel.setVisibility(GONE);
-            spgrLabel2.setVisibility(GONE);
-        }
 
         recipeEditButton = (Button) page.findViewById(R.id.recipeEditButton);
 
@@ -161,14 +148,18 @@ public class VersionFragment extends Fragment {
         firingCycles = Util.typeUntypedList(dbHelper.readAll(Storable.Type.FIRING_CYCLE));
         firingCycles.add(0,new FiringCycle(getString(R.string.glaze_firingcycle_makenew)));
         firingcycleSpinner.setAdapter(new FiringCycleArrayAdapter<>(getContext(),R.layout.spinner_item_small,firingCycles));
-        Util.setSpinnerSelection(firingcycleSpinner, gVer.getFiringCycle());
 
         firingcycleEditButton = (Button) page.findViewById(R.id.firingcycleEditButton);
-        if (firingcycleSpinner.getSelectedItemPosition() == 0) firingcycleEditButton.setVisibility(GONE);
 
         firingCycleTable = (TableLayout) page.findViewById(R.id.firingcycleTable);
-        if (!gVer.getFiringCycleID().equals("")) selectedFiringCycle = gVer.getFiringCycle();
-        populateFiringcycleTable();
+
+        if (gVer.getFiringCycleID().equals(""))
+            firingcycleEditButton.setVisibility(GONE);
+        else {
+            selectedFiringCycle = gVer.getFiringCycle();
+            Util.setSpinnerSelection(firingcycleSpinner, selectedFiringCycle);
+            populateFiringcycleTable();
+        }
 
         notes = (EditText) page.findViewById(R.id.notes);
         notes.setText(gVer.getNotes());
@@ -195,7 +186,7 @@ public class VersionFragment extends Fragment {
             public void onClick(View v) {
                 Intent editRecipeIntent = new Intent(getContext(),EditRecipe.class);
                 editRecipeIntent.putExtra(KeyValues.KEY_GLAZE_EDIT_RECIPE,gVer);
-                startActivity(editRecipeIntent);
+                startActivityForResult(editRecipeIntent,KeyValues.KEY_GLAZE_EDIT_RECIPE_REQUESTCODE);
             }
         });
 
@@ -218,42 +209,16 @@ public class VersionFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedFiringCycle = firingCycles.get(position);
                 if (position == 0) {
-                    View dialogView = inflater.inflate(R.layout.dialog_new_item,null);
-                    final EditText itemNameField = (EditText) dialogView.findViewById(R.id.itemNameField);
-                    newFcDialog = new AlertDialog.Builder(getActivity())
-                            .setPositiveButton(R.string.list_dialog_button_positive,null)
-                            .setNegativeButton(R.string.list_dialog_button_negative,null)
-                            .setView(dialogView)
-                            .setTitle(R.string.list_dialog_title_firingcycle)
-                            .create();
-                    newFcDialog.show();
-                    newFcDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            String newFcName = itemNameField.getText().toString();
-                            ArrayList<String> fcNames = dbHelper.getDistinctNames(Storable.Type.FIRING_CYCLE);
-                            if (fcNames.contains(newFcName))
-                                Toast.makeText(getContext(),R.string.glaze_fcdialog_failed,Toast.LENGTH_LONG).show();
-                            else {
-                                selectedFiringCycle.setDateCreated(Util.getDateTimeStamp());
-                                ContentValues glazeFcCv = new ContentValues();
-                                glazeFcCv.put(DbHelper.SingleCN.FIRING_CYCLE_ID,selectedFiringCycle.getDateCreatedRaw());
-                                dbHelper.append(gVer,glazeFcCv);
-                                Intent editFcIntent = new Intent(getContext(),EditFiringCycle.class);
-                                editFcIntent.putExtra(KeyValues.KEY_ITEM_NEWNAME, newFcName);
-                                startActivity(editFcIntent);
-                            }
-                        }
-                    });
-                    newFcDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            newFcDialog.dismiss();
-                        }
-                    });
+                    createNewFc();
                 }
-                else
+                else {
                     populateFiringcycleTable();
+                    ContentValues glazeFcCv = new ContentValues();
+                    glazeFcCv.put(DbHelper.SingleCN.FIRING_CYCLE_ID,selectedFiringCycle.getDateCreatedRaw());
+                    dbHelper.append(gVer,glazeFcCv);
+                    firingcycleEditButton.setVisibility(View.VISIBLE);
+                }
+
             }
 
             @Override
@@ -272,6 +237,44 @@ public class VersionFragment extends Fragment {
         bisqueSpinner.setOnItemSelectedListener(new SimpleSpinnerSaver(getContext(),gVer, DbHelper.SingleCN.BISQUED_TO,false));
 
         notes.addTextChangedListener(new SimpleTextSaver(getContext(),gVer, DbHelper.CCN_NOTES,false));
+    }
+
+
+    /*--------------------CREATE NEW FC--------------------*/
+    private void createNewFc() {
+        View dialogView = inflater.inflate(R.layout.dialog_new_item,null);
+        final EditText itemNameField = (EditText) dialogView.findViewById(R.id.itemNameField);
+        newFcDialog = new AlertDialog.Builder(getActivity())
+                .setPositiveButton(R.string.list_dialog_button_positive,null)
+                .setNegativeButton(R.string.list_dialog_button_negative,null)
+                .setView(dialogView)
+                .setTitle(R.string.list_dialog_title_firingcycle)
+                .create();
+        newFcDialog.show();
+        newFcDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String newFcName = itemNameField.getText().toString();
+                ArrayList<String> fcNames = dbHelper.getDistinctNames(Storable.Type.FIRING_CYCLE);
+                if (fcNames.contains(newFcName))
+                    Toast.makeText(getContext(),R.string.glaze_fcdialog_failed,Toast.LENGTH_LONG).show();
+                else {
+                    selectedFiringCycle.setDateCreated(Util.getDateTimeStamp());
+                    ContentValues glazeFcCv = new ContentValues();
+                    glazeFcCv.put(DbHelper.SingleCN.FIRING_CYCLE_ID,selectedFiringCycle.getDateCreatedRaw());
+                    dbHelper.append(gVer,glazeFcCv);
+                    Intent editFcIntent = new Intent(getContext(),EditFiringCycle.class);
+                    editFcIntent.putExtra(KeyValues.KEY_ITEM_NEWNAME, newFcName);
+                    startActivity(editFcIntent);
+                }
+            }
+        });
+        newFcDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                newFcDialog.dismiss();
+            }
+        });
     }
 
 
@@ -314,6 +317,21 @@ public class VersionFragment extends Fragment {
             for (IngredientQuantity iq : materialsList) addRecipeRow(iq,recipeMaterialsTable);
             for (IngredientQuantity iq : additionsList) addRecipeRow(iq,recipeAdditionsTable);
         }
+
+        TextView spgrLabel = (TextView) page.findViewById(R.id.spgrLabel);
+        TextView spgrLabel2 = (TextView) page.findViewById(R.id.spgrLabel2);
+        Double spgr = new Double(gVer.getSpgr());
+        if (spgr == 0){
+            spgrField.setVisibility(GONE);
+            spgrLabel.setVisibility(GONE);
+            spgrLabel2.setVisibility(GONE);
+        }
+        else {
+            spgrField.setText(spgr.toString());
+            spgrField.setVisibility(View.VISIBLE);
+            spgrLabel.setVisibility(View.VISIBLE);
+            spgrLabel2.setVisibility(View.VISIBLE);
+        }
     }
 
     private void addRecipeRow (@Nullable IngredientQuantity iq, final TableLayout recipeTable) {
@@ -336,14 +354,14 @@ public class VersionFragment extends Fragment {
     private void addFiringCycleRow(@Nullable RampHold rh) {
         final TableRow firingCycleRow = (TableRow) inflater.inflate(R.layout.tablerow_firingcycle,null);
 
-        final TextView temperature = (TextView) firingCycleRow.findViewById(R.id.temperatureLabel);
         final TextView rate = (TextView) firingCycleRow.findViewById(R.id.rateLabel);
+        final TextView temperature = (TextView) firingCycleRow.findViewById(R.id.temperatureLabel);
         final TextView hold = (TextView) firingCycleRow.findViewById(R.id.holdLabel);
 
         if (rh != null) {
-            temperature.setText(new Double(rh.getTemperature()).toString());
-            rate.setText(new Double(rh.getRate()).toString());
-            hold.setText(new Double(rh.getHold()).toString());
+            rate.setText(Double.toString(rh.getRate()));
+            temperature.setText(Double.toString(rh.getTemperature()));
+            hold.setText(Double.toString(rh.getHold()));
         }
         firingCycleTable.addView(firingCycleRow);
     }
@@ -410,6 +428,13 @@ public class VersionFragment extends Fragment {
         else if (resultCode == RESULT_FIRST_USER) resultCodeType = "RESULT_FIRST_USER";
         System.out.println("Request code matches take image key: " + (requestCode == KeyValues.KEY_REQUEST_IMAGE_CAPTURE));
         System.out.println("Img Intent result code: " + resultCodeType);
+
+        if (requestCode == KeyValues.KEY_GLAZE_EDIT_RECIPE_REQUESTCODE && resultCode == RESULT_OK) {
+            gVer = data.getParcelableExtra(KeyValues.KEY_GLAZE_FROM_EDIT_RECIPE);
+            populateRecipeTables();
+            System.out.println("RETURNED GLAZE RECIPE: " + IngredientQuantity.toLongString(gVer.getMaterials()));
+            return;
+        }
 
         if (requestCode == KeyValues.KEY_REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             //Bundle extras = data.getExtras();

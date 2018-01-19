@@ -1,10 +1,9 @@
 package nh.glazelog;
 
 import android.content.Context;
-import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
-import android.text.Layout;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,6 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import nh.glazelog.activity.GlazeList;
 import nh.glazelog.glaze.FiringCycle;
 
 import static android.view.View.GONE;
@@ -54,7 +52,7 @@ public class FiringCycleArrayAdapter<T> extends ArrayAdapter<T> {
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         if (convertView == null) convertView = inflater.inflate(R.layout.spinner_item_firingcycle,parent,false);
-        FiringCycle fc = (FiringCycle)getItem(position);
+        final FiringCycle fc = (FiringCycle)getItem(position);
 
         TextView name = (TextView) convertView.findViewById(R.id.firingcycleName);
         name.setText(fc.getName());
@@ -62,9 +60,13 @@ public class FiringCycleArrayAdapter<T> extends ArrayAdapter<T> {
         TextView subtitle = (TextView) convertView.findViewById(R.id.firingcycleSubtitle);
         subtitle.setText(fc.getSecondaryInfo(null));
 
-        if (fc.getName().equals(getContext().getString(R.string.glaze_firingcycle_makenew))) {
+        if (position == 0) {
             name.setTextColor(name.getHintTextColors());
             subtitle.setVisibility(GONE);
+        }
+        else {
+            name.setTextColor(0xff000000);
+            subtitle.setVisibility(View.VISIBLE);
         }
 
         return convertView;
@@ -86,5 +88,11 @@ public class FiringCycleArrayAdapter<T> extends ArrayAdapter<T> {
 
         return convertView;
     }
+
+    @Override
+    public int getPosition(@Nullable T item) {
+        return super.getPosition(item);
+    }
+
 
 }

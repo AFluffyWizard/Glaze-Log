@@ -44,15 +44,21 @@ public class EditFiringCycle extends AppCompatActivity {
         dbHelper = DbHelper.getSingletonInstance(getApplicationContext());
 
         Intent intent = getIntent();
-        if (intent.hasExtra(KeyValues.KEY_ITEM_FROM_LIST))
-            firingCycle = intent.getParcelableExtra(KeyValues.KEY_ITEM_FROM_LIST);
+        if (intent.hasExtra(KeyValues.KEY_ITEM_FROM_LIST)) {
+            System.out.println("FC ACTIVITY OPENED FROM LIST");
+            ArrayList<FiringCycle> fc = intent.getParcelableArrayListExtra(KeyValues.KEY_ITEM_FROM_LIST);
+            firingCycle = fc.get(0);
+        }
         else if (intent.hasExtra(KeyValues.KEY_ITEM_NEWNAME)) {
+            System.out.println("FC ACTIVITY OPENED WITH NEW NAME");
             String name = intent.getStringExtra(KeyValues.KEY_ITEM_NEWNAME);
             firingCycle = new FiringCycle(name);
             dbHelper.write(firingCycle);
         }
-        else
+        else {
             firingCycle = intent.getParcelableExtra(KeyValues.KEY_GLAZE_EDIT_FIRINGCYCLE);
+            System.out.println("FC ACTIVITY OPENED FROM GLAZE");
+        }
 
         ActionBar ab = getSupportActionBar();
         ab.setTitle(firingCycle.getName());

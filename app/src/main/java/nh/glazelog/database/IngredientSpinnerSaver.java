@@ -21,9 +21,13 @@ import nh.glazelog.glaze.IngredientQuantity;
 public class IngredientSpinnerSaver extends SpinnerSaver {
 
     TableLayout ingredientTable;
+    Glaze g;
+    boolean isMaterials;
 
     public IngredientSpinnerSaver(Context context, Glaze g, TableLayout table, boolean isMaterialsTable) {
         super(context,g, DbHelper.SingleCN.MATERIALS,false);
+        this.g = g;
+        this.isMaterials = isMaterialsTable;
         if (!isMaterialsTable) cvKey = DbHelper.SingleCN.ADDITIONS;
         ingredientTable = table;
     }
@@ -34,7 +38,7 @@ public class IngredientSpinnerSaver extends SpinnerSaver {
     }
 
     private void saveWithoutParameters() {
-        System.out.println("IngredientEnum Text Saver called for " + cvKey + ".");
+        System.out.println("IngredientEnum Spinner Saver called for " + cvKey + ".");
         ArrayList<IngredientQuantity> ingredientQuantities = new ArrayList<>();
         for (int i = 0; i < ingredientTable.getChildCount(); i++) {
             TableRow row = (TableRow) ingredientTable.getChildAt(i);
@@ -42,10 +46,10 @@ public class IngredientSpinnerSaver extends SpinnerSaver {
             String amount = ((TextView)row.findViewById(R.id.amountEditText)).getText().toString();
             ingredientQuantities.add(new IngredientQuantity(ingredient,amount));
         }
-        ContentValues cvToSave = new ContentValues();
-        cvToSave.put(cvKey,IngredientQuantity.toLongString(ingredientQuantities));
-        dbHelper.append(sToSave,cvToSave);
-        System.out.println("\"" + cvToSave.get(cvKey).toString() + "\" saved in column \"" + cvKey + "\".");
+        if (isMaterials)    g.setMaterials(ingredientQuantities);
+        else                g.setAdditions(ingredientQuantities);
+        dbHelper.append(sToSave,cvKey,IngredientQuantity.toLongString(ingredientQuantities));
+        System.out.println("\"" + IngredientQuantity.toLongString(ingredientQuantities) + "\" saved in column \"" + cvKey + "\".");
     }
 
 }

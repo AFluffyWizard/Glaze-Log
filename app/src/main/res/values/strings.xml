@@ -11,7 +11,7 @@
     <string name="recipe_label">Recipe</string>
     <string name="recipe_spgr_label" translatable="false">"(sp gr: "</string>
     <string name="recipe_additions_label">Additions</string>
-    <string name="glaze_firingcycle_label">Firing Cycle:</string>
+    <string name="glaze_firingcycle_label">Firing Cycle</string>
     <string name="glaze_notes_label">Other Notes</string>
     <string name="glaze_version_primarynotes_hint" translatable="false">Desc. of version</string>
     <string name="glaze_version_secondarynotes_hint">Other notes…</string>

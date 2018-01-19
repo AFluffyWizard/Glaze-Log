@@ -134,7 +134,7 @@ public class Util {
         return checkWritePermission;
     }
 
-    public static final int PERMISSION_USE_INTERNAL_STORAGE = 200;
+    public static final int PERMISSION_USE_INTERNAL_STORAGE = 6564;
     public static void requestStoragePermissions(Activity activity) {
         //Manifest.permission.READ_EXTERNAL_STORAGE
         ActivityCompat.requestPermissions(activity,
@@ -142,12 +142,20 @@ public class Util {
                 PERMISSION_USE_INTERNAL_STORAGE);
     }
 
-    public static <T extends Object> void setSpinnerSelection (Spinner spinner, Object o) {
-        int itemPos = ((ArrayAdapter<T>)spinner.getAdapter()).getPosition((T)o);
-        spinner.setSelection(itemPos);
+    public static <T extends Object> boolean setSpinnerSelection (Spinner spinner, Object o) {
+        for (int i = 0; i < spinner.getAdapter().getCount(); i++) {
+            if (spinner.getAdapter().getItem(i).toString().equals(o.toString())) {
+                spinner.setSelection(i);
+                return true;
+            }
+        }
+        System.out.println("COULD NOT FIND OBJ \"" + o + "\" IN SPINNER");
+        return false;
     }
+
     public static <T extends Enum> void setSpinnerSelection (Spinner spinner, Enum o) {
         int itemPos = ((ArrayAdapter<T>)spinner.getAdapter()).getPosition((T)o);
+        //System.out.println("INDEX OF " + o + " IN SPINNER: " + itemPos);
         spinner.setSelection(itemPos);
     }
 

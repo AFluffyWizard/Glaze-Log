@@ -36,10 +36,10 @@ public class FiringCycleTextSaver extends TextSaver {
         ArrayList<RampHold> rampHolds = new ArrayList<>();
         for (int i = 1; i < firingCycleTable.getChildCount(); i++) {
             TableRow row = (TableRow) firingCycleTable.getChildAt(i);
-            String temp = ((TextView)row.findViewById(R.id.temperatureEditText)).getText().toString();
             String rate = ((TextView)row.findViewById(R.id.rateEditText)).getText().toString();
+            String temp = ((TextView)row.findViewById(R.id.temperatureEditText)).getText().toString();
             String hold = ((TextView)row.findViewById(R.id.holdEditText)).getText().toString();
-            rampHolds.add(new RampHold(temp,rate,hold));
+            rampHolds.add(new RampHold(rate,temp,hold));
         }
         ContentValues cvToSave = new ContentValues();
         cvToSave.put(cvKey,RampHold.toLongString(rampHolds));

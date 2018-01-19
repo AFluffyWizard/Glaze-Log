@@ -55,6 +55,7 @@ public class GlazeList extends AppCompatActivity {
 
     ArrayList<String> itemNames;
     Class itemActivityClass;
+    Storable.Type lastOpenedList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,12 +109,13 @@ public class GlazeList extends AppCompatActivity {
         getSupportActionBar().setTitle(type.getListTitle());
         newItemDialog.setTitle(type.getDialogTitle());
         itemNames = dbHelper.getDistinctNames(type);
+        lastOpenedList = type;
 
         // obtain a reference to the list
         LinearLayout list = (LinearLayout) findViewById(R.id.layoutList);
         list.removeAllViews();
 
-        // load necessary components
+        // load items
         final ArrayList<ArrayList<T>> itemsWithVersions = new ArrayList<>();
         for (String name : dbHelper.getDistinctNames(type)) {
             ArrayList<T> item = Util.<T>typeUntypedList(dbHelper.readSingle(type, dbHelper.CCN_NAME,name));
@@ -208,7 +210,7 @@ public class GlazeList extends AppCompatActivity {
             glazeDbLoader.execute("");
         }
         else {
-            populateList(Storable.Type.SINGLE);
+            populateList(lastOpenedList);
         }
     }
 

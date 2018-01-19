@@ -1,5 +1,6 @@
 package nh.glazelog.activity;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 
@@ -16,9 +17,11 @@ import nh.glazelog.DeleteDialog;
 import nh.glazelog.KeyValues;
 import nh.glazelog.R;
 import nh.glazelog.RenameDialog;
+import nh.glazelog.Util;
 import nh.glazelog.VersionPager;
 import nh.glazelog.VersionPagerAdapter;
 import nh.glazelog.database.DbHelper;
+import nh.glazelog.database.Storable;
 import nh.glazelog.glaze.*;
 
 public class SingleGlaze extends AppCompatActivity {
@@ -41,12 +44,13 @@ public class SingleGlaze extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent.hasExtra(KeyValues.KEY_ITEM_FROM_LIST))
             glaze = intent.getParcelableArrayListExtra(KeyValues.KEY_ITEM_FROM_LIST);
-        else {
+        else if (intent.hasExtra(KeyValues.KEY_ITEM_NEWNAME)){
             glaze = new ArrayList<>();
             String newGlazeName = intent.getStringExtra(KeyValues.KEY_ITEM_NEWNAME);
             glaze.add(new Glaze(newGlazeName));
             dbHelper.write(glaze.get(0));
         }
+
         rootGlaze = glaze.get(0);
         currentGlaze = glaze.get(glaze.size()-1);
 

@@ -20,10 +20,14 @@ import nh.glazelog.glaze.IngredientQuantity;
 public class IngredientTextSaver extends TextSaver {
 
     TableLayout ingredientTable;
+    Glaze g;
+    boolean isMaterials;
 
     public IngredientTextSaver(Context context, Glaze g, TableLayout ingredientTable, boolean isMaterialsTable) {
         super(context,g,"",false);
         this.ingredientTable = ingredientTable;
+        this.g = g;
+        this.isMaterials = isMaterialsTable;
         if (isMaterialsTable)   cvKey = DbHelper.SingleCN.MATERIALS;
         else                    cvKey = DbHelper.SingleCN.ADDITIONS;
     }
@@ -37,9 +41,9 @@ public class IngredientTextSaver extends TextSaver {
             String amount = ((TextView)row.findViewById(R.id.amountEditText)).getText().toString();
             ingredientQuantities.add(new IngredientQuantity(ingredient,amount));
         }
-        ContentValues cvToSave = new ContentValues();
-        cvToSave.put(cvKey,IngredientQuantity.toLongString(ingredientQuantities));
-        dbHelper.append(sToSave,cvToSave);
-        System.out.println("\"" + cvToSave.get(cvKey).toString() + "\" saved in column \"" + cvKey + "\" of " + sToSave.getName() + ".");
+        if (isMaterials)    g.setMaterials(ingredientQuantities);
+        else                g.setAdditions(ingredientQuantities);
+        dbHelper.append(sToSave,cvKey,IngredientQuantity.toLongString(ingredientQuantities));
+        System.out.println("\"" + IngredientQuantity.toLongString(ingredientQuantities) + "\" saved in column \"" + cvKey + "\" of " + sToSave.getName() + ".");
     }
 }

@@ -22,7 +22,7 @@ import nh.glazelog.glaze.Ingredient;
 public class DbHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "GlazeData.db";
-    public static final int DATABASE_VERSION = 11;
+    public static final int DATABASE_VERSION = 13;
 
     // for storing/parsing lists of data
     public static final String SHORT_SEP = ":";
@@ -76,11 +76,23 @@ public class DbHelper extends SQLiteOpenHelper {
                 CCN_DATE_CREATED + " = ?",new String[]{s.getDateCreatedRaw()},SQLiteDatabase.CONFLICT_REPLACE);
     }
 
+    public void append(Storable s, String rowName, String value) {
+        ContentValues cv = new ContentValues();
+        cv.put(rowName,value);
+        append(s,cv);
+    }
+
     public void appendAllVersions(Storable s, ContentValues values) {
         s.updateDateEdited();
         values.put(CCN_DATE_EDITED,s.getDateEditedRaw());
         singletonDatabase.updateWithOnConflict(s.getStorableType().getTableName(),values,
                 CCN_NAME + " = ?",new String[]{s.getName()},SQLiteDatabase.CONFLICT_REPLACE);
+    }
+
+    public void appendAllVersions(Storable s, String rowName, String value) {
+        ContentValues cv = new ContentValues();
+        cv.put(rowName,value);
+        appendAllVersions(s,cv);
     }
 
     public boolean contains(Storable s, boolean useDate) {

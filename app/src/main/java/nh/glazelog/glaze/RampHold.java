@@ -32,7 +32,7 @@ public class RampHold implements Parcelable {
         hold = holdTime;
     }
 
-    public RampHold (String temp, String rateOfChange, String holdTime) {
+    public RampHold (String rateOfChange, String temp, String holdTime) {
         if (!rateOfChange.equals("")) rate = Double.parseDouble(rateOfChange);
         if (!temp.equals("")) temperature = Double.parseDouble(temp);
         if (!holdTime.equals("")) hold = Double.parseDouble(holdTime);
